@@ -1,0 +1,77 @@
+<!--
+  FunSculpting /funsculpting/ conversion bridge → GTM dataLayer
+  ---------------------------------------------------------------
+  WHERE: WPCode → Add Snippet → Code Type: HTML Snippet → Location: Site-Wide Footer
+         Smart Conditional Logic: Page URL contains "/funsculpting/"
+  WHY:   GTM (GTM-MP5XDZ) + GA4 (G-BCQCHJNLRB) + dataLayer already live.
+         This only PUSHES dataLayer events; GTM tags (see gtag-gtm-config.md) fire the Google Ads conversions.
+
+  Events pushed:
+    demo_booked       [PRIMARY]   Calendly booking COMPLETED (calendly.event_scheduled)
+    financing_click   [SECONDARY] Outbound click to app.taycor.com (cross-domain: click = intent, not funded app)
+    calculate_revenue [OPTIONAL]  #fs-roi anchor engagement — NOT wired to an Ads conversion
+
+  Notes for this page (verified on live /funsculpting/):
+    - All 5 "Book Demo" CTAs are plain links to calendly.com/inspiredsurgical — converted to on-page popups below.
+    - No Gravity Forms / CF7 instances render here, so no form-submit tracking is included.
+    - Idempotent: guards against double-binding and double-firing.
+-->
+<script>
+(function () {
+  if (window.__fsTrackingInit) return;            // never double-bind
+  window.__fsTrackingInit = true;
+  window.dataLayer = window.dataLayer || [];
+  function push(name, data){ window.dataLayer.push(Object.assign({event:name}, data||{})); }
+
+  /* ---------- (a) CALENDLY demo_booked [PRIMARY] ---------- */
+  // Load Calendly assets so links can open as an on-page popup (required to hear the booking event).
+  if (!document.querySelector('link[href*="assets.calendly.com"]')) {
+    var css=document.createElement('link');
+    css.rel='stylesheet'; css.href='https://assets.calendly.com/assets/external/widget.css';
+    document.head.appendChild(css);
+  }
+  if (!window.Calendly && !document.querySelector('script[src*="assets.calendly.com/assets/external/widget.js"]')) {
+    var s=document.createElement('script');
+    s.src='https://assets.calendly.com/assets/external/widget.js'; s.async=true;
+    document.head.appendChild(s);
+  }
+  // Convert EVERY Calendly link on the page (all 5 CTAs) into a popup, via delegation.
+  document.addEventListener('click', function(e){
+    var a = e.target.closest && e.target.closest('a[href*="calendly.com/inspiredsurgical"]');
+    if (!a) return;
+    if (window.Calendly && window.Calendly.initPopupWidget) {
+      e.preventDefault();
+      window.Calendly.initPopupWidget({ url: a.href });
+    } // else: assets still loading — link opens normally as fallback
+  }, false);
+  // Fire ONLY on a completed booking (not open/view/select).
+  var demoFired=false;
+  window.addEventListener('message', function(e){
+    if (!e || !e.origin || e.origin.indexOf('calendly.com')===-1) return;
+    if (!e.data || e.data.event !== 'calendly.event_scheduled') return;   // completion only
+    if (demoFired) return;                                                 // idempotent
+    demoFired=true;
+    push('demo_booked', { conversion_source:'calendly' });
+  }, false);
+
+  /* ---------- (c) FINANCING — Taycor outbound click [SECONDARY] ---------- */
+  var finFired=false;
+  document.addEventListener('click', function(e){
+    var a = e.target.closest && e.target.closest('a[href*="app.taycor.com"]');
+    if (!a) return;
+    var newTab = a.target==='_blank' || e.metaKey||e.ctrlKey||e.shiftKey||e.button===1;
+    if (!finFired){ finFired=true; push('financing_click', { conversion_source:'taycor', link_url:a.href }); }
+    // Same-tab navigation: hold ~350ms so the conversion pixel sends before we leave.
+    if (!newTab && e.button===0){
+      e.preventDefault();
+      setTimeout(function(){ window.location.href = a.href; }, 350);
+    }
+  }, false);
+
+  /* ---------- (optional) Calculate Revenue — engagement only, NOT an Ads conversion ---------- */
+  document.addEventListener('click', function(e){
+    var a = e.target.closest && e.target.closest('a[href$="#fs-roi"], a[href="#fs-roi"]');
+    if (a) push('calculate_revenue', { conversion_source:'roi_anchor' });
+  }, false);
+})();
+</script>
