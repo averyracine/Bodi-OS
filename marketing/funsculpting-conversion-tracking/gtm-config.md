@@ -1,3 +1,17 @@
+> # ⚠️ SUPERSEDED — GTM is NOT used in the shipped implementation
+> This GTM-based plan was **abandoned during setup** and is kept for history only. **Do not
+> follow it.** See **`COWORK-HANDOFF.md`** for what was actually built.
+>
+> Why it was dropped:
+> 1. The Google Ads account is **GA4-linked**, so its conversion wizard only offers **GA4 key
+>    events** — the manual `AW-` Conversion ID + label path below does not exist for this
+>    account. Conversions were created as **GA4 key events** instead.
+> 2. **No signed-in account had access to container GTM-MP5XDZ**, so GTM could not be
+>    configured. The page loads `gtag/js?id=G-BCQCHJNLRB` directly, so events are fired via
+>    **direct `gtag`** (see `wpcode-funsculpting-gtag.html`) — **no GTM, no `AW-` IDs.**
+
+---
+
 # GTM configuration — FunSculpting Google Ads conversions
 
 Container: **GTM-MP5XDZ** · GA4 already live (**G-BCQCHJNLRB**) · dataLayer present.

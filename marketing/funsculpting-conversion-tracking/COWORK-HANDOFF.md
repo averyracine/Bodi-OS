@@ -1,89 +1,97 @@
-# Cowork handoff — FunSculpting Google Ads conversion tracking
+# FunSculpting conversion tracking — execution brief (source of truth)
 
 **Goal:** make Google Ads able to measure and optimize for FunSculpting demo bookings.
-All decisions are already made below — this is **execution only**. Source files live in this
-same folder: `wpcode-funsculpting-footer.html` (the snippet) and `gtm-config.md` (full GTM spec).
+This brief reflects **what was actually built**, which differs from the original GTM-based plan.
 
-**Environment (already live, do not recreate):**
-- WordPress: Kadence + Elementor + **WPCode** installed.
-- Landing page: `https://inspiredsurgicalsupplies.com/funsculpting/`
-- **GTM-MP5XDZ** + **GA4 G-BCQCHJNLRB** + a dataLayer are already running. There was **no Google Ads conversion tag** — that is the gap to close.
+> **Why the approach changed (read this first):**
+> The original plan was to create *manual* Google Ads conversion actions (a `AW-…`
+> Conversion ID + per-action labels) and fire them from **GTM** "Google Ads Conversion
+> Tracking" tags on custom-event triggers. That path was abandoned during setup for two
+> concrete reasons:
+> 1. **The Google Ads account is GA4-linked.** Its conversion wizard only offers **GA4 key
+>    events** as the website data source — it never exposes the manual `AW-` + label path.
+>    So the conversions were created as **GA4 key events imported into Ads**, not manual tags.
+> 2. **No signed-in Google account had access to the GTM container (GTM-MP5XDZ)** — GTM
+>    couldn't be configured at all. But the live page loads the Google tag directly
+>    (`gtag/js?id=G-BCQCHJNLRB`), so `window.gtag` is available. Events are therefore fired
+>    **directly via `gtag`, with no GTM.**
 
-**Guardrails (follow exactly):**
-- Do **not** edit core or parent-theme files. Use **WPCode snippets + GTM only**.
-- Keep GTM in **Preview** — **do NOT Publish** until a human approves.
-- Don't change DNS, plugins, or hosting settings.
-- The Calendly conversion must fire only on a **completed booking**, never on popup open.
+**Environment (live, do not recreate):** WordPress (Kadence + Elementor + **WPCode**).
+Landing page `https://inspiredsurgicalsupplies.com/funsculpting/`. **GA4 G-BCQCHJNLRB** loads
+on the page via the global site tag. **GTM-MP5XDZ exists but is not used** (no access).
+
+**Guardrails:** WPCode snippet only — **no core or parent/child-theme edits**. Financing is
+**cross-domain** (`app.taycor.com`), so only the **outbound click** is measurable, never the
+funded application. The CME waitlist page (`/cme-physician-training/`) is **still parked**
+(custom JS-handled HTML forms, separate task).
 
 ---
 
-## Step 1 — Revoke a leaked token (GitHub)
-A fine-grained PAT starting `github_pat_11BTRV5K…` was exposed in a chat transcript.
-Go to github.com → **Settings → Developer settings → Personal access tokens → Fine-grained tokens** → delete that token. (Leave "bodi-os write token" intact.)
+## Step 1 — Revoke any leaked token (GitHub)
+Earlier a fine-grained PAT (`github_pat_11BTRV5K…`) was pasted into a chat transcript. If it
+still exists, delete it: github.com → **Settings → Developer settings → Personal access
+tokens**. *(If it's already absent/revoked, this step is done — nothing to do.)*
 
-## Step 2 — Create 2 conversion actions (Google Ads)
-Google Ads → **Goals → Conversions → + New conversion action → Website → Add manually**.
-When asked how to install the tag, choose **Use Google Tag Manager**.
+## Step 2 — Conversions (Google Ads, GA4 key events)
+Account: **Inspired Surgical Supplies (479-712-3095)**, GA4-linked. Both conversions were
+created as **GA4 key events imported into Google Ads** (the only path this account exposes):
 
-**Action A — `FunSculpting – Demo Booked` (PRIMARY)**
+**`demo_booked` — PRIMARY**
 - Category: **Submit lead form**
-- Value: don't use a value (optional flat proxy value if value-bidding later)
+- Goal: **Primary** (drives bidding)
 - Count: **One**
-- Click-through window 30d · Engaged-view 3d · View-through 1d · Attribution: Data-driven
-- Goal setting: **Primary** (Ads optimizes toward this)
+- Click-through window: **30 days** · Engaged-view: **3 days**
+- Attribution: **Data-driven** · Value: **none**
 
-**Action B — `FunSculpting – Financing Click` (SECONDARY)**
-- Category: **Other** (it's an outbound intent click, not a verified application)
-- Value: don't use a value
-- Count: **One**
-- Click-through window 30d · Attribution: Data-driven
-- Goal setting: **Secondary** (observation only — must NOT drive bidding)
+**`financing_click` — observation-only**
+- Category: **Outbound click**
+- Count: **One** · Click-through window: **30 days** · Value: **none**
+- **Observation-only mechanism:** in this GA4-linked account the per-action *Secondary*
+  radio was disabled, so "secondary" is achieved by turning the **account-default toggle for
+  the "Outbound click" goal OFF**. Result: **0 campaigns optimize toward it** while it still
+  records for reporting.
 
-**Record and report back:** the **Conversion ID** (`AW-XXXXXXXXXX`, same for both) and each
-action's **Conversion label**. You'll need them in Step 3.
+**Notes / expected states:**
+- Campaign bidding is currently **Maximize clicks**, so **no conversion-based bidding happens
+  yet**. Planned switch to **Maximize Conversions** after ~**15–30** conversions accumulate.
+- Both GA4 events show **Inactive** in Ads until live data flows — **expected**, not a fault.
 
-## Step 3 — Configure GTM (container GTM-MP5XDZ)
-Work in a new workspace. Build:
+## No GTM — events fire via direct `gtag`
+There is **no GTM configuration** in this build. Because (a) the account is GA4-linked and
+the conversions are GA4 key events, and (b) no one had GTM container access, the events are
+sent **straight through the page's existing `gtag`** (`G-BCQCHJNLRB`). GA4 then forwards the
+key events to Google Ads. No Conversion Linker, no GTM tags/triggers, no `AW-` IDs are
+involved. *(The old GTM spec is preserved as `gtm-config.md` with a SUPERSEDED banner.)*
 
-1. **Conversion Linker tag** → trigger **All Pages**. Name: `Google Ads - Conversion Linker`.
-2. **Custom Event triggers:**
-   - `CE - demo_booked` → Event name `demo_booked`
-   - `CE - financing_click` → Event name `financing_click`
-3. **Google Ads Conversion Tracking tags** (fill ID/label from Step 2):
+## Step 4 — Site snippet (WPCode, direct gtag)
+Source file: **`wpcode-funsculpting-gtag.html`** (this folder).
+- WordPress → **WPCode → Add Snippet → HTML Snippet**.
+- Paste the full contents of `wpcode-funsculpting-gtag.html`.
+- Location: **Site-Wide Footer** · Smart Conditional Logic: **Page URL contains
+  `/funsculpting/`** · **Active**.
+- The snippet self-guards to `/funsculpting/` paths, converts Calendly links to on-page
+  popups, and fires the three GA4 events via `gtag`: `demo_booked` (Calendly
+  `event_scheduled`), `financing_click` (outbound `taycor.com`, holding same-tab navigation
+  ~350ms so the event sends first), and optional `calculate_revenue` (ROI CTA). It is
+  idempotent — guards against double-injection, double-bind, and double-fire.
 
-   | Tag name | Conversion ID | Conversion Label | Trigger | Ads role |
-   |---|---|---|---|---|
-   | `Ads - Demo Booked (PRIMARY)` | `AW-__________` | `__________` | `CE - demo_booked` | Count One · Primary |
-   | `Ads - Financing Click` | `AW-__________` | `__________` | `CE - financing_click` | Count One · Secondary |
+*(The previous dataLayer/GTM snippet `wpcode-funsculpting-footer.html` is deprecated and kept
+for history only — do not install it.)*
 
-   *(Optional: a GA4 Event tag on a `CE - calculate_revenue` trigger for ROI-calculator engagement — no Ads tag.)*
+## Step 5 — Verify (GA4 Realtime / DebugView, not GTM)
+On `/funsculpting/`, with the snippet active:
+1. **GA4 Realtime / DebugView:** trigger each action and confirm the event appears —
+   `demo_booked`, `financing_click`, `calculate_revenue`. (DebugView is the precise check;
+   use the GA Debugger extension or `?_dbg=1`-style debug mode.)
+2. **Scoping:** confirm events fire **only** on `/funsculpting/` (load another page and verify
+   nothing fires).
+3. **Single-fire:** rapid re-clicks / rebooking → **one** event per genuine action (the
+   snippet's time/flag guards + GA4 key-event "Count: one" backstop).
+4. **Desktop + mobile:** repeat on a real phone.
+5. **End-to-end:** complete **one real Calendly booking** and confirm `demo_booked` shows in
+   GA4 Realtime (and, after processing latency, in the Ads conversion's status). Opening the
+   Calendly popup **without** booking must **not** fire `demo_booked`.
 
-## Step 4 — Add the WPCode snippet (WordPress)
-WordPress admin → **WPCode → Add Snippet → Code Type: HTML Snippet**.
-- Paste the entire contents of `wpcode-funsculpting-footer.html` (in this folder).
-- Location: **Site-Wide Footer**.
-- Smart Conditional Logic: **Page URL contains `/funsculpting/`**.
-- **Save & Activate.**
-
-What the snippet does (already written, no edits needed): converts all 5 "Book Demo" Calendly
-links to on-page popups and pushes `demo_booked` on `calendly.event_scheduled`; pushes
-`financing_click` on outbound clicks to `app.taycor.com` (holding same-tab navigation ~350ms so
-the pixel sends first); pushes optional `calculate_revenue` on the `#fs-roi` anchor. It is
-idempotent (guards against double-bind and double-fire).
-
-## Step 5 — Verify, then hand back for publish approval
-GTM **Preview** on `/funsculpting/`, with Tag Assistant / Network tab, on **desktop and a phone**:
-1. Open each Calendly CTA → popup opens, **no** `demo_booked` yet. Complete a real booking →
-   `demo_booked` fires **once**, `Ads - Demo Booked` = Fired, one `googleadservices…/pagead/conversion/` hit.
-2. Click "Apply for Financing" → `financing_click` fires once, then navigates to `app.taycor.com`.
-3. Rapidly re-click / rebook → still a single fire each (no double-counting).
-4. Confirm the same on mobile.
-
-**Stop here.** Present the Preview results to a human for sign-off **before** publishing the GTM version.
-
----
-
-## Notes / scope boundaries
-- **No Gravity Forms / CF7 forms render on `/funsculpting/`**, so there is intentionally no form-submit tracking on this page.
-- **Financing is cross-domain** (`app.taycor.com`): we can only catch the outbound click (intent), not the funded application — hence Secondary/observation.
-- **Parked (separate task):** `/cme-physician-training/` waitlist uses custom HTML forms (`.cme-card`, `.cme-state-info`) handled in JS — not GF/CF7. To track later, hook that page's submit-success into a `waitlist_submit` dataLayer event + a third Ads conversion.
+Once GA4 shows the events, the Ads key events flip from **Inactive** to recording. After
+~15–30 conversions, switch the campaign to **Maximize Conversions** to begin optimizing
+toward `demo_booked`.

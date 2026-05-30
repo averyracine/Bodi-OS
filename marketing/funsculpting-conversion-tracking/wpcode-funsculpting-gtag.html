@@ -1,0 +1,106 @@
+<!--
+  FunSculpting conversion tracking — DIRECT gtag (GA4: G-BCQCHJNLRB)
+  WHERE: WPCode HTML Snippet, Site-Wide Footer, URL contains "/funsculpting/".
+  FIRES: demo_booked (Calendly event_scheduled), financing_click (outbound app.taycor.com),
+         calculate_revenue (optional, ROI CTA). Sent straight through the page's gtag.
+  Idempotent: guards double-injection, double-bind, double-fire.
+-->
+<script>
+(function () {
+  "use strict";
+  if (!/\/funsculpting\/?/i.test(location.pathname)) return;
+  if (window.__fsTrackInit) return;
+  window.__fsTrackInit = true;
+
+  function track(name, params) {
+    try {
+      if (typeof window.gtag === "function") {
+        window.gtag("event", name, params || {});
+      } else {
+        (window.dataLayer = window.dataLayer || []).push(
+          Object.assign({ event: name }, params || {})
+        );
+      }
+    } catch (e) {}
+  }
+
+  function ensureCalendly(cb) {
+    if (window.Calendly) { cb(); return; }
+    if (!document.querySelector('link[href*="assets.calendly.com/assets/external/widget.css"]')) {
+      var l = document.createElement("link");
+      l.rel = "stylesheet";
+      l.href = "https://assets.calendly.com/assets/external/widget.css";
+      document.head.appendChild(l);
+    }
+    var existing = document.querySelector('script[src*="assets.calendly.com/assets/external/widget.js"]');
+    if (existing) { existing.addEventListener("load", cb); if (window.Calendly) cb(); return; }
+    var s = document.createElement("script");
+    s.src = "https://assets.calendly.com/assets/external/widget.js";
+    s.async = true; s.onload = cb;
+    document.head.appendChild(s);
+  }
+
+  function bindCalendly() {
+    var links = document.querySelectorAll('a[href*="calendly.com"]');
+    Array.prototype.forEach.call(links, function (a) {
+      if (a.__fsBound) return;
+      a.__fsBound = true;
+      a.addEventListener("click", function (ev) {
+        if (!window.Calendly) return;
+        ev.preventDefault();
+        window.Calendly.initPopupWidget({ url: a.href });
+      });
+    });
+  }
+
+  var lastDemoTs = 0;
+  window.addEventListener("message", function (e) {
+    var d = e && e.data;
+    if (!d || typeof d !== "object" || typeof d.event !== "string") return;
+    if (d.event.indexOf("calendly") !== 0) return;
+    if (d.event === "calendly.event_scheduled") {
+      var now = Date.now();
+      if (now - lastDemoTs < 3000) return;
+      lastDemoTs = now;
+      track("demo_booked");
+    }
+  });
+
+  document.addEventListener("click", function (ev) {
+    var a = ev.target && ev.target.closest ? ev.target.closest("a") : null;
+    if (!a) return;
+    var href = a.getAttribute("href") || "";
+    if (!/taycor\.com/i.test(href)) return;
+    var newTab = a.target === "_blank" || ev.metaKey || ev.ctrlKey || ev.shiftKey;
+    if (newTab) { track("financing_click"); return; }
+    if (a.__fsFinHold) return;
+    a.__fsFinHold = true;
+    ev.preventDefault();
+    track("financing_click");
+    var dest = a.href;
+    setTimeout(function () { window.location.href = dest; }, 350);
+  }, true);
+
+  var roiFired = false;
+  document.addEventListener("click", function (ev) {
+    var a = ev.target && ev.target.closest ? ev.target.closest("a") : null;
+    if (!a) return;
+    var href = (a.getAttribute("href") || "").toLowerCase();
+    var txt = (a.textContent || "").toLowerCase();
+    if (href.indexOf("#fs-roi") !== -1 || txt.indexOf("calculate revenue") !== -1) {
+      if (roiFired) return;
+      roiFired = true;
+      track("calculate_revenue");
+    }
+  });
+
+  function init() {
+    ensureCalendly(bindCalendly);
+    var n = 0;
+    var iv = setInterval(function () { bindCalendly(); if (++n >= 10) clearInterval(iv); }, 1000);
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else { init(); }
+})();
+</script>
