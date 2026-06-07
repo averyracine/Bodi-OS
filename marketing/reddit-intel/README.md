@@ -84,9 +84,9 @@ uses OAuth. The client is **read-only by design** — there is no posting code.
    ```
    REDDIT_CLIENT_ID=...
    REDDIT_CLIENT_SECRET=...
-   REDDIT_USERNAME=MedicalGrowthOps              # your persona account
+   REDDIT_USERNAME=Active_Law_1788              # permanent username (display name: MedicalGrowthOps)
    REDDIT_PASSWORD=...
-   REDDIT_USER_AGENT=reddit-intel:funsculpting:v0.1 (by /u/MedicalGrowthOps)
+   REDDIT_USER_AGENT=reddit-intel:funsculpting:v0.1 (by /u/Active_Law_1788)
    ```
 4. Run without `--offline`:
    ```bash

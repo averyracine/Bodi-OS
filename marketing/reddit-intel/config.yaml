@@ -24,8 +24,10 @@ brand:
 # Account strategy — the Reddit identity should NOT be "FunSculpting".
 # -----------------------------------------------------------------------------
 account_strategy:
-  # The handle in use for the brand persona. Set REDDIT_USERNAME in .env to match.
+  # selected_handle = the DISPLAY name shown on the profile.
+  # reddit_username = the actual (permanent) account login used by the API.
   selected_handle: MedicalGrowthOps
+  reddit_username: Active_Law_1788
   recommended_handles:
     - MedicalGrowthOps
     - PracticeGrowthInsights
