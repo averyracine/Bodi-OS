@@ -1,0 +1,13 @@
+# Secrets
+.env
+
+# Generated artifacts
+data/pull-*.json
+reports/daily-*.md
+reports/daily-*.html
+reports/weekly-*.md
+
+# Python
+__pycache__/
+*.pyc
+.venv/
