@@ -37,9 +37,14 @@ account_strategy:
     - clinic economics
     - cash-pay healthcare
     - aesthetic practice operations
+  # Reddit bios are short (~200 chars). No product mention, no hype.
   bio_suggestion: >
-    Operator focused on medical practice growth and service-line economics.
-    I share what actually moves revenue in cash-pay and aesthetic practices.
+    Practice-growth & clinic-economics operator. I dig into what actually moves
+    revenue in cash-pay and aesthetic practices — margins, physician time,
+    retention, service-line ROI. Here to compare notes, not to sell.
+  bio_alternates:
+    - "I work on the economics of cash-pay and aesthetic practices. Margins, labor cost, retention, ROI on new service lines. No pitches — just operator notes."
+    - "Medical practice growth & service-line economics. I help clinics figure out what's worth adding and what just sounds good in a vendor deck."
 
 # -----------------------------------------------------------------------------
 # Target subreddits. Edit this list anytime.
