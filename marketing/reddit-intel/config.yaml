@@ -1,0 +1,279 @@
+# =============================================================================
+# Reddit Intelligence + Engagement Assistant — Configuration
+# FunSculpting (body recomposition / body contouring service line for clinics)
+#
+# This file is the control surface for the whole system. Edit it freely:
+# add/remove subreddits, tune keywords, change scoring weights, etc.
+# Nothing here auto-posts. The system only researches, scores, and DRAFTS.
+# =============================================================================
+
+brand:
+  name: FunSculpting
+  # What we actually sell (used only to inform internal scoring — NOT pitched).
+  one_liner: >
+    A high-margin, cash-pay, staff-administered body recomposition / body
+    contouring service line that helps existing clinics monetize their patient
+    base with low physician-time burden.
+  # The public-facing posture. We lead with practice growth + clinic economics,
+  # NOT with the product.
+  positioning: medical practice growth / clinic economics contributor
+  # Mention FunSculpting only when strategically appropriate AND approved.
+  mention_product: false
+
+# -----------------------------------------------------------------------------
+# Account strategy — the Reddit identity should NOT be "FunSculpting".
+# -----------------------------------------------------------------------------
+account_strategy:
+  recommended_handles:
+    - PracticeGrowthInsights
+    - ClinicRevenueLab
+    - MedicalGrowthOps
+    - CashPayClinic
+    - PracticeExpansionLab
+  positioning_themes:
+    - medical practice growth
+    - clinic economics
+    - cash-pay healthcare
+    - aesthetic practice operations
+  bio_suggestion: >
+    Operator focused on medical practice growth and service-line economics.
+    I share what actually moves revenue in cash-pay and aesthetic practices.
+
+# -----------------------------------------------------------------------------
+# Target subreddits. Edit this list anytime.
+#   weight       : 0.0–1.0 likelihood that doctors/practice owners (BUYERS) are here
+#   risk_profile : low | medium | high  (how strict the sub is about self-promo / outsiders)
+#   note         : free-text reminder about the audience
+# -----------------------------------------------------------------------------
+subreddits:
+  - name: medspa
+    weight: 1.00
+    risk_profile: medium
+    note: Med spa owners/operators — core buyer.
+  - name: medicalpractice
+    weight: 0.95
+    risk_profile: medium
+    note: Practice owners discussing operations & revenue.
+  - name: privatepractice
+    weight: 0.95
+    risk_profile: medium
+    note: Independent practice owners — strong buyer fit.
+  - name: aesthetics
+    weight: 0.90
+    risk_profile: medium
+    note: Aesthetic practice operations & devices.
+  - name: functionalmedicine
+    weight: 0.80
+    risk_profile: medium
+    note: Functional med practices — cash-pay friendly.
+  - name: trt
+    weight: 0.70
+    risk_profile: high
+    note: Mix of patients + TRT clinic operators. Patient-heavy; be careful.
+  - name: whitecoatinvestor
+    weight: 0.80
+    risk_profile: low
+    note: Physicians thinking about money & practice economics.
+  - name: medicine
+    weight: 0.55
+    risk_profile: high
+    note: Verified clinicians; very anti-promo. Credibility-only, no selling.
+  - name: FamilyMedicine
+    weight: 0.55
+    risk_profile: high
+    note: Clinicians; some practice-owner discussion.
+  - name: Dermatology
+    weight: 0.65
+    risk_profile: high
+    note: Derm practices do aesthetics; strict sub.
+  - name: PlasticSurgery
+    weight: 0.65
+    risk_profile: high
+    note: Surgeons; body contouring adjacent. Strict.
+  - name: entrepreneur
+    weight: 0.50
+    risk_profile: low
+    note: General business owners; some clinic owners.
+  - name: smallbusiness
+    weight: 0.50
+    risk_profile: low
+    note: General SMB; occasional practice owners.
+  - name: weightloss
+    weight: 0.35
+    risk_profile: medium
+    note: Mostly patients — demand-signal goldmine, not a buyer pool.
+  - name: Residency
+    weight: 0.30
+    risk_profile: high
+    note: Future physicians; long-game credibility only.
+  - name: physicianassistant
+    weight: 0.45
+    risk_profile: medium
+    note: PAs often run med spa / aesthetic service lines.
+  - name: NursePractitioner
+    weight: 0.55
+    risk_profile: medium
+    note: NPs frequently own/run cash-pay clinics & med spas.
+
+# -----------------------------------------------------------------------------
+# Keywords used for searching AND for relevance scoring.
+#   high_value   : strong topical match to FunSculpting buyer conversations
+#   medium_value : adjacent / supporting topics
+#   buyer_signal : phrases that suggest a practice OWNER / operator is speaking
+# -----------------------------------------------------------------------------
+keywords:
+  high_value:
+    - body contouring
+    - non-surgical body contouring
+    - minimally invasive body contouring
+    - body composition
+    - liposuction alternative
+    - new service line
+    - cash pay
+    - cash-pay
+    - procedure revenue
+    - high ticket service
+    - aesthetic device
+    - med spa growth
+    - medspa growth
+    - GLP-1
+    - semaglutide
+    - tirzepatide
+    - patient retention
+    - patient lifetime value
+  medium_value:
+    - private practice
+    - practice revenue
+    - weight loss clinic
+    - hormone clinic
+    - TRT clinic
+    - functional medicine
+    - regenerative medicine
+    - fat transfer
+    - liposuction
+    - adipose
+    - equipment lease
+    - service line
+    - cash flow
+    - margins
+    - differentiation
+    - skin tightening
+    - EmSculpt
+    - CoolSculpting
+
+  buyer_signal:
+    - my practice
+    - our practice
+    - our clinic
+    - my clinic
+    - my med spa
+    - my medspa
+    - we added
+    - we offer
+    - our patients
+    - our providers
+    - my staff
+    - opening a
+    - thinking of adding
+    - should I add
+    - worth adding
+    - ROI on
+    - return on investment
+    - lease vs buy
+    - per treatment
+    - profit margin
+
+# -----------------------------------------------------------------------------
+# Opportunity scoring (1–10). Subscores are computed 0–1, then weighted.
+# Tune the weights to change what the system prioritizes.
+# -----------------------------------------------------------------------------
+scoring:
+  weights:
+    relevance: 3.0        # topical match to FunSculpting buyer conversations
+    buyer_presence: 2.5   # likelihood a doctor / practice owner is in the thread
+    engagement: 1.5       # upvotes + comments
+    recency: 1.5          # newer = more actionable
+    value_add: 1.5        # can Avery add value without sounding promotional?
+  # Thread must clear this to appear in the daily "top threads" table.
+  min_score_to_surface: 4.0
+
+# -----------------------------------------------------------------------------
+# Action thresholds. Combine score + risk into a recommendation.
+# -----------------------------------------------------------------------------
+actions:
+  comment_min_score: 6.5      # >= this AND risk != high -> recommend COMMENT
+  monitor_min_score: 5.0      # >= this -> at least MONITOR
+  # Below monitor_min_score -> SAVE (if some buyer signal) or IGNORE.
+
+# -----------------------------------------------------------------------------
+# Reddit search defaults
+# -----------------------------------------------------------------------------
+search:
+  time_filter: week          # hour | day | week | month | year | all
+  sort: relevance            # relevance | hot | top | new | comments
+  limit_per_query: 25
+  max_keywords_per_sub: 8     # cap queries per subreddit to stay polite
+
+# -----------------------------------------------------------------------------
+# LLM drafting (Anthropic / Claude). Optional — the system falls back to
+# high-quality templates if no API key or the SDK isn't installed.
+# Set ANTHROPIC_API_KEY in the environment to enable.
+# -----------------------------------------------------------------------------
+llm:
+  enabled: true
+  model: claude-opus-4-8
+  effort: medium
+
+# -----------------------------------------------------------------------------
+# Comment style rules (enforced in the drafting prompt).
+# -----------------------------------------------------------------------------
+comment_style:
+  - Short
+  - Useful
+  - Conversational
+  - Doctor-appropriate
+  - No hype
+  - No emojis
+  - No "DM me"
+  - No direct sales pitch
+  - No links unless explicitly requested
+  - Positions Avery as knowledgeable about practice growth and service-line economics
+
+# -----------------------------------------------------------------------------
+# Hard guardrails. These are surfaced in every report and baked into prompts.
+# -----------------------------------------------------------------------------
+guardrails:
+  - Do not spam
+  - Do not auto-post
+  - Do not fake being a doctor
+  - Do not give medical advice
+  - Do not pretend to be a patient
+  - Do not use deceptive testimonials
+  - Do not claim clinical outcomes we cannot support
+  - Do not mention FunSculpting unless strategically appropriate and approved
+  - Do not drop links in cold comments
+  - Do not DM people automatically
+  - Always prioritize credibility over short-term lead generation
+
+# -----------------------------------------------------------------------------
+# Seeds for the original-post idea generator. Add your own anytime.
+# -----------------------------------------------------------------------------
+post_idea_seeds:
+  - subreddit: medspa
+    angle: ROI of cash-pay service lines
+    title: "Med spa owners: which service line surprised you most on ROI?"
+  - subreddit: medicalpractice
+    angle: GLP-1 retention gap
+    title: "Are GLP-1 patients asking about body contouring after the weight comes off?"
+  - subreddit: privatepractice
+    angle: Evaluating new procedures
+    title: "How do you decide whether a new procedure is actually worth adding?"
+  - subreddit: aesthetics
+    angle: Service ROI benchmarking
+    title: "For aesthetic practice owners: what has the best ROI right now?"
+  - subreddit: whitecoatinvestor
+    angle: High-ticket service pitfalls
+    title: "Biggest mistakes practices make when adding a high-ticket cash-pay service?"
+  - subreddit: functionalmedicine
+    angle: Monetizing the existing panel
+    title: "What cash-pay service line has worked best alongside your core practice?"

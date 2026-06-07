@@ -1,0 +1,7 @@
+# Core (required)
+PyYAML>=6.0
+requests>=2.31
+
+# Optional — enables LLM-powered comment/post drafting and richer research
+# extraction. Without it, the system falls back to high-quality templates.
+anthropic>=0.40
