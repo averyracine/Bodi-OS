@@ -26,6 +26,7 @@ from .drafts import draft_comment, generate_post_ideas
 from .llm import LLM
 from .reddit_client import (
     Post,
+    PublicRedditClient,
     RedditAuthError,
     RedditClient,
     load_pull,
@@ -55,12 +56,23 @@ def _gather_posts(args, cfg) -> list[Post]:
         print(f"[load] {args.input}", file=sys.stderr)
         return load_pull(Path(args.input))
 
-    # Live pull.
+    # Unauthenticated public-JSON pull (no API app needed).
+    if getattr(args, "public", False):
+        import os
+
+        ua = os.environ.get("REDDIT_USER_AGENT") or "reddit-intel:funsculpting:v0.1"
+        print("[public] using Reddit public search (best-effort, rate-limited)",
+              file=sys.stderr)
+        return _live_pull(PublicRedditClient(ua), cfg)
+
+    # Authenticated live pull.
     try:
         client = RedditClient.from_env()
     except RedditAuthError as exc:
         print(f"[warn] {exc}", file=sys.stderr)
-        print("[warn] falling back to sample posts (--offline)", file=sys.stderr)
+        print("[warn] tip: run with --public for no-credentials live data, "
+              "or --offline for sample data", file=sys.stderr)
+        print("[warn] falling back to sample posts", file=sys.stderr)
         return load_sample_posts()
 
     return _live_pull(client, cfg)
@@ -218,6 +230,9 @@ def cmd_research(args) -> int:
 def _add_common(p: argparse.ArgumentParser) -> None:
     p.add_argument("--offline", action="store_true",
                    help="Use bundled sample posts (no Reddit credentials needed).")
+    p.add_argument("--public", action="store_true",
+                   help="Pull live data via Reddit's public search (no API app; "
+                        "best-effort, rate-limited).")
     p.add_argument("--input", help="Load a cached pull JSON instead of searching.")
 
 

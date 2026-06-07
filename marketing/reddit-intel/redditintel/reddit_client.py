@@ -201,6 +201,76 @@ class RedditClient:
         return posts
 
 
+def _listing_to_posts(data: dict[str, Any], subreddit: str) -> list[Post]:
+    """Parse a Reddit listing JSON into Post objects (shared by both clients)."""
+    posts: list[Post] = []
+    for child in data.get("data", {}).get("children", []):
+        d = child.get("data", {})
+        posts.append(
+            Post(
+                id=d.get("id", ""),
+                subreddit=d.get("subreddit", subreddit),
+                title=d.get("title", ""),
+                selftext=d.get("selftext", "") or "",
+                author=d.get("author", "") or "[deleted]",
+                url=d.get("url", ""),
+                permalink=d.get("permalink", ""),
+                score=int(d.get("score", 0) or 0),
+                num_comments=int(d.get("num_comments", 0) or 0),
+                created_utc=float(d.get("created_utc", 0) or 0),
+            )
+        )
+    return posts
+
+
+class PublicRedditClient:
+    """Unauthenticated read client using Reddit's public `.json` search.
+
+    No API app / credentials required. Best-effort only: rate-limited to a few
+    requests/minute, can return 429/403, and is not guaranteed long-term. Use
+    the authenticated RedditClient for reliable, higher-volume pulls.
+    """
+
+    BASE = "https://www.reddit.com"
+
+    def __init__(self, user_agent: str = USER_AGENT_FALLBACK, *, pause: float = 2.5) -> None:
+        self.user_agent = user_agent or USER_AGENT_FALLBACK
+        self.pause = pause
+
+    def search_subreddit(
+        self,
+        subreddit: str,
+        query: str,
+        *,
+        time_filter: str = "week",
+        sort: str = "relevance",
+        limit: int = 25,
+    ) -> list[Post]:
+        resp = requests.get(
+            f"{self.BASE}/r/{subreddit}/search.json",
+            params={
+                "q": query,
+                "restrict_sr": "1",
+                "sort": sort,
+                "t": time_filter,
+                "limit": limit,
+                "type": "link",
+            },
+            headers={"User-Agent": self.user_agent},
+            timeout=30,
+        )
+        if resp.status_code in (429, 403):
+            raise RuntimeError(
+                f"public endpoint returned {resp.status_code} for r/{subreddit} "
+                "(rate-limited or blocked). Slow down or use the authenticated app."
+            )
+        resp.raise_for_status()
+        posts = _listing_to_posts(resp.json(), subreddit)
+        # Public endpoint is stricter on rate — be extra polite.
+        time.sleep(self.pause)
+        return posts
+
+
 # --------------------------------------------------------------------------- #
 # Sample / offline data so the pipeline runs with no credentials.
 # --------------------------------------------------------------------------- #

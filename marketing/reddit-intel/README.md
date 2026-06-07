@@ -58,6 +58,20 @@ python3 -m redditintel.cli research --offline          # market research + asset
 
 ---
 
+## No-app live mode (`--public`)
+
+If you can't create an API app yet, pull live data through Reddit's public
+search — no credentials needed:
+
+```bash
+python3 -m redditintel.cli daily --public
+```
+
+Tradeoffs: best-effort and **rate-limited** (a few requests/minute; may return
+429/403; not guaranteed long-term). Run it from a normal/residential network —
+datacenter and cloud IPs are often blocked by Reddit for unauthenticated
+requests. For reliable, higher-volume pulls, set up the authenticated app below.
+
 ## Going live (real Reddit data)
 
 ### Reddit API vs scraping — and why this uses the API
