@@ -39,6 +39,22 @@ Campaign link: https://ads.google.com/aw/campaigns?campaignId=23660906143&ocid=4
 The other 4 were already paused (or sit in paused ad groups) — leave as-is unless you want them live.
 The disapproved ad `814524024204` still has placeholder "TODO" copy — finish the copy before enabling.
 
+## Extensions repoint — DONE ✅ (campaign-level, no ad churn)
+All campaign extensions moved off the ISS domain in a single `campaign_update`
+(`extensions` is a full replace; callouts, structured snippets, and images were
+passed back unchanged so nothing was dropped):
+- **8 sitelinks** → `https://funsculpting.com/providers-v2/?...&utm_content=sitelink_<slug>`
+  (provider_resources, book_consult, financing, education, pricing, how_it_works,
+  book_demo, results).
+- **Lead form** privacy policy → `https://funsculpting.com/privacy-policy/`
+  (was ISS). ⚠️ **Verify this URL exists** — a dead privacy-policy URL can get the
+  lead form disapproved; I couldn't load it from here (egress blocked).
+- Callouts, structured snippets, and image assets: unchanged.
+
+> One failed attempt occurred first (MCP connection dropped mid-call, "permission
+> stream closed"); a re-read confirmed it had NOT applied, then the retry succeeded —
+> so no double-apply.
+
 ## Still not done from here
 - **Verify `/providers-v2/` actually loads** before re-enabling. The previously
   disapproved ad was flagged `DESTINATION_NOT_WORKING`; this session can't load
