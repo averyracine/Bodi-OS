@@ -16,9 +16,11 @@ booking. Goal metric = provider Calendly bookings on the canonical slug
 > **These are live ad-destination edits.** Apply them per-account in each ad UI,
 > review the diff first, and do **not** 301 `/for-providers/` until every Meta +
 > Google ad that points there has been repointed (see `site-redirects-and-tracking.md`).
-> Neither connected MCP (Windsor.ai, Supermetrics) exposes a write action that edits
-> an ad's **final/destination URL**, so the repoints themselves are manual in
-> Google Ads and Meta/Manus — this table is the exact spec to execute.
+> **Google (Task 1)** can be executed from the MCP layer: Supermetrics
+> `campaign_update` edits ad `final_urls`; the 7-ad update is staged and blocked only
+> by a Supermetrics write-access toggle for AW account `4797123095` (enable at
+> `https://hub.supermetrics.com/write-settings?platform=AW&teamId=qY8m4wQ4u_VE6SfXSXSc`).
+> **Meta (Task 2)** is manual in Meta/Manus — this table is the exact spec.
 
 ---
 

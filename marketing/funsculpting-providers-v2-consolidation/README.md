@@ -29,11 +29,17 @@ self-contained (same pattern as `../funsculpting-conversion-tracking/`).
   platforms via Supermetrics (Google Ads `4797123095`, Meta `1515861149899091`) and
   built an accurate before/after routing spec for all of them.
 
+**Executable from here once unblocked:**
+- **Google Ads repoint (Task 1).** Supermetrics `campaign_update` *can* edit an ad's
+  `final_urls`, and the exact 7-ad update is staged against the live structure
+  (campaign `23660906143`). It is currently blocked only by a Supermetrics **write-access
+  toggle** for AW account `4797123095` (team `inspiringphysicians`): enable at
+  `https://hub.supermetrics.com/write-settings?platform=AW&teamId=qY8m4wQ4u_VE6SfXSXSc`,
+  after which the repoint can run in one call.
+
 **Must be done by a human / a session with access (not possible here):**
-- **The repoints themselves.** No connected MCP (Windsor.ai or Supermetrics) exposes a
-  write action that edits an ad's **final/destination URL** — Windsor offers only
-  pause/enable/budget/create on Meta; Supermetrics writes are campaign-level. So Tasks
-  1 & 2 are executed manually in Google Ads and Meta/Manus, using this spec.
+- **Meta repoints (Task 2).** Out of scope for this session at the user's instruction.
+- **Anything on `funsculpting.com` / `calendly.com`** (see below) — egress blocked.
 - **Anything on `funsculpting.com` / `calendly.com`.** This session's egress policy
   blocks both domains (403 from the policy proxy), so the live page, the 301, the
   inline scheduler, and a real test booking could not be verified from here. The 301
