@@ -1,0 +1,16 @@
+{
+  "name": "veo-video",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Veo video generator for Bodi-OS video ads + social + website clips",
+  "bin": {
+    "veo-video": "./generate-video.mjs"
+  },
+  "scripts": {
+    "generate": "node generate-video.mjs"
+  },
+  "dependencies": {
+    "@google/genai": "^1.28.0"
+  }
+}
