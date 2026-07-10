@@ -1,0 +1,16 @@
+{
+  "name": "nano-banana",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Nano Banana (Gemini image) generator for Bodi-OS ad + website creatives",
+  "bin": {
+    "nano-banana": "./generate.mjs"
+  },
+  "scripts": {
+    "generate": "node generate.mjs"
+  },
+  "dependencies": {
+    "@google/genai": "^1.28.0"
+  }
+}

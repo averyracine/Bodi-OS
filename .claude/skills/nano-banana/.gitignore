@@ -1,0 +1,12 @@
+# Secrets — never commit the API key
+.env
+*.key
+
+# Node dependencies
+node_modules/
+
+# Generated images (they're outputs, not source)
+*.png
+*.jpg
+*.jpeg
+*.webp
