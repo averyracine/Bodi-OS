@@ -1,0 +1,86 @@
+{
+  "_comment": [
+    "Edit decision list for the FunSculpting provider ad. Times are seconds within each source clip.",
+    "in/out are the VAD boundaries from the analysis pass; build_ad.py pads them by 0.1 s,",
+    "or snaps them to word timestamps when word timings are available (tx_vad.json words or local whisper).",
+    "start_text/end_text anchor a cut to spoken words; segments with requires_words are dropped when",
+    "no word timings exist, and segments with fallback_only are used only in that case.",
+    "Overlay and b-roll times (at/until) are seconds relative to the segment start; until=null means segment end."
+  ],
+  "fps": 30,
+  "brand": {
+    "navy": "#0B1F3A",
+    "gold": "#C9A24A",
+    "white": "#FFFFFF",
+    "url": "inspiredsurgicalsupplies.com/funsculpting"
+  },
+  "grade": "eq=contrast=1.05:saturation=1.08",
+  "punch_in": 1.12,
+  "highlight": [
+    "FunSculpting", "revenue streams", "revenue", "revenues", "cash-pay", "service line",
+    "business in a box", "front end to back end", "marketing", "hands-on training",
+    "90 days", "structured launch", "practice growth call", "financial model"
+  ],
+  "segments": {
+    "hook":       {"clip": "1729", "in": 2.46,  "out": 12.10, "speaker": "Dr. Dean", "punch": true,
+                   "text": "Medical practices are constantly looking for new ways to add revenue streams without adding increasing complexity. That's why I want to introduce you to FunSculpting.",
+                   "overlays": [{"text": "NEW CASH-PAY\nSERVICE LINE?", "at": 0.2, "until": 3.6}]},
+    "mike_what":  {"clip": "1744", "in": 2.42,  "out": 13.73, "speaker": "Mike", "regulatory_flag": "regenerative medicine",
+                   "text": "FunSculpting is a physician-based body contouring and regenerative medicine platform that really helps clinics like yourself add additional revenues to your practice.",
+                   "overlays": [{"text": "BUILT FOR\nMEDICAL PRACTICES", "at": 1.0, "until": 4.5}]},
+    "dean_eval":  {"clip": "1733", "in": 3.38,  "out": 8.80,  "speaker": "Dr. Dean",
+                   "text": "When evaluating new technology, physicians need to look beyond the technology itself."},
+    "dean_all":   {"clip": "1735", "in": 12.95, "out": 18.79, "speaker": "Dr. Dean", "punch": true,
+                   "text": "Clinical applications, training, workflow, and the overall business model all matter."},
+    "dean_conv":  {"clip": "1737", "in": 0.18,  "out": 7.07,  "speaker": "Dr. Dean",
+                   "text": "These are conversations worth having before bringing on a new technology in your practice."},
+    "mike_box":   {"clip": "1745", "in": 3.96,  "out": 25.34, "speaker": "Mike", "requires_words": true,
+                   "start_text": "we're delivering", "end_text": "business in a box",
+                   "text": "We're delivering a business in a box.",
+                   "overlays": [{"text": "TECHNOLOGY + TRAINING\n+ SUPPORT", "at": 0.3, "until": null}]},
+    "mike_e2e":   {"clip": "1745", "in": 3.96,  "out": 25.34, "speaker": "Mike", "requires_words": true, "punch": true,
+                   "start_text": "front end", "end_text": "all the marketing",
+                   "text": "Front end to back end, pre-op to post-op, and all the marketing.",
+                   "broll": [{"clip": "1730", "in": 7.0, "out": 9.0, "at": 0.4}]},
+    "mike_full":  {"clip": "1745", "in": 3.96,  "out": 25.34, "speaker": "Mike", "fallback_only": true,
+                   "text": "We're delivering a business in a box, a system designed to help you in all aspects of your business, front end to back end, pre-op to post-op, and all the marketing.",
+                   "overlays": [{"text": "TECHNOLOGY + TRAINING\n+ SUPPORT", "at": 0.5, "until": 4.5}],
+                   "broll": [{"clip": "1730", "in": 7.0, "out": 9.0, "at": 9.0}]},
+    "avery_opp":  {"clip": "1746", "in": 1.40,  "out": 10.40, "speaker": "Avery",
+                   "text": "We help physicians evaluate the opportunity to add an additional cash-pay service line into their existing practice."},
+    "avery_prog": {"clip": "1747", "in": 23.67, "out": 31.14, "speaker": "Avery", "punch": true,
+                   "text": "Our program includes hands-on training, implementation guidance, and marketing support for the first 90 days.",
+                   "overlays": [{"text": "90-DAY\nMARKETING SUPPORT", "at": 3.5, "until": null}]},
+    "avery_goal": {"clip": "1747", "in": 108.31, "out": 114.21, "speaker": "Avery",
+                   "text": "The goal is to help practices move from equipment acquisition to a structured launch."},
+    "avery_cta1": {"clip": "1749", "in": 21.30, "out": 31.20, "speaker": "Avery",
+                   "text": "If you are a physician or a medical practice owner looking to explore new services, we'd like to show you how FunSculpting could work in your practice.",
+                   "broll": [{"clip": "1752", "in": 0.2, "out": 2.0, "at": 6.6}]},
+    "avery_cta2": {"clip": "1751", "in": 5.02,  "out": 14.66, "speaker": "Avery", "punch": true,
+                   "text": "Schedule the practice growth call with us so you can talk about the technology, financial model, and how you can get implemented."}
+  },
+  "end_card": {
+    "background_clip": "1752", "background_at": 1.0,
+    "eyebrow": "FOR PHYSICIANS & PRACTICE OWNERS",
+    "headline": "BOOK A PRIVATE\nPROVIDER WALKTHROUGH",
+    "button": "SCHEDULE A PRACTICE GROWTH CALL"
+  },
+  "cuts": {
+    "flagship": {
+      "title": "FunSculpting Provider Flagship",
+      "file": "FunSculpting_Provider_Flagship",
+      "formats": ["9x16", "4x5", "16x9"],
+      "sequence": ["hook", "mike_what", "dean_eval", "dean_all", "dean_conv", "mike_box", "mike_e2e", "mike_full",
+                   "avery_opp", "avery_prog", "avery_goal", "avery_cta1", "avery_cta2"],
+      "end_card_seconds": 3.0
+    },
+    "short": {
+      "title": "FunSculpting Provider Short",
+      "file": "FunSculpting_Provider_Short",
+      "formats": ["9x16"],
+      "_comment": "hook > 1746 > 1747 > 1751 runs ~36 s; 1746 is left out so the short lands under 30 s. Add avery_opp back after hook to restore it.",
+      "sequence": ["hook", "avery_prog", "avery_cta2"],
+      "end_card_seconds": 2.5
+    }
+  }
+}
