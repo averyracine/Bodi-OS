@@ -19,7 +19,7 @@ export function BrandName({ compact = false }: { compact?: boolean }) {
   return (
     <span className="flex items-center gap-2.5 font-semibold tracking-tight">
       <BrandMark size={compact ? 28 : 32} />
-      <span className={compact ? "text-base" : "text-lg"}>
+      <span className={`font-display ${compact ? "text-base" : "text-lg"}`}>
         Command Center<span className="text-muted font-normal"> for Tesla</span>
       </span>
     </span>

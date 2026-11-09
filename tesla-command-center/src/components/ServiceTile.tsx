@@ -1,18 +1,26 @@
 "use client";
 
-import { useState } from "react";
-import { CATALOG_BY_ID, domainOf, monogram, type LaunchBehavior } from "@/lib/catalog";
+import { useState, type CSSProperties, type ReactNode } from "react";
+import { CATALOG_BY_ID, CATEGORY_LABELS, domainOf, monogram, type Category, type LaunchBehavior } from "@/lib/catalog";
 import type { Preferences } from "@/lib/prefs";
 import { MAX_RECENTS } from "@/lib/prefs";
-import { useOnline } from "@/hooks/useBrowser";
 import { BRAND_ART } from "@/lib/brand-icons";
+import { useOnline } from "@/hooks/useBrowser";
 import { Icon } from "./Icon";
+
+/**
+ * Third-party logos are off by default (not authorised by their owners).
+ * Set NEXT_PUBLIC_SERVICE_LOGOS=on only after obtaining permission.
+ */
+const LOGOS_ON = process.env.NEXT_PUBLIC_SERVICE_LOGOS === "on";
 
 export interface ResolvedService {
   id: string;
   name: string;
   url: string;
   hue: number;
+  accent: string;
+  category: Category;
   launch: LaunchBehavior;
   parkedUseOnly: boolean;
   custom: boolean;
@@ -22,13 +30,19 @@ export interface ResolvedService {
 export function resolveService(id: string, prefs: Preferences): ResolvedService | null {
   const svc = CATALOG_BY_ID.get(id);
   if (svc) {
-    return { id, name: svc.name, url: svc.url, hue: svc.hue, launch: prefs.launchOverrides[id] ?? svc.launch, parkedUseOnly: svc.parkedUseOnly, custom: false };
+    return {
+      id, name: svc.name, url: svc.url, hue: svc.hue, accent: svc.accent, category: svc.category,
+      launch: prefs.launchOverrides[id] ?? svc.launch, parkedUseOnly: svc.parkedUseOnly, custom: false,
+    };
   }
   const c = prefs.customLinks.find((l) => l.id === id);
   if (c) {
     let hue = 0;
     for (const ch of c.name) hue = (hue * 31 + ch.charCodeAt(0)) % 360;
-    return { id, name: c.name, url: c.url, hue, launch: prefs.launchOverrides[id] ?? "new-tab", parkedUseOnly: false, custom: true };
+    return {
+      id, name: c.name, url: c.url, hue, accent: `hsl(${hue} 70% 62%)`, category: "custom",
+      launch: prefs.launchOverrides[id] ?? "new-tab", parkedUseOnly: false, custom: true,
+    };
   }
   return null;
 }
@@ -38,60 +52,39 @@ export function recordLaunch(prefs: Preferences, id: string): Preferences {
   return { ...prefs, recents };
 }
 
+/** Kept for custom-link fallbacks and older call sites. */
 export function Monogram({ name, hue, size = 64 }: { name: string; hue: number; size?: number }) {
   return (
-    <span className="tile-mark shrink-0" style={{ ["--h" as string]: hue, width: size, height: size, fontSize: size * 0.34 }}>
+    <span className="app-icon" style={{ ["--tint" as string]: `hsl(${hue} 70% 62%)`, width: size, height: size, fontSize: size * 0.34, borderRadius: size * 0.28 }}>
       {monogram(name)}
     </span>
   );
 }
 
-/** Perceived-brightness check so text on a brand colour stays readable. */
-export function isLight(hex: string): boolean {
-  const n = parseInt(hex.replace("#", ""), 16);
-  const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
-  return 0.299 * r + 0.587 * g + 0.114 * b > 170;
-}
-
-/** The service's logo (or brand-colour wordmark) on its own colour; monogram for custom links. */
-export function ServiceArt({ id, name, hue, size = 64, rounded = 16 }: { id: string; name: string; hue: number; size?: number; rounded?: number }) {
-  const art = BRAND_ART[id];
-  if (!art) return <Monogram name={name} hue={hue} size={size} />;
+/** Icon for a service: our own monogram on a tint of its accent colour (logos only when enabled). */
+export function ServiceArt({ id, name, hue, size = 48, accent }: { id: string; name: string; hue: number; size?: number; rounded?: number; accent?: string }) {
+  const tint = accent ?? CATALOG_BY_ID.get(id)?.accent ?? `hsl(${hue} 70% 62%)`;
+  const art = LOGOS_ON ? BRAND_ART[id] : undefined;
   return (
     <span
       aria-hidden="true"
-      className="grid place-items-center shrink-0 overflow-hidden shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]"
-      style={{ width: size, height: size, background: art.bg, color: art.fg, borderRadius: rounded }}
+      className="app-icon"
+      style={{ ["--tint" as string]: tint, width: size, height: size, borderRadius: size * 0.28, fontSize: size * 0.34 }}
     >
-      {art.path ? (
-        <svg viewBox="0 0 24 24" width={size * 0.56} height={size * 0.56} fill="currentColor">
-          <path d={art.path} />
-        </svg>
+      {art?.path ? (
+        <svg viewBox="0 0 24 24" width={size * 0.5} height={size * 0.5} fill="currentColor"><path d={art.path} /></svg>
       ) : (
-        <BrandWordmark art={art} size={size} />
+        monogram(name)
       )}
     </span>
   );
 }
 
-function BrandWordmark({ art, size }: { art: NonNullable<(typeof BRAND_ART)[string]>; size: number }) {
-  const w = art.wordmark!;
-  const len = w.text.length;
-  return (
-    <span
-      style={{
-        fontSize: size * (len > 6 ? 0.2 : 0.3),
-        fontWeight: w.weight ?? 800,
-        fontStyle: w.italic ? "italic" : undefined,
-        letterSpacing: len > 6 ? "-0.01em" : "0.02em",
-        lineHeight: 1,
-        textAlign: "center",
-        padding: "0 6%",
-      }}
-    >
-      {w.text}
-    </span>
-  );
+/** Kept for API compatibility with earlier code. */
+export function isLight(hex: string): boolean {
+  const n = parseInt(hex.replace("#", ""), 16);
+  const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+  return 0.299 * r + 0.587 * g + 0.114 * b > 170;
 }
 
 /**
@@ -105,24 +98,27 @@ export function LaunchLink({
   className,
   children,
   ariaLabel,
+  style,
 }: {
   service: ResolvedService;
   onLaunch?: () => void;
   className?: string;
-  children: React.ReactNode;
+  children: ReactNode;
   ariaLabel?: string;
+  style?: CSSProperties;
 }) {
   const online = useOnline();
   const [warn, setWarn] = useState(false);
   const newTab = service.launch === "new-tab";
   return (
-    <span className="relative block">
+    <span className="relative block h-full">
       <a
         href={service.url}
         target={newTab ? "_blank" : undefined}
         rel="noopener noreferrer"
         referrerPolicy="no-referrer"
         className={className}
+        style={style}
         aria-label={ariaLabel ?? `Open ${service.name} (${newTab ? "new tab" : "this tab"}, external site)`}
         onClick={(e) => {
           if (!online && !warn) {
@@ -142,6 +138,29 @@ export function LaunchLink({
         </span>
       )}
     </span>
+  );
+}
+
+/** Premium app card used on Home and Discover. */
+export function AppCard({ svc, onLaunch, starred = false, compact = false }: { svc: ResolvedService; onLaunch?: () => void; starred?: boolean; compact?: boolean }) {
+  return (
+    <LaunchLink service={svc} onLaunch={onLaunch} className={`app-card group ${compact ? "!min-h-[112px]" : ""}`} style={{ ["--tint" as string]: svc.accent }}>
+      <span className="flex items-start justify-between gap-2">
+        <ServiceArt id={svc.id} name={svc.name} hue={svc.hue} accent={svc.accent} size={compact ? 40 : 52} />
+        <span className="flex items-center gap-1.5 text-muted">
+          {starred && <Icon name="star" size={14} className="fill-current text-accent" />}
+          <span className="grid place-items-center w-8 h-8 rounded-full border border-line opacity-70 group-hover:opacity-100 group-hover:text-fg transition-opacity">
+            <Icon name="external" size={15} />
+          </span>
+        </span>
+      </span>
+      <span className="mt-auto min-w-0">
+        <span className="block text-[1.05rem] font-semibold leading-tight break-words">{svc.name}</span>
+        <span className="block text-xs text-muted mt-0.5">
+          {CATEGORY_LABELS[svc.category]} · {svc.launch === "new-tab" ? "new tab" : "this tab"}
+        </span>
+      </span>
+    </LaunchLink>
   );
 }
 

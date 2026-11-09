@@ -9,6 +9,7 @@ function viewFor(path: string): ViewId {
   if (path.startsWith("/app/library")) return "library";
   if (path.startsWith("/app/focus")) return "focus";
   if (path.startsWith("/app/settings")) return "settings";
+  if (path.startsWith("/app/discover")) return "discover";
   return "home";
 }
 

@@ -31,6 +31,12 @@ Legend: ⬜ untested · ✅ works · ⚠️ partial (add notes) · ❌ doesn't w
 | Drag-to-reorder works with touch (Move buttons are the fallback) | ⬜ | |
 | `prefers-reduced-motion` reported | ⬜ | |
 
+| Floating dock clear of the car's own UI, and nothing hidden behind it after scrolling | ⬜ | |
+| Header and ticker legible; ticker shows whole symbols only | ⬜ | |
+| Web fonts (Manrope, Sora) load; fallback acceptable if not | ⬜ | |
+| `backdrop-filter` (glass header/dock) supported, or fallback acceptable | ⬜ | |
+| Mode switch (Watch/Listen/Work/Drive) and widget customize usable by touch | ⬜ | |
+
 ## 2. Storage and sessions
 
 | Check | Result | Notes |
@@ -83,6 +89,29 @@ For each service, record: page loads · login works · playback starts · audio 
 | Google Calendar | ⬜ | ⬜ | n/a | n/a | n/a | |
 | Google Docs | ⬜ | ⬜ | n/a | n/a | n/a | |
 | Notion | ⬜ | ⬜ | n/a | n/a | n/a | |
+| ESPN | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | DRM |
+| HBO Max | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | DRM |
+| Paramount+ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | DRM |
+| Apple TV | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | DRM |
+| ChatGPT | ⬜ | ⬜ | n/a | ⬜ (voice) | n/a | |
+| Claude | ⬜ | ⬜ | n/a | ⬜ (voice) | n/a | |
+| Gemini | ⬜ | ⬜ | n/a | ⬜ (voice) | n/a | |
+| Perplexity | ⬜ | ⬜ | n/a | n/a | n/a | |
+| Gmail | ⬜ | ⬜ | n/a | n/a | n/a | |
+| Google Drive | ⬜ | ⬜ | n/a | n/a | n/a | |
+| Google Maps | ⬜ | ⬜ | n/a | n/a | n/a | Plan before driving |
+| Waze (live map) | ⬜ | ⬜ | n/a | n/a | n/a | |
+| PlugShare | ⬜ | ⬜ | n/a | n/a | n/a | |
+| Supercharger map (tesla.com/findus) | ⬜ | n/a | n/a | n/a | n/a | |
+
+## 5b. Widgets
+
+| Check | Result | Notes |
+| --- | --- | --- |
+| Weather: city search works | ⬜ | |
+| Weather: "Use this device's location" prompts, and what it reports in the car (if anything) | ⬜ | We never read vehicle location. |
+| Markets: sample label visible; live quotes once a key is configured | ⬜ | |
+| Widget layout persists across sleep and wake | ⬜ | |
 
 ## 6. Resilience
 

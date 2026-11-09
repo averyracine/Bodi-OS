@@ -20,7 +20,21 @@ npm run lint && npm run typecheck && npm test && npm run build
 npm run start -- -p 3100 & BASE_URL=http://localhost:3100 node e2e/smoke.cjs
 ```
 
-`e2e/smoke.cjs` uses the system Playwright/Chromium, runs 39 browser checks in demo mode and writes screenshots to `docs/screenshots/`.
+`e2e/smoke.cjs` uses the system Playwright/Chromium and runs 69 browser checks in demo mode, at 1280×800, 1440×900, 1920×1080 and 390×844 plus the phone onboarding pages. It writes screenshots to `docs/screenshots/`.
+
+`npm run build:demo` (after `npm run build`) writes a single-file browser-only demo to `standalone/dist/`.
+
+## V2 dashboard (current)
+
+- **Modes**: Watch, Listen, Work and Drive. These are screen layouts, not vehicle modes. Storage ids are `watch`, `listen`, `focus` (shown as Work) and `drive`, so saved v1 setups carry over.
+- **Widgets** (`src/components/widgets/*`, `src/lib/widgets.ts`): Clock, Weather, Markets, Calendar, Quick Launch and Quick Notes. Each mode keeps its own order and compact/expanded sizes. Hiding a widget never deletes its data. Use *Customize widgets* on Home, or reset them in Settings.
+- **Preferences v2** (`src/lib/prefs.ts`): adds the `drive` list, `widgets`, `quickLaunch`, `clockFormat` and `weather`. `sanitizePreferences` migrates v1 data in place.
+- **Navigation**: compact header (mode, parked-use note, connection, account, time), a slim static ticker, and a floating dock with Home, Library, Focus, Discover and Settings. On phones, Discover and Settings move under *More*.
+- **Library**: 28 apps across Streaming, Music, AI, Productivity, Gaming and Utilities, with category counts. Starring can add to any mode or to Quick Launch.
+- **Discover** (`/app/discover`): ready-made setups. Applying one replaces a mode's apps after an in-page confirmation.
+- **Icons**: original monogram icons tinted with each service's accent colour. Third-party logos are behind `NEXT_PUBLIC_SERVICE_LOGOS=on` and should stay off until each brand owner approves.
+- **Weather**: `/api/weather` and `/api/geocode` call fixed Open-Meteo hosts with validated input, cache for 10 minutes and rate-limit per client. The free tier is non-commercial only, so production needs `OPEN_METEO_API_KEY` (a paid plan; pricing at open-meteo.com/en/pricing). Without one, the widget shows labelled sample weather. Location is a city you type, or this device's location only after you tap the button and the browser asks for permission. The car's location is never used.
+- **Calendar**: a real local month view plus links to Google Calendar and Outlook. No account is connected, so no events are shown or invented.
 
 ## What's where
 
@@ -60,9 +74,11 @@ npm run start -- -p 3100 & BASE_URL=http://localhost:3100 node e2e/smoke.cjs
 
 ## Implemented vs. mocked vs. unverified
 
-**Implemented and tested locally (demo mode, browser + unit tests):** the landing page with its interactive preview; Home (favorites, presets, Move-button and drag reorder, recents, clock, scratchpad); the Library (search, categories, favorites, custom links, per-service launch behavior); the Focus workspace (timer, scratchpad, checklist, split prototype); Settings (themes, reduced motion, presets, export/import/reset, consent); and the offline, error, loading and unavailable states.
+**Implemented and tested locally (demo mode, browser + unit tests), V2:** modes, widgets (show, hide, reorder, resize, reset, persist), v1→v2 migration, Discover setups, Quick Launch, the mobile dock overflow, ticker without clipping, dock clearance and reduced motion.
 
-**Implemented but not exercised against real services** (no credentials in this environment): Supabase magic-link auth, preference sync, the Stripe Checkout, Portal and webhook routes, the Supabase-backed pairing and device stores, and analytics storage. Their core logic (`reconcile.ts`, `pairing/service.ts`) is unit-tested with in-memory stores.
+**Implemented and tested locally, V1:** the landing page with its interactive preview; Home (favorites, presets, Move-button and drag reorder, recents, clock, scratchpad); the Library (search, categories, favorites, custom links, per-service launch behavior); the Focus workspace (timer, scratchpad, checklist, split prototype); Settings (themes, reduced motion, presets, export/import/reset, consent); and the offline, error, loading and unavailable states.
+
+**Implemented but not exercised against real services** (no credentials in this environment): live weather (Open-Meteo was rate-limited from this sandbox, so only the response mapping is unit-tested), live quotes (Finnhub, needs a key), Supabase magic-link auth, preference sync, the Stripe Checkout, Portal and webhook routes, the Supabase-backed pairing and device stores, and analytics storage. Their core logic (`reconcile.ts`, `pairing/service.ts`) is unit-tested with in-memory stores.
 
 **Unverified vehicle behavior:** everything about the car's browser (viewport, cookies, tabs, playback, audio, fullscreen, suspension). See the checklist.
 

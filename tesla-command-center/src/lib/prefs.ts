@@ -1,5 +1,6 @@
 import { CATALOG_BY_ID, type LaunchBehavior } from "./catalog";
-import { DEFAULT_PRESET_FAVORITES, MAX_FAVORITES, type PresetId } from "./presets";
+import { DEFAULT_PRESET_FAVORITES, MAX_FAVORITES, PRESET_IDS, type PresetId } from "./presets";
+import { DEFAULT_WIDGET_LAYOUTS, sanitizeWidgetLayout, type WidgetLayout } from "./widgets";
 import { validateCustomUrl } from "./url";
 import { DEFAULT_WATCHLIST, sanitizeWatchlist } from "./markets";
 
@@ -18,8 +19,17 @@ export interface RecentLaunch {
   at: number;
 }
 
+export interface WeatherPlace {
+  name: string;
+  lat: number;
+  lon: number;
+}
+
+export type ClockFormat = "auto" | "12h" | "24h";
+
 export interface Preferences {
-  version: 1;
+  /** v1: original MVP. v2: adds the Drive preset, widgets, quick launch, clock and weather settings. */
+  version: 2;
   theme: Theme;
   reducedMotion: ReducedMotion;
   activePreset: PresetId;
@@ -30,8 +40,17 @@ export interface Preferences {
   focus: { layout: "single" | "split"; minutes: number };
   analyticsConsent: Consent;
   markets: { watchlist: string[]; showTicker: boolean };
+  quickLaunch: string[];
+  widgets: Record<PresetId, WidgetLayout>;
+  clockFormat: ClockFormat;
+  weather: { place: WeatherPlace | null; unit: "f" | "c" };
   updatedAt: number;
 }
+
+export const DEFAULT_QUICK_LAUNCH = ["spotify", "apple-music", "youtube-music", "chatgpt", "google-maps"];
+
+const cloneLayouts = (): Record<PresetId, WidgetLayout> =>
+  Object.fromEntries(PRESET_IDS.map((id) => [id, { order: [...DEFAULT_WIDGET_LAYOUTS[id].order], sizes: { ...DEFAULT_WIDGET_LAYOUTS[id].sizes } }])) as Record<PresetId, WidgetLayout>;
 
 export const PREFS_STORAGE_KEY = "tcc.prefs.v1";
 export const NOTES_STORAGE_KEY = "tcc.notes.v1";
@@ -40,7 +59,7 @@ export const MAX_RECENTS = 8;
 
 export function defaultPreferences(): Preferences {
   return {
-    version: 1,
+    version: 2,
     theme: "graphite",
     reducedMotion: "system",
     activePreset: "watch",
@@ -48,13 +67,18 @@ export function defaultPreferences(): Preferences {
       watch: [...DEFAULT_PRESET_FAVORITES.watch],
       listen: [...DEFAULT_PRESET_FAVORITES.listen],
       focus: [...DEFAULT_PRESET_FAVORITES.focus],
+      drive: [...DEFAULT_PRESET_FAVORITES.drive],
     },
     customLinks: [],
     launchOverrides: {},
     recents: [],
-    focus: { layout: "single", minutes: 25 },
+    focus: { layout: "split", minutes: 25 },
     analyticsConsent: "unset",
     markets: { watchlist: [...DEFAULT_WATCHLIST], showTicker: true },
+    quickLaunch: [...DEFAULT_QUICK_LAUNCH],
+    widgets: cloneLayouts(),
+    clockFormat: "auto",
+    weather: { place: null, unit: "f" },
     updatedAt: 0,
   };
 }
@@ -101,11 +125,20 @@ export function sanitizePreferences(input: unknown): Preferences {
   };
 
   const presetsIn = isObj(input.presets) ? input.presets : {};
-  const presets = {
-    watch: cleanList(presetsIn.watch, d.presets.watch),
-    listen: cleanList(presetsIn.listen, d.presets.listen),
-    focus: cleanList(presetsIn.focus, d.presets.focus),
-  };
+  // v1 data has no "drive" list; cleanList falls back to the default for it.
+  const presets = Object.fromEntries(PRESET_IDS.map((id) => [id, cleanList(presetsIn[id], d.presets[id])])) as Record<PresetId, string[]>;
+  const widgetsIn = isObj(input.widgets) ? input.widgets : {};
+  const widgets = Object.fromEntries(
+    PRESET_IDS.map((id) => [id, sanitizeWidgetLayout(widgetsIn[id], d.widgets[id])]),
+  ) as Record<PresetId, WidgetLayout>;
+  const weatherIn = isObj(input.weather) ? input.weather : {};
+  const placeIn = isObj(weatherIn.place) ? weatherIn.place : null;
+  const place =
+    placeIn && typeof placeIn.name === "string" && placeIn.name.trim() &&
+    typeof placeIn.lat === "number" && Math.abs(placeIn.lat) <= 90 &&
+    typeof placeIn.lon === "number" && Math.abs(placeIn.lon) <= 180
+      ? { name: placeIn.name.trim().slice(0, 80), lat: +placeIn.lat.toFixed(3), lon: +placeIn.lon.toFixed(3) }
+      : null;
 
   const launchOverrides: Record<string, LaunchBehavior> = {};
   if (isObj(input.launchOverrides)) {
@@ -128,10 +161,10 @@ export function sanitizePreferences(input: unknown): Preferences {
   const minutes = typeof focusIn.minutes === "number" ? Math.round(focusIn.minutes) : d.focus.minutes;
 
   return {
-    version: 1,
+    version: 2,
     theme: oneOf(input.theme, ["graphite", "midnight", "contrast"] as const, d.theme),
     reducedMotion: oneOf(input.reducedMotion, ["system", "on", "off"] as const, d.reducedMotion),
-    activePreset: oneOf(input.activePreset, ["watch", "listen", "focus"] as const, d.activePreset),
+    activePreset: oneOf(input.activePreset, PRESET_IDS, d.activePreset),
     presets,
     customLinks,
     launchOverrides,
@@ -145,6 +178,10 @@ export function sanitizePreferences(input: unknown): Preferences {
       watchlist: sanitizeWatchlist(isObj(input.markets) ? input.markets.watchlist : undefined),
       showTicker: isObj(input.markets) && typeof input.markets.showTicker === "boolean" ? input.markets.showTicker : true,
     },
+    quickLaunch: cleanList(input.quickLaunch, d.quickLaunch),
+    widgets,
+    clockFormat: oneOf(input.clockFormat, ["auto", "12h", "24h"] as const, d.clockFormat),
+    weather: { place, unit: oneOf(weatherIn.unit, ["f", "c"] as const, d.weather.unit) },
     updatedAt: typeof input.updatedAt === "number" && Number.isFinite(input.updatedAt) ? input.updatedAt : 0,
   };
 }

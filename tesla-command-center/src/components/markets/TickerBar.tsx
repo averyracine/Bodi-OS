@@ -4,36 +4,41 @@ import { useQuoteFeed } from "./QuotesProvider";
 import { fmtPct, fmtPrice } from "./format";
 import { usePrefs } from "../PrefsProvider";
 
-/** Scrolling ticker band. Pauses on hover/focus; static and swipeable when motion is reduced. */
+/**
+ * Slim, static ticker. Items wrap onto a hidden second line, so a symbol is
+ * either fully shown or not shown: nothing is clipped and nothing animates.
+ */
 export function TickerBar() {
   const feed = useQuoteFeed();
   const { prefs } = usePrefs();
-  if (!prefs?.markets.showTicker || feed.quotes.length === 0) return null;
-
-  const items = feed.quotes.map((q) => {
-    const up = q.change >= 0;
-    return (
-      <span key={q.symbol} className="flex items-center gap-2 px-5 whitespace-nowrap">
-        <span className="font-semibold text-fg">{q.symbol}</span>
-        <span className="tabular-nums text-fg/90">{fmtPrice(q.price)}</span>
-        <span className={`tabular-nums font-semibold ${up ? "text-ok" : "text-danger"}`}>
-          {up ? "▲" : "▼"} {fmtPct(q.changePct)}
-        </span>
-      </span>
-    );
-  });
+  if (!prefs?.markets.showTicker || prefs.markets.watchlist.length === 0) return null;
+  const sample = feed.source === "sample";
 
   return (
-    <div className="relative flex items-center h-11 shrink-0 border-b border-line/60 bg-surface/50 text-sm overflow-hidden" role="region" aria-label="Market ticker">
-      <span className={`shrink-0 z-10 h-full flex items-center px-4 text-xs font-bold uppercase tracking-wider ${feed.source === "live" ? "text-accent" : "text-warn"} bg-surface border-r border-line/60`}>
-        {feed.source === "live" ? "Markets" : "Sample"}
+    <div className="flex items-center gap-3 h-[34px] min-w-0 px-4 lg:px-6 border-b border-line text-[13px]" role="region" aria-label="Market ticker">
+      <span className={`shrink-0 eyebrow !text-[10px] ${sample ? "!text-warn" : "!text-accent"}`} title={sample ? "Simulated prices. Live quotes aren't connected." : "Live quotes, may be delayed."}>
+        {sample ? "Sample prices" : "Markets"}
       </span>
-      <div className="ticker-viewport flex-1 overflow-x-auto overflow-y-hidden no-scrollbar" tabIndex={0} aria-label="Ticker symbols">
-        <div className="ticker-track flex w-max">
-          <div className="flex">{items}</div>
-          <div className="flex" aria-hidden="true">{items}</div>
-        </div>
-      </div>
+      {feed.status === "loading" ? (
+        <span className="text-muted">Loading quotes…</span>
+      ) : feed.status === "error" && feed.quotes.length === 0 ? (
+        <span className="text-muted">Quotes unavailable right now.</span>
+      ) : (
+        <ul className="ticker-row flex-1 min-w-0" aria-label="Quotes">
+          {feed.quotes.map((q) => {
+            const up = q.change >= 0;
+            return (
+              <li key={q.symbol} className="flex items-center gap-1.5 pr-6 whitespace-nowrap" data-ticker-item>
+                <span className="font-semibold">{q.symbol}</span>
+                <span className="tabular-nums text-muted">{fmtPrice(q.price)}</span>
+                <span className={`tabular-nums font-semibold ${up ? "text-ok" : "text-danger"}`}>
+                  <span aria-hidden="true">{up ? "▲" : "▼"}</span> {fmtPct(q.changePct)}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </div>
   );
 }

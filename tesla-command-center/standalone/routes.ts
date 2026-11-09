@@ -3,6 +3,7 @@ export const HASH_FOR_PATH: [prefix: string, hash: string][] = [
   ["/app/library", "library"],
   ["/app/focus", "focus"],
   ["/app/settings", "preferences"],
+  ["/app/discover", "discover"],
   ["/app", "dashboard"],
   ["/start", "get-started"],
   ["/login", "preferences"],

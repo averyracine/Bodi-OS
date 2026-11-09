@@ -10,6 +10,7 @@ import { HomeView } from "@/components/views/HomeView";
 import { LibraryView } from "@/components/views/LibraryView";
 import { FocusView } from "@/components/views/FocusView";
 import { SettingsView } from "@/components/views/SettingsView";
+import { DiscoverView } from "@/components/views/DiscoverView";
 
 // The hosted viewer blocks file downloads; Settings explains that instead of failing silently.
 (globalThis as { __TCC_NO_DOWNLOADS__?: boolean }).__TCC_NO_DOWNLOADS__ = true;
@@ -29,8 +30,8 @@ window.fetch = async (input, init) => {
   return realFetch(input, init);
 };
 
-const VIEW_FOR_HASH: Record<string, ViewId> = { dashboard: "home", library: "library", focus: "focus", preferences: "settings" };
-const HASH_FOR_VIEW: Record<ViewId, string> = { home: "dashboard", library: "library", focus: "focus", settings: "preferences" };
+const VIEW_FOR_HASH: Record<string, ViewId> = { dashboard: "home", library: "library", focus: "focus", discover: "discover", preferences: "settings" };
+const HASH_FOR_VIEW: Record<ViewId, string> = { home: "dashboard", library: "library", focus: "focus", discover: "discover", settings: "preferences" };
 
 const subscribe = (cb: () => void) => {
   window.addEventListener("hashchange", cb);
@@ -54,6 +55,7 @@ function App() {
           {view === "library" && <LibraryView />}
           {view === "focus" && <FocusView />}
           {view === "settings" && <SettingsView />}
+          {view === "discover" && <DiscoverView />}
         </AppShell>
       </NavProvider>
     );

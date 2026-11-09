@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { createContext, useContext, type ReactNode } from "react";
 
-export type ViewId = "home" | "library" | "focus" | "settings";
+export type ViewId = "home" | "library" | "focus" | "discover" | "settings";
 
 export const VIEW_HREF: Record<ViewId, string> = {
   home: "/app",
   library: "/app/library",
   focus: "/app/focus",
+  discover: "/app/discover",
   settings: "/app/settings",
 };
 
@@ -26,6 +27,7 @@ export function ViewLink({
   children,
   ariaCurrent,
   ariaLabel,
+  onClick,
 }: {
   view: ViewId;
   hash?: string;
@@ -33,17 +35,18 @@ export function ViewLink({
   children: ReactNode;
   ariaCurrent?: boolean;
   ariaLabel?: string;
+  onClick?: () => void;
 }) {
   const { select } = useContext(NavContext);
   if (select) {
     return (
-      <button type="button" className={className} aria-current={ariaCurrent ? "page" : undefined} aria-label={ariaLabel} onClick={() => select(view)}>
+      <button type="button" className={className} aria-current={ariaCurrent ? "page" : undefined} aria-label={ariaLabel} onClick={() => { onClick?.(); select(view); }}>
         {children}
       </button>
     );
   }
   return (
-    <Link href={VIEW_HREF[view] + (hash ? `#${hash}` : "")} className={className} aria-current={ariaCurrent ? "page" : undefined} aria-label={ariaLabel}>
+    <Link href={VIEW_HREF[view] + (hash ? `#${hash}` : "")} className={className} aria-current={ariaCurrent ? "page" : undefined} aria-label={ariaLabel} onClick={onClick}>
       {children}
     </Link>
   );

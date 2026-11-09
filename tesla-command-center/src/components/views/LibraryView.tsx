@@ -1,9 +1,9 @@
 "use client";
 
-import { useId, useMemo, useState } from "react";
+import { useDeferredValue, useId, useMemo, useState } from "react";
 import { CATALOG, CATEGORY_LABELS, domainOf, TESLA_STATUS_LABEL, type Category, type LaunchBehavior } from "@/lib/catalog";
 import { MAX_CUSTOM_LINKS, newCustomId } from "@/lib/prefs";
-import { MAX_FAVORITES, PRESETS } from "@/lib/presets";
+import { MAX_FAVORITES, PRESETS, type PresetId } from "@/lib/presets";
 import { validateCustomUrl } from "@/lib/url";
 import { track } from "@/lib/analytics";
 import { usePrefs } from "../PrefsProvider";
@@ -11,7 +11,8 @@ import { Icon } from "../Icon";
 import { LaunchLink, recordLaunch, resolveService, ServiceArt } from "../ServiceTile";
 
 type Filter = "all" | Category;
-const FILTERS: Filter[] = ["all", "video", "music", "games", "productivity", "custom"];
+const FILTERS: Filter[] = ["all", "video", "music", "ai", "productivity", "games", "utilities", "custom"];
+type Target = PresetId | "quick";
 
 interface Row {
   id: string;
@@ -22,6 +23,7 @@ interface Row {
   parkedUseOnly: boolean;
   defaultLaunch: LaunchBehavior;
   custom: boolean;
+  blurb: string;
 }
 
 export function LibraryView() {
@@ -29,42 +31,53 @@ export function LibraryView() {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
   const [notice, setNotice] = useState("");
+  const [target, setTarget] = useState<Target | null>(null);
+  const deferredQuery = useDeferredValue(query);
 
   const rows: Row[] = useMemo(() => {
     const base: Row[] = CATALOG.map((s) => ({
       id: s.id, name: s.name, category: s.category, url: s.url, requiresAccount: s.requiresAccount,
-      parkedUseOnly: s.parkedUseOnly, defaultLaunch: s.launch, custom: false,
+      parkedUseOnly: s.parkedUseOnly, defaultLaunch: s.launch, custom: false, blurb: s.blurb,
     }));
     const custom: Row[] = (prefs?.customLinks ?? []).map((c) => ({
       id: c.id, name: c.name, category: "custom", url: c.url, requiresAccount: false,
-      parkedUseOnly: false, defaultLaunch: "new-tab", custom: true,
+      parkedUseOnly: false, defaultLaunch: "new-tab", custom: true, blurb: "Your link.",
     }));
     return [...custom, ...base];
   }, [prefs?.customLinks]);
 
+  const counts = useMemo(() => {
+    const c: Record<string, number> = { all: rows.length };
+    for (const r of rows) c[r.category] = (c[r.category] ?? 0) + 1;
+    return c;
+  }, [rows]);
+
   if (!prefs) return <div className="skeleton h-96" aria-busy="true" aria-label="Loading library" />;
 
-  const q = query.trim().toLowerCase();
+  const q = deferredQuery.trim().toLowerCase();
   const visible = rows.filter(
-    (r) => (filter === "all" || r.category === filter) && (!q || r.name.toLowerCase().includes(q) || domainOf(r.url).includes(q)),
+    (r) => (filter === "all" || r.category === filter) &&
+      (!q || r.name.toLowerCase().includes(q) || domainOf(r.url).includes(q) || CATEGORY_LABELS[r.category].toLowerCase().includes(q)),
   );
-  const preset = prefs.activePreset;
-  const presetLabel = PRESETS.find((p) => p.id === preset)!.label;
-  const favs = prefs.presets[preset];
+  const tgt: Target = target ?? prefs.activePreset;
+  const tgtLabel = tgt === "quick" ? "Quick Launch" : PRESETS.find((p) => p.id === tgt)!.label;
+  const favs = tgt === "quick" ? prefs.quickLaunch : prefs.presets[tgt];
+  const setFavs = (fn: (l: string[]) => string[]) =>
+    update((p) => (tgt === "quick" ? { ...p, quickLaunch: fn(p.quickLaunch) } : { ...p, presets: { ...p.presets, [tgt]: fn(p.presets[tgt]) } }));
 
   const toggleFav = (row: Row) => {
     if (favs.includes(row.id)) {
-      update((p) => ({ ...p, presets: { ...p.presets, [preset]: p.presets[preset].filter((x) => x !== row.id) } }));
-      setNotice(`Removed ${row.name} from ${presetLabel}.`);
+      setFavs((l) => l.filter((x) => x !== row.id));
+      setNotice(`Removed ${row.name} from ${tgtLabel}.`);
       return;
     }
     if (favs.length >= MAX_FAVORITES) {
-      setNotice(`${presetLabel} already has ${MAX_FAVORITES} favorites. Remove one first.`);
+      setNotice(`${tgtLabel} already has ${MAX_FAVORITES} apps. Remove one first.`);
       return;
     }
-    update((p) => ({ ...p, presets: { ...p.presets, [preset]: [...p.presets[preset], row.id] } }));
-    setNotice(`Added ${row.name} to ${presetLabel}.`);
-    if (!preview) track("favorite_added", { preset, service_id: row.id });
+    setFavs((l) => [...l, row.id]);
+    setNotice(`Added ${row.name} to ${tgtLabel}.`);
+    if (!preview && tgt !== "quick") track("favorite_added", { preset: tgt, service_id: row.id });
   };
 
   const setLaunch = (id: string, v: LaunchBehavior) =>
@@ -78,11 +91,8 @@ export function LibraryView() {
         ...p,
         customLinks: p.customLinks.filter((c) => c.id !== id),
         launchOverrides,
-        presets: {
-          watch: p.presets.watch.filter((x) => x !== id),
-          listen: p.presets.listen.filter((x) => x !== id),
-          focus: p.presets.focus.filter((x) => x !== id),
-        },
+        presets: Object.fromEntries(Object.entries(p.presets).map(([k, v]) => [k, v.filter((x) => x !== id)])) as typeof p.presets,
+        quickLaunch: p.quickLaunch.filter((x) => x !== id),
         recents: p.recents.filter((r) => r.id !== id),
       };
     });
@@ -91,28 +101,43 @@ export function LibraryView() {
     <div className="flex flex-col gap-5 fade-in">
       <div className="flex flex-wrap items-end gap-4">
         <div className="mr-auto">
-          <h1 className="text-2xl font-semibold tracking-tight">App library</h1>
-          <p className="text-muted">Starring adds to your <strong className="text-fg">{presetLabel}</strong> preset ({favs.length}/{MAX_FAVORITES}).</p>
+          <p className="eyebrow">{rows.length} apps</p>
+          <h1 className="font-display text-3xl font-semibold mt-1">Library</h1>
         </div>
-        <label className="relative w-full sm:w-[380px]">
+        <label className="relative w-full sm:w-[380px] block">
           <span className="sr-only">Search apps</span>
-          <Icon name="search" size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" />
-          <input type="search" className="input pl-12" placeholder="Search apps or websites" value={query} onChange={(e) => setQuery(e.target.value)} />
+          <span className="pointer-events-none absolute inset-y-0 left-0 w-12 grid place-items-center text-muted" data-search-icon>
+            <Icon name="search" size={20} />
+          </span>
+          <input type="search" className="input !pl-12" placeholder="Search apps or websites" value={query} onChange={(e) => setQuery(e.target.value)} />
         </label>
       </div>
 
-      <div role="tablist" aria-label="Categories" className="flex flex-wrap gap-2">
-        {FILTERS.map((f) => (
-          <button
-            key={f}
-            role="tab"
-            aria-selected={filter === f}
-            onClick={() => setFilter(f)}
-            className={`btn btn-sm ${filter === f ? "btn-primary" : ""}`}
-          >
-            {f === "all" ? "All" : CATEGORY_LABELS[f]}
-          </button>
-        ))}
+      <div className="flex flex-wrap items-center gap-3">
+        <div role="tablist" aria-label="Categories" className="flex flex-wrap gap-2 mr-auto">
+          {FILTERS.map((f) => (
+            <button
+              key={f}
+              role="tab"
+              aria-selected={filter === f}
+              onClick={() => setFilter(f)}
+              className={`btn btn-sm gap-2 ${filter === f ? "btn-primary" : ""}`}
+            >
+              {f === "all" ? "All" : CATEGORY_LABELS[f]}
+              <span className={`text-xs tabular-nums ${filter === f ? "opacity-70" : "text-muted"}`}>{counts[f] ?? 0}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-3 card px-4 py-3">
+        <span className="text-sm text-muted">Starring adds to</span>
+        <div className="seg" role="radiogroup" aria-label="Add apps to">
+          {[...PRESETS.map((p) => ({ id: p.id as Target, label: p.label })), { id: "quick" as Target, label: "Quick Launch" }].map((o) => (
+            <button key={o.id} role="radio" aria-checked={tgt === o.id} onClick={() => setTarget(o.id)} className="!min-h-[44px]">{o.label}</button>
+          ))}
+        </div>
+        <span className="text-sm text-muted tabular-nums">{favs.length}/{MAX_FAVORITES}</span>
       </div>
 
       <p className="sr-only" aria-live="polite">{notice}</p>
@@ -132,23 +157,24 @@ export function LibraryView() {
           {q && <button className="btn mt-4" onClick={() => setQuery("")}>Clear search</button>}
         </div>
       ) : (
-        <ul className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
+        <ul className="grid gap-3 sm:gap-4 md:grid-cols-2 2xl:grid-cols-3">
           {visible.map((row) => {
             const svc = resolveService(row.id, prefs)!;
             const launch = prefs.launchOverrides[row.id] ?? row.defaultLaunch;
             const fav = favs.includes(row.id);
             return (
-              <li key={row.id} className="card p-4 flex flex-col gap-3">
+              <li key={row.id} className="card p-4 flex flex-col gap-3" style={{ ["--tint" as string]: svc.accent }}>
                 <div className="flex items-start gap-3">
-                  <ServiceArt id={row.id} name={row.name} hue={svc.hue} size={52} rounded={14} />
+                  <ServiceArt id={row.id} name={row.name} hue={svc.hue} accent={svc.accent} size={52} />
                   <div className="min-w-0 flex-1">
                     <p className="font-semibold text-lg leading-tight break-words">{row.name}</p>
-                    <p className="text-muted text-sm break-all">{domainOf(row.url)}</p>
+                    <p className="text-muted text-sm">{row.blurb}</p>
+                    <p className="text-muted text-xs break-all mt-0.5">{domainOf(row.url)}</p>
                   </div>
                   <button
-                    className={`btn btn-sm ${fav ? "text-accent" : "text-muted"}`}
+                    className={`btn btn-sm ${fav ? "text-accent border-accent/40" : "text-muted"}`}
                     aria-pressed={fav}
-                    aria-label={fav ? `Remove ${row.name} from ${presetLabel}` : `Add ${row.name} to ${presetLabel}`}
+                    aria-label={fav ? `Remove ${row.name} from ${tgtLabel}` : `Add ${row.name} to ${tgtLabel}`}
                     onClick={() => toggleFav(row)}
                   >
                     <Icon name="star" size={22} className={fav ? "fill-current" : ""} />
@@ -164,7 +190,7 @@ export function LibraryView() {
                 <div className="flex flex-wrap items-center gap-2 mt-auto">
                   <div className="seg" role="radiogroup" aria-label={`How ${row.name} opens`}>
                     {(["new-tab", "same-tab"] as const).map((v) => (
-                      <button key={v} role="radio" aria-checked={launch === v} onClick={() => setLaunch(row.id, v)}>
+                      <button key={v} role="radio" aria-checked={launch === v} onClick={() => setLaunch(row.id, v)} className="!min-h-[44px]">
                         {v === "new-tab" ? "New tab" : "This tab"}
                       </button>
                     ))}

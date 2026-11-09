@@ -5,13 +5,12 @@ import { ExploreCta } from "@/components/ExploreCta";
 import { Icon, type IconName } from "@/components/Icon";
 
 const FEATURES: { icon: IconName; title: string; body: string }[] = [
-  { icon: "grid", title: "Big, readable favorites", body: "Up to eight large tiles in each service's colours, with full names, sized for a touchscreen at arm's length." },
-  { icon: "star", title: "Watch, Listen and Focus presets", body: "Each preset keeps its own favorites. Switch with one tap, and rearrange with Move buttons or drag." },
-  { icon: "search", title: "A searchable app library", body: "A curated starter catalog plus your own HTTPS links. You choose how each one opens." },
-  { icon: "chart", title: "Markets at a glance", body: "A ticker band and a watchlist with sparklines. Live when a quote provider is connected, clearly marked as sample data when it isn't." },
-  { icon: "focus", title: "Focus workspace", body: "A built-in timer, scratchpad and checklist, in one pane or side by side." },
-  { icon: "phone", title: "Pair from your phone", body: "Approve your car with a short code or QR on your phone, so you never type a password on the car screen." },
-  { icon: "shield", title: "Honest by design", body: "No fake safety locks and no restriction workarounds. Links open each service's own site." },
+  { icon: "home", title: "Personalized dashboard", body: "Watch, Listen, Work and Drive modes, each with its own apps and widgets. Rearrange anything by touch, drag or keyboard." },
+  { icon: "tv", title: "Entertainment shortcuts", body: "Streaming, sports, music and cloud gaming one tap away. Each opens the service's own site, and you choose new tab or this tab." },
+  { icon: "sparkle", title: "AI and productivity", body: "Claude, ChatGPT, Gemini and Perplexity next to mail, calendar and files, plus a built-in timer, notes and checklist." },
+  { icon: "layout", title: "Customizable widgets", body: "Clock, weather, markets, calendar, quick launch and notes. Show, hide, resize and reorder per mode." },
+  { icon: "bolt", title: "Simple setup", body: "Open the site in your car while parked. Everything else (account, billing, settings) happens on your phone." },
+  { icon: "shield", title: "Secure account and pairing", body: "Approve your car from your phone with a single-use 5-minute code. Revoke any paired car from Settings." },
 ];
 
 const FAQ: { q: string; a: string }[] = [
@@ -29,7 +28,7 @@ const FAQ: { q: string; a: string }[] = [
   },
   {
     q: "What does $10/month include?",
-    a: "Account sync for your presets and settings, phone-to-car pairing, and ongoing improvements to the dashboard. The local dashboard preview is free to explore without an account.",
+    a: "Account sync for your modes, apps, widgets and settings, phone-to-car pairing, and ongoing improvements. The dashboard preview is free to explore without an account.",
   },
   {
     q: "How do I cancel?",
@@ -42,6 +41,10 @@ const FAQ: { q: string; a: string }[] = [
   {
     q: "Are the stock prices real?",
     a: "Only when the live quote feed is connected, and they may be delayed. Until then the ticker and Markets card show sample prices, labelled \"Sample data · not real prices\". Either way it's for information only, not investment advice.",
+  },
+  {
+    q: "Does Drive mode know where my car is?",
+    a: "No. Drive is a screen layout for trip prep: maps, charger links, weather and your day. A web page can't read your car's location, battery, gear or speed. Weather uses a city you choose, or this device's location only if you allow it.",
   },
   {
     q: "Is this made by Tesla?",
@@ -63,25 +66,33 @@ export default function Landing() {
       </header>
 
       <main id="main">
-        <section className="mx-auto max-w-7xl px-5 lg:px-8 pt-10 pb-12 grid gap-10">
-          <div className="max-w-3xl">
-            <p className="chip chip-accent mb-5">For parked downtime · $10/month</p>
-            <h1 className="text-5xl md:text-6xl font-semibold tracking-tight leading-[1.05]">Your Tesla downtime, upgraded.</h1>
-            <p className="text-xl text-muted mt-5 max-w-2xl">
-              A calm, large-type home screen for your car&rsquo;s web browser, with your favorite services, presets for watching,
-              listening or focusing, and a scratchpad. Built for charging stops and time spent parked.
-            </p>
-            <div className="flex flex-wrap gap-3 mt-8">
-              <ExploreCta className="btn btn-primary text-lg px-6" />
-              <a href="#pricing" className="btn">See pricing</a>
+        <section className="mx-auto max-w-7xl px-5 lg:px-8 pt-8 pb-12 grid gap-10">
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] items-end">
+            <div className="min-w-0">
+              <p className="chip chip-accent mb-5">Command Center · $10/month</p>
+              <h1 className="font-display text-5xl md:text-7xl font-semibold leading-[1.02] [text-wrap:balance]">
+                Your Tesla. <span className="text-accent">Your Command Center.</span>
+              </h1>
+              <p className="text-xl text-muted mt-5 max-w-xl">
+                Entertainment, AI, productivity and everyday essentials in one personalized dashboard.
+              </p>
             </div>
-            <p className="text-sm text-muted mt-4">No account needed to explore. The preview below is the real dashboard. Try it.</p>
+            <div className="flex flex-col gap-3 lg:items-end">
+              <div className="flex flex-wrap gap-3">
+                <ExploreCta className="btn btn-primary text-lg px-6" />
+                <Link href="/start" className="btn text-lg px-6">Get Command Center · $10/month</Link>
+              </div>
+              <p className="text-sm text-muted lg:text-right max-w-sm">
+                The preview below is the real dashboard. Try it, no account needed. Designed for use while parked.
+              </p>
+            </div>
           </div>
           <DashboardPreview />
         </section>
 
         <section id="features" className="mx-auto max-w-7xl px-5 lg:px-8 py-16 scroll-mt-20">
-          <h2 className="text-3xl font-semibold tracking-tight">What&rsquo;s inside</h2>
+          <p className="eyebrow">What you get</p>
+          <h2 className="font-display text-4xl font-semibold mt-2 [text-wrap:balance]">One screen for the time you spend parked.</h2>
           <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mt-8">
             {FEATURES.map((f) => (
               <li key={f.title} className="card p-6">
@@ -98,7 +109,7 @@ export default function Landing() {
             {[
               ["1", "Open it in the car", "Visit the site in your car's browser while parked."],
               ["2", "Approve from your phone", "Scan the QR code, sign in on your phone, and tap Approve. The code expires in 5 minutes and works once."],
-              ["3", "Pick a preset", "Watch, Listen or Focus. Your favorites follow your account."],
+              ["3", "Pick a mode", "Watch, Listen, Work or Drive. Your apps and widgets follow your account."],
             ].map(([n, t, b]) => (
               <div key={n}>
                 <span className="text-accent font-semibold">Step {n}</span>
@@ -112,7 +123,7 @@ export default function Landing() {
         <section id="pricing" className="mx-auto max-w-7xl px-5 lg:px-8 py-16 scroll-mt-20">
           <div className="grid gap-8 lg:grid-cols-2 items-start">
             <div>
-              <h2 className="text-3xl font-semibold tracking-tight">One plan. No surprises.</h2>
+              <h2 className="font-display text-4xl font-semibold">One plan. No surprises.</h2>
               <p className="text-muted mt-3 text-lg">
                 Explore the dashboard free in your browser. Subscribe when you want your setup synced and paired to your car.
               </p>
@@ -127,9 +138,9 @@ export default function Landing() {
             </div>
             <div className="card p-8">
               <p className="text-muted font-medium">Command Center</p>
-              <p className="mt-2"><span className="text-6xl font-semibold tracking-tight">$10</span><span className="text-muted text-xl">/month</span></p>
+              <p className="mt-2"><span className="font-display text-6xl font-semibold">$10</span><span className="text-muted text-xl">/month</span></p>
               <ul className="mt-6 space-y-3">
-                {["Watch, Listen and Focus presets", "Account sync for favorites and settings", "Secure phone-to-car pairing", "Focus timer, scratchpad and checklist", "Cancel anytime in Stripe's portal"].map((x) => (
+                {["Watch, Listen, Work and Drive modes", "Customizable widgets: weather, markets, calendar and more", "Account sync for apps, modes and settings", "Secure phone-to-car pairing", "Focus timer, notes and checklist", "Cancel anytime in Stripe's portal"].map((x) => (
                   <li key={x} className="flex items-start gap-3"><Icon name="check" className="text-accent shrink-0 mt-0.5" size={20} />{x}</li>
                 ))}
               </ul>
@@ -143,7 +154,7 @@ export default function Landing() {
         </section>
 
         <section id="faq" className="mx-auto max-w-3xl px-5 lg:px-8 py-16 scroll-mt-20">
-          <h2 className="text-3xl font-semibold tracking-tight">Questions</h2>
+          <h2 className="font-display text-4xl font-semibold">Questions</h2>
           <div className="mt-6 flex flex-col gap-3">
             {FAQ.map((f) => (
               <details key={f.q} className="card group">
@@ -158,7 +169,7 @@ export default function Landing() {
         </section>
 
         <section className="mx-auto max-w-7xl px-5 lg:px-8 pb-20 text-center">
-          <h2 className="text-3xl font-semibold tracking-tight">See it for yourself.</h2>
+          <h2 className="font-display text-4xl font-semibold">See it for yourself.</h2>
           <div className="mt-6 flex justify-center"><ExploreCta className="btn btn-primary text-lg px-6" /></div>
         </section>
       </main>

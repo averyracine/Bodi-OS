@@ -5,7 +5,7 @@ import { Icon } from "./Icon";
 export function ExploreCta({ className = "btn btn-primary" }: { className?: string }) {
   return (
     <Link href="/app" className={className}>
-      Explore the dashboard <Icon name="right" size={20} />
+      Explore Interactive Demo <Icon name="right" size={20} />
     </Link>
   );
 }

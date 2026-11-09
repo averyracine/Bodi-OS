@@ -8,6 +8,7 @@ import { HomeView } from "./views/HomeView";
 import { LibraryView } from "./views/LibraryView";
 import { FocusView } from "./views/FocusView";
 import { SettingsView } from "./views/SettingsView";
+import { DiscoverView } from "./views/DiscoverView";
 
 const W = 1280;
 const H = 800;
@@ -47,6 +48,7 @@ export function DashboardPreview() {
                   {view === "library" && <LibraryView />}
                   {view === "focus" && <FocusView />}
                   {view === "settings" && <SettingsView />}
+                  {view === "discover" && <DiscoverView />}
                 </AppShell>
               </NavProvider>
             </PrefsProvider>

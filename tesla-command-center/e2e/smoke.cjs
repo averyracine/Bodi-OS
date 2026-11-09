@@ -24,13 +24,13 @@ async function noHorizontalScroll(page) {
   const browser = await chromium.launch();
 
   // ---------- Landscape development viewports ----------
-  for (const [w, h] of [[1280, 800], [1920, 1080]]) {
+  for (const [w, h] of [[1280, 800], [1440, 900], [1920, 1080]]) {
     const ctx = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 2 });
     const page = await ctx.newPage();
     await page.goto(`${BASE}/`);
     await page.getByRole("button", { name: "No thanks" }).click();
     await page.getByRole("region", { name: "Interactive dashboard preview" }).getByRole("list", { name: "Watch favorites" }).waitFor();
-    check(`landing headline @${w}x${h}`, await visible(page.getByRole("heading", { name: "Your Tesla downtime, upgraded." })));
+    check(`landing headline @${w}x${h}`, await visible(page.getByRole("heading", { name: "Your Tesla. Your Command Center." })));
     check(`landing no horizontal scroll @${w}x${h}`, await noHorizontalScroll(page));
     await page.screenshot({ path: `${SHOTS}/landing-${w}x${h}.png` });
 
@@ -39,7 +39,27 @@ async function noHorizontalScroll(page) {
     check(`dashboard no horizontal scroll @${w}x${h}`, await noHorizontalScroll(page));
     await page.getByRole("button", { name: "No thanks" }).click().catch(() => {});
     await page.screenshot({ path: `${SHOTS}/app-home-${w}x${h}.png` });
-    for (const v of ["library", "focus", "settings"]) {
+    // Ticker: every visible symbol fits; overflow wraps to a hidden line instead of clipping.
+    const tickerOk = await page.evaluate(() => {
+      const row = document.querySelector('[aria-label="Quotes"]');
+      if (!row) return false;
+      const r = row.getBoundingClientRect();
+      const items = [...row.querySelectorAll("[data-ticker-item]")];
+      const firstTop = items[0].getBoundingClientRect().top;
+      return items.filter((i) => i.getBoundingClientRect().top === firstTop).every((i) => i.getBoundingClientRect().right <= r.right + 0.5);
+    });
+    check(`ticker has no clipped symbols @${w}x${h}`, tickerOk);
+    // Dock never covers content: at the bottom of the page, main's last element ends above the dock.
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    const dockClear = await page.evaluate(() => {
+      const dock = document.querySelector('nav[aria-label="Primary"]').getBoundingClientRect();
+      const main = document.querySelector("main");
+      const last = [...main.querySelectorAll("*")].reduce((m, el) => Math.max(m, el.getBoundingClientRect().bottom), 0);
+      return last <= dock.top + 1;
+    });
+    check(`dock does not cover content @${w}x${h}`, dockClear);
+    await page.evaluate(() => window.scrollTo(0, 0));
+    for (const v of ["library", "focus", "discover", "settings"]) {
       await page.goto(`${BASE}/app/${v}`);
       await page.locator("h1").first().waitFor();
       await page.waitForTimeout(300);
@@ -96,7 +116,7 @@ async function noHorizontalScroll(page) {
   await page.getByRole("button", { name: "Clear search" }).click();
 
   // Category filter
-  await page.getByRole("tab", { name: "Cloud games" }).click();
+  await page.getByRole("tab", { name: "Gaming" }).click();
   check("category filter", (await cards.count()) === 2);
   await page.getByRole("tab", { name: "All" }).click();
 
@@ -143,8 +163,66 @@ async function noHorizontalScroll(page) {
   const t = await page.getByRole("timer").innerText();
   check("timer counts down", t !== "25:00", t);
   await page.getByRole("button", { name: "Pause" }).click();
-  await page.getByRole("radio", { name: "Split (prototype)" }).click();
+  await page.getByRole("radio", { name: "Split view" }).click();
   check("split layout renders two panes", (await page.getByRole("region", { name: /pane/ }).count()) === 2);
+
+  // Search icon alignment: icon sits inside the input's left padding, vertically centred.
+  await page.goto(`${BASE}/app/library`);
+  await page.getByRole("searchbox", { name: "Search apps" }).waitFor();
+  const align = await page.evaluate(() => {
+    const icon = document.querySelector("[data-search-icon] svg").getBoundingClientRect();
+    const input = document.querySelector('input[type="search"]');
+    const ir = input.getBoundingClientRect();
+    const padLeft = parseFloat(getComputedStyle(input).paddingLeft);
+    return icon.right <= ir.left + padLeft && Math.abs((icon.top + icon.bottom) / 2 - (ir.top + ir.bottom) / 2) < 2;
+  });
+  check("search icon aligned inside input", align);
+  check("category chips show counts", /\d/.test(await page.getByRole("tab", { name: /Gaming/ }).innerText()));
+
+  // Quick Launch target from the library
+  await page.getByRole("radiogroup", { name: "Add apps to" }).getByRole("radio", { name: "Quick Launch" }).click();
+  await page.getByRole("searchbox", { name: "Search apps" }).fill("perplexity");
+  await page.getByRole("button", { name: "Add Perplexity to Quick Launch" }).click();
+  await page.getByRole("searchbox", { name: "Search apps" }).fill("");
+
+  // Modes: Work and Drive, persistence
+  await page.goto(`${BASE}/app`);
+  await page.getByRole("radio", { name: "Drive" }).click();
+  await page.getByRole("list", { name: "Drive favorites" }).waitFor();
+  check("Drive mode shows its own apps", (await page.getByRole("list", { name: "Drive favorites" }).locator("a").first().getAttribute("href")) === "https://www.google.com/maps");
+  check("Drive mode shows labelled sample weather", await visible(page.getByText("Sample weather · not live")));
+  await page.reload();
+  check("Drive mode persists across reload", await visible(page.getByRole("list", { name: "Drive favorites" })));
+  await page.getByRole("radio", { name: "Work" }).click();
+  check("Work mode shows AI apps", (await page.getByRole("list", { name: "Work favorites" }).locator("a").first().getAttribute("href")) === "https://chatgpt.com/");
+
+  // Widgets: hide, move, resize, persist, restore, reset
+  await page.getByRole("button", { name: "Customize widgets" }).click();
+  await page.getByRole("button", { name: "Hide Markets" }).click();
+  await page.getByRole("button", { name: "Move Quick Notes up" }).click();
+  await page.getByRole("button", { name: "Expand Calendar" }).click();
+  await page.getByRole("button", { name: "Done" }).last().click();
+  await page.reload();
+  await page.getByRole("list", { name: "Work favorites" }).waitFor();
+  const order = await page.locator("[data-widget]").evaluateAll((els) => els.map((e) => e.getAttribute("data-widget")));
+  check("widget hide/move persists", !order.includes("markets") && order.indexOf("notes") < order.indexOf("calendar"), order.join(","));
+  check("widget size persists", await visible(page.getByRole("grid", { name: "This month" })));
+  await page.getByRole("button", { name: "Customize widgets" }).click();
+  await page.getByRole("button", { name: "Show Markets" }).click();
+  check("hidden widget can be restored", (await page.locator('[data-widget="markets"]').count()) === 1);
+  await page.getByRole("button", { name: "Reset this mode’s widgets" }).click();
+  const reset = await page.locator("[data-widget]").evaluateAll((els) => els.map((e) => e.getAttribute("data-widget")).join(","));
+  check("widget layout resets", reset === "clock,calendar,notes,markets", reset);
+  await page.getByRole("button", { name: "Done" }).last().click();
+  await page.getByRole("radio", { name: "Watch" }).click();
+  check("Quick Launch shows chosen app", await visible(page.getByRole("list", { name: "Quick Launch apps" }).getByText("Perplexity")));
+  await page.getByRole("radio", { name: "Listen" }).click();
+
+  // Discover: apply a setup with in-page confirmation
+  await page.goto(`${BASE}/app/discover`);
+  await page.getByRole("button", { name: "Use for Drive mode" }).first().click();
+  await page.getByRole("button", { name: "Replace" }).click();
+  check("discover setup applies", await visible(page.getByText("Applied to Drive.")));
 
   // Watchlist editing
   await page.goto(`${BASE}/app/settings`);
@@ -192,8 +270,45 @@ async function noHorizontalScroll(page) {
   await page.goto(`${BASE}/app`);
   check("reset restores defaults", await visible(page.getByRole("list", { name: "Watch favorites" })));
 
+  // Migration: a saved v1 preferences object keeps its Focus (now Work) apps and gains Drive.
+  await page.evaluate(() => localStorage.setItem("tcc.prefs.v1", JSON.stringify({
+    version: 1, theme: "graphite", activePreset: "focus", presets: { watch: ["youtube"], listen: ["spotify"], focus: ["notion", "google-docs"] },
+  })));
+  await page.goto(`${BASE}/app`);
+  check("v1 Focus apps migrate to Work", (await page.getByRole("list", { name: "Work favorites" }).locator("a").first().getAttribute("href")) === "https://www.notion.so/");
+  await page.getByRole("radio", { name: "Drive" }).click();
+  check("v1 data gains default Drive apps", (await page.getByRole("list", { name: "Drive favorites" }).locator("li").count()) === 6);
+
   check("no uncaught page errors", errors.length === 0, errors.join(" | "));
   await ctx.close();
+
+  // ---------- Reduced motion ----------
+  const rm = await browser.newContext({ viewport: { width: 1280, height: 800 }, reducedMotion: "reduce" });
+  const rp = await rm.newPage();
+  await rp.goto(`${BASE}/app`);
+  await rp.getByRole("list", { name: "Watch favorites" }).waitFor();
+  const motion = await rp.evaluate(() => {
+    const card = document.querySelector(".app-card");
+    const fade = document.querySelector(".fade-in");
+    return getComputedStyle(card).transitionDuration.split(",").every((d) => parseFloat(d) === 0) && getComputedStyle(fade).animationName === "none";
+  });
+  check("reduced motion disables transitions and animations", motion);
+  await rm.close();
+
+  // ---------- Mobile dashboard + dock overflow ----------
+  const md = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true });
+  const mdp = await md.newPage();
+  await mdp.goto(`${BASE}/app`);
+  await mdp.getByRole("button", { name: "No thanks" }).click().catch(() => {});
+  await mdp.getByRole("list", { name: "Watch favorites" }).waitFor();
+  check("mobile dashboard no horizontal scroll", await noHorizontalScroll(mdp));
+  await mdp.screenshot({ path: `${SHOTS}/app-home-390x844.png` });
+  await mdp.screenshot({ path: `${SHOTS}/app-home-390x844-full.png`, fullPage: true });
+  await mdp.getByRole("button", { name: "More" }).click();
+  await mdp.getByRole("link", { name: "Discover" }).click();
+  await mdp.waitForURL("**/app/discover");
+  check("mobile More menu reaches Discover", mdp.url().endsWith("/app/discover"));
+  await md.close();
 
   // ---------- Mobile onboarding ----------
   const { devices } = require("playwright");

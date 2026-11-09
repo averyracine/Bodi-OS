@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { PRESETS } from "@/lib/presets";
 import { DEFAULT_PRESET_FAVORITES } from "@/lib/presets";
-import { sanitizePreferences, type Theme, type ReducedMotion } from "@/lib/prefs";
+import { defaultPreferences, sanitizePreferences, type Theme, type ReducedMotion } from "@/lib/prefs";
 import { notesStore } from "@/lib/notes-store";
 import { track } from "@/lib/analytics";
 import { useSession, type SessionInfo } from "@/hooks/useSession";
@@ -63,7 +63,7 @@ export function SettingsView() {
 
   return (
     <div className="grid gap-5 xl:grid-cols-2 fade-in items-start">
-      <h1 className="text-2xl font-semibold tracking-tight xl:col-span-2">Settings</h1>
+      <h1 className="font-display text-3xl font-semibold xl:col-span-2">Settings</h1>
       {store.error && <p role="alert" className="xl:col-span-2 card p-4 text-warn">{store.error}</p>}
 
       <div className="flex flex-col gap-5 min-w-0">
@@ -94,7 +94,7 @@ export function SettingsView() {
           </fieldset>
         </Section>
 
-        <Section id="presets" title="Presets" desc="Watch, Listen and Focus each keep their own favorites.">
+        <Section id="presets" title="Modes" desc="Watch, Listen, Work and Drive each keep their own apps and widgets. These are screen layouts, not vehicle modes.">
           <div className="seg" role="radiogroup" aria-label="Active preset">
             {PRESETS.map((p) => (
               <button key={p.id} role="radio" aria-checked={prefs.activePreset === p.id} onClick={() => update((x) => ({ ...x, activePreset: p.id }))}>
@@ -111,6 +111,44 @@ export function SettingsView() {
             }}
           >
             <Icon name="reset" size={18} /> Restore default favorites for this preset
+          </button>
+        </Section>
+
+        <Section id="home-widgets" title="Home & widgets" desc="Widget layouts are saved per mode. Use Customize widgets on Home to arrange them.">
+          <fieldset>
+            <legend className="text-sm font-medium mb-2">Clock</legend>
+            <div className="seg" role="radiogroup" aria-label="Clock format">
+              {(["auto", "12h", "24h"] as const).map((v) => (
+                <button key={v} role="radio" aria-checked={prefs.clockFormat === v} onClick={() => update((p) => ({ ...p, clockFormat: v }))}>
+                  {v === "auto" ? "Match device" : v === "12h" ? "12-hour" : "24-hour"}
+                </button>
+              ))}
+            </div>
+          </fieldset>
+          <fieldset className="mt-4">
+            <legend className="text-sm font-medium mb-2">Weather</legend>
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="seg" role="radiogroup" aria-label="Temperature unit">
+                {(["f", "c"] as const).map((v) => (
+                  <button key={v} role="radio" aria-checked={prefs.weather.unit === v} onClick={() => update((p) => ({ ...p, weather: { ...p.weather, unit: v } }))}>
+                    °{v.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+              <span className="text-sm text-muted">{prefs.weather.place ? prefs.weather.place.name : "No city set"}</span>
+              {prefs.weather.place && (
+                <button className="btn btn-sm" onClick={() => update((p) => ({ ...p, weather: { ...p.weather, place: null } }))}>Forget city</button>
+              )}
+            </div>
+          </fieldset>
+          <button
+            className="btn btn-sm mt-4"
+            onClick={() => {
+              update((p) => ({ ...p, widgets: defaultPreferences().widgets }));
+              setMsg({ kind: "ok", text: "Widget layouts reset for every mode." });
+            }}
+          >
+            <Icon name="reset" size={18} /> Reset all widget layouts
           </button>
         </Section>
 

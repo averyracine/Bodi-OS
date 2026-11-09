@@ -18,6 +18,7 @@ const result = await build({
     "process.env.NEXT_PUBLIC_SUPABASE_URL": '""',
     "process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY": '""',
     "process.env.NEXT_PUBLIC_APP_URL": '""',
+    "process.env.NEXT_PUBLIC_SERVICE_LOGOS": "\"\"",
   },
   alias: {
     "@": path.join(root, "src"),
@@ -34,9 +35,10 @@ const css = cssFiles.map((f) => readFileSync(path.join(cssDir, f), "utf8")).join
 
 const html = `<title>Command Center for Tesla</title>
 <meta name="description" content="Browser-only demo of the parked-use dashboard.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&family=Sora:wght@500..700&display=swap">
 <style>
-:root { color-scheme: dark; }
-html, body { background: #0c0e11; color: #e9edf2; }
+:root { color-scheme: dark; --font-manrope: "Manrope"; --font-sora: "Sora"; }
+html, body { background: #080b10; color: #f2f5f9; }
 ${css}
 </style>
 <div id="root"></div>
