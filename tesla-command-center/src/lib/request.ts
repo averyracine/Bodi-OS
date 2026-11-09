@@ -4,8 +4,7 @@ import { getAdminSupabase } from "./supabase/admin";
 import { getSessionUser } from "./supabase/server";
 import { authenticateDevice } from "./pairing/service";
 import { supabasePairingStore } from "./pairing/supabase-store";
-import { getUserSubscription } from "./billing/supabase-store";
-import { hasPremiumAccess } from "./billing/reconcile";
+import { getAccess } from "./access";
 
 export const DEVICE_COOKIE = "tcc_device";
 
@@ -31,11 +30,9 @@ export async function getActor(): Promise<Actor | null> {
   return device ? { kind: "device", userId: device.userId, deviceId: device.id } : null;
 }
 
-/** Server-side premium check. The only source of truth is the webhook-maintained table. */
+/** Server-side access check: active subscription (webhook-maintained) or owner entitlement. */
 export async function userHasPremium(userId: string): Promise<boolean> {
-  const admin = getAdminSupabase();
-  if (!admin) return false;
-  return hasPremiumAccess(await getUserSubscription(admin, userId));
+  return (await getAccess(userId)).allowed;
 }
 
 export function json(data: unknown, status = 200) {

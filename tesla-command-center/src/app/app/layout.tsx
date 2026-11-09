@@ -1,27 +1,39 @@
-"use client";
+import { Suspense, type ReactNode } from "react";
+import { redirect } from "next/navigation";
+import { DashboardFrame } from "@/components/DashboardFrame";
+import { isSupabaseConfigured } from "@/lib/env";
+import { getActor } from "@/lib/request";
+import { getAccess } from "@/lib/access";
 
-import { usePathname } from "next/navigation";
-import { AppShell } from "@/components/AppShell";
-import type { ViewId } from "@/components/Nav";
-import { useSession } from "@/hooks/useSession";
-
-function viewFor(path: string): ViewId {
-  if (path.startsWith("/app/library")) return "library";
-  if (path.startsWith("/app/focus")) return "focus";
-  if (path.startsWith("/app/settings")) return "settings";
-  if (path.startsWith("/app/discover")) return "discover";
-  return "home";
+/**
+ * Server-side gate for the dashboard. With accounts configured, /app requires a
+ * signed-in user (or a car paired to one) whose account has an active
+ * subscription or an owner/test entitlement. Without Supabase configured the
+ * build is the labelled local demo and stays open.
+ */
+async function Gate({ children }: { children: ReactNode }) {
+  if (!isSupabaseConfigured()) return <>{children}</>;
+  const actor = await getActor();
+  if (!actor) redirect("/login?next=/app");
+  const access = await getAccess(actor.userId);
+  if (!access.allowed) redirect("/subscribe");
+  return <>{children}</>;
 }
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const path = usePathname();
-  const session = useSession();
-  const s = session.state === "ready" ? session.session : null;
-  const demo = s?.mode === "demo";
-  const label = !s ? "Profile" : demo ? "Demo" : s.actor?.kind === "user" ? "Account" : s.actor?.kind === "device" ? "Car" : "Sign in";
+function Checking() {
   return (
-    <AppShell active={viewFor(path)} demo={demo} accountLabel={label}>
-      {children}
-    </AppShell>
+    <div className="app-bg min-h-dvh grid place-items-center p-6" aria-busy="true">
+      <p className="text-muted">Checking your access…</p>
+    </div>
+  );
+}
+
+export default function DashboardLayout({ children }: { children: ReactNode }) {
+  return (
+    <Suspense fallback={<Checking />}>
+      <Gate>
+        <DashboardFrame>{children}</DashboardFrame>
+      </Gate>
+    </Suspense>
   );
 }

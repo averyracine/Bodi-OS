@@ -3,7 +3,7 @@ import { isBillingConfigured, isSupabaseConfigured } from "@/lib/env";
 import { getActor, json } from "@/lib/request";
 import { getAdminSupabase } from "@/lib/supabase/admin";
 import { getUserSubscription } from "@/lib/billing/supabase-store";
-import { hasPremiumAccess } from "@/lib/billing/reconcile";
+import { getAccess } from "@/lib/access";
 
 /** Describes what this browser is: demo, signed-out, signed-in user, or paired car. */
 export async function GET() {
@@ -15,7 +15,7 @@ export async function GET() {
   if (!actor) return json({ mode: "live", configured, actor: null });
 
   const admin = getAdminSupabase();
-  const sub = admin ? await getUserSubscription(admin, actor.userId) : null;
+  const [sub, access] = await Promise.all([admin ? getUserSubscription(admin, actor.userId) : null, getAccess(actor.userId)]);
   return json({
     mode: "live",
     configured,
@@ -23,6 +23,7 @@ export async function GET() {
     subscription: sub
       ? { status: sub.status, currentPeriodEnd: sub.current_period_end, cancelAtPeriodEnd: sub.cancel_at_period_end }
       : null,
-    premium: hasPremiumAccess(sub),
+    premium: access.allowed,
+    access: access.via,
   });
 }

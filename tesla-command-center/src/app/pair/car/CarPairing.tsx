@@ -46,7 +46,7 @@ export function CarPairing() {
         const j = await r.json().catch(() => ({}));
         if (r.ok && j.status === "paired") {
           setState({ kind: "paired" });
-          setTimeout(() => router.push("/app/settings#account"), 1500);
+          setTimeout(() => router.push("/app"), 1500);
         } else if (r.status === 410) {
           setState({ kind: "expired" });
         } else if (r.status === 409 || r.status === 404) {

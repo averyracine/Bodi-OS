@@ -358,7 +358,9 @@ function LiveAccount({ s, reload }: { s: SessionInfo; reload: () => void }) {
       </Section>
 
       <Section id="billing" title="Billing">
-        {!s.configured.billing ? (
+        {s.access === "owner" ? (
+          <p><span className="chip chip-accent">Owner test access</span> <span className="text-muted text-sm">Granted on the server for this account. No subscription or payment involved.</span></p>
+        ) : !s.configured.billing ? (
           <p className="text-muted">Billing isn&rsquo;t configured in this environment, so no payment can be taken.</p>
         ) : !signedIn ? (
           <p className="text-muted">{isDevice ? "Manage billing from your phone." : "Sign in to subscribe."}</p>

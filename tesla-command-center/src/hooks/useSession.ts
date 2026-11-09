@@ -8,6 +8,7 @@ export interface SessionInfo {
   actor: null | { kind: "user"; email: string | null } | { kind: "device" };
   subscription?: { status: string; currentPeriodEnd: string | null; cancelAtPeriodEnd: boolean } | null;
   premium?: boolean;
+  access?: "subscription" | "owner" | null;
 }
 
 export type SessionState =
