@@ -73,11 +73,24 @@ async function noHorizontalScroll(page) {
   const page = await ctx.newPage();
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
+  // Icons must never come from the network: record any image or font request that leaves our origin.
+  const externalAssets = [];
+  page.on("request", (r) => {
+    const t = r.resourceType();
+    if ((t === "image" || t === "font") && !r.url().startsWith(BASE) && !r.url().startsWith("data:")) externalAssets.push(r.url());
+  });
+  const iconKinds = (scope) => scope.locator("[data-app-icon]").evaluateAll((els) =>
+    els.map((e) => ({ kind: e.getAttribute("data-icon-kind"), ok: e.getAttribute("data-icon-kind") !== "brand" || (e.querySelector("img")?.naturalWidth ?? 0) > 0 })));
 
   await page.goto(`${BASE}/app`);
   await page.getByRole("list", { name: "Watch favorites" }).waitFor();
   const favList = page.getByRole("list", { name: "Watch favorites" });
   check("8 default Watch favorites", (await favList.locator("li").count()) === 8);
+  await page.waitForFunction(() => [...document.querySelectorAll("[data-icon-kind=brand] img")].every((i) => i.complete));
+  const favIcons = await iconKinds(favList);
+  check("all Watch favorites show a rendered brand logo", favIcons.length === 8 && favIcons.every((i) => i.kind === "brand" && i.ok), JSON.stringify(favIcons));
+  const qlIcons = await iconKinds(page.getByRole("list", { name: "Quick Launch apps" }));
+  check("Quick Launch shows brand logos", qlIcons.length > 0 && qlIcons.every((i) => i.kind === "brand" && i.ok));
   check("markets card shows sample label", await visible(page.getByText("Sample data · not real prices")));
   check("ticker band renders", await visible(page.getByRole("region", { name: "Market ticker" })));
 
@@ -103,8 +116,19 @@ async function noHorizontalScroll(page) {
   check("active preset persists across reload", await page.getByRole("list", { name: "Listen favorites" }).waitFor({ timeout: 5000 }).then(() => true, () => false));
   check("Listen preset has its own favorites", (await page.getByRole("list", { name: "Listen favorites" }).locator("a").first().getAttribute("href")) === "https://open.spotify.com/");
 
-  // Library search + favorite toggle
+  // Library: every catalog app shows its logo; only PlugShare (no published SVG) falls back.
   await page.goto(`${BASE}/app/library`);
+  await page.getByRole("searchbox", { name: "Search apps" }).waitFor();
+  await page.waitForFunction(() => [...document.querySelectorAll("[data-icon-kind=brand] img")].every((i) => i.complete));
+  const libIcons = await page.locator("main ul > li").evaluateAll((lis) => lis.map((li) => ({
+    name: li.querySelector("p")?.textContent,
+    kind: li.querySelector("[data-app-icon]")?.getAttribute("data-icon-kind"),
+    ok: (li.querySelector("[data-app-icon] img")?.naturalWidth ?? 1) > 0,
+  })));
+  const fallbacks = libIcons.filter((i) => i.kind !== "brand").map((i) => i.name);
+  check("library: 27 brand logos, PlugShare is the only fallback", libIcons.length === 28 && libIcons.every((i) => i.ok) && fallbacks.join() === "PlugShare", fallbacks.join());
+
+  // Library search + favorite toggle
   await page.getByRole("searchbox", { name: "Search apps" }).fill("geforce");
   const cards = page.locator("main ul > li");
   check("search filters library", (await cards.count()) === 1 && (await cards.first().innerText()).includes("GeForce NOW"));
@@ -133,6 +157,7 @@ async function noHorizontalScroll(page) {
   await page.getByLabel("HTTPS address").fill("https://example.com/map");
   await page.getByRole("button", { name: "Add link" }).click();
   check("accepts https custom link", await visible(page.getByText("Charge map")));
+  check("custom link uses the initials fallback", (await page.locator("main ul > li").filter({ hasText: "Charge map" }).locator("[data-icon-kind=fallback]").count()) === 1);
 
   // Launch behavior toggle
   await page.getByRole("searchbox", { name: "Search apps" }).fill("netflix");
@@ -185,6 +210,19 @@ async function noHorizontalScroll(page) {
   await page.getByRole("button", { name: "Add Perplexity to Quick Launch" }).click();
   await page.getByRole("searchbox", { name: "Search apps" }).fill("");
 
+  // Recently opened uses the same icons (launch from Library recorded YouTube/Netflix earlier).
+  await page.goto(`${BASE}/app`);
+  await page.getByRole("list", { name: /favorites/ }).waitFor();
+  await page.getByRole("list", { name: /favorites/ }).locator("a").first().evaluate((a) => a.addEventListener("click", (e) => e.preventDefault(), { once: true }));
+  await page.getByRole("list", { name: /favorites/ }).locator("a").first().click();
+  const recentIcons = await page.locator("h2:has-text('Recently opened')").locator("xpath=../..").locator("[data-app-icon]").evaluateAll((els) => els.map((e) => e.getAttribute("data-icon-kind")));
+  check("recently opened shows brand logos", recentIcons.length > 0 && recentIcons.every((k) => k === "brand"), recentIcons.join());
+  // Arrange mode: tiles stop being links, so rearranging can't launch an app.
+  await page.getByRole("button", { name: "Arrange" }).click();
+  check("arrange mode has no launch links in the grid", (await page.getByRole("list", { name: /favorites/ }).locator("a[target], a[href^='https://']").count()) === 0);
+  check("arrange mode keeps brand logos", (await page.getByRole("list", { name: /favorites/ }).locator("[data-icon-kind=brand]").count()) > 0);
+  await page.getByRole("button", { name: "Done" }).first().click();
+
   // Modes: Work and Drive, persistence
   await page.goto(`${BASE}/app`);
   await page.getByRole("radio", { name: "Drive" }).click();
@@ -194,6 +232,7 @@ async function noHorizontalScroll(page) {
   await page.reload();
   check("Drive mode persists across reload", await visible(page.getByRole("list", { name: "Drive favorites" })));
   await page.getByRole("radio", { name: "Work" }).click();
+  check("Work mode icons are all brand logos", (await iconKinds(page.getByRole("list", { name: "Work favorites" }))).every((i) => i.kind === "brand"));
   check("Work mode shows AI apps", (await page.getByRole("list", { name: "Work favorites" }).locator("a").first().getAttribute("href")) === "https://chatgpt.com/");
 
   // Widgets: hide, move, resize, persist, restore, reset
@@ -279,6 +318,7 @@ async function noHorizontalScroll(page) {
   await page.getByRole("radio", { name: "Drive" }).click();
   check("v1 data gains default Drive apps", (await page.getByRole("list", { name: "Drive favorites" }).locator("li").count()) === 6);
 
+  check("no external image or font requests", externalAssets.length === 0, externalAssets.slice(0, 3).join(" "));
   check("no uncaught page errors", errors.length === 0, errors.join(" | "));
   await ctx.close();
 
@@ -302,6 +342,7 @@ async function noHorizontalScroll(page) {
   await mdp.getByRole("button", { name: "No thanks" }).click().catch(() => {});
   await mdp.getByRole("list", { name: "Watch favorites" }).waitFor();
   check("mobile dashboard no horizontal scroll", await noHorizontalScroll(mdp));
+  check("mobile shows brand logos", (await mdp.getByRole("list", { name: "Watch favorites" }).locator("[data-icon-kind=brand]").count()) === 8);
   await mdp.screenshot({ path: `${SHOTS}/app-home-390x844.png` });
   await mdp.screenshot({ path: `${SHOTS}/app-home-390x844-full.png`, fullPage: true });
   await mdp.getByRole("button", { name: "More" }).click();

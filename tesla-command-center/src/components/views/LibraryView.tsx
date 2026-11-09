@@ -8,7 +8,7 @@ import { validateCustomUrl } from "@/lib/url";
 import { track } from "@/lib/analytics";
 import { usePrefs } from "../PrefsProvider";
 import { Icon } from "../Icon";
-import { LaunchLink, recordLaunch, resolveService, ServiceArt } from "../ServiceTile";
+import { LaunchLink, recordLaunch, resolveService, AppIcon } from "../ServiceTile";
 
 type Filter = "all" | Category;
 const FILTERS: Filter[] = ["all", "video", "music", "ai", "productivity", "games", "utilities", "custom"];
@@ -165,7 +165,7 @@ export function LibraryView() {
             return (
               <li key={row.id} className="card p-4 flex flex-col gap-3" style={{ ["--tint" as string]: svc.accent }}>
                 <div className="flex items-start gap-3">
-                  <ServiceArt id={row.id} name={row.name} hue={svc.hue} accent={svc.accent} size={52} />
+                  <AppIcon id={row.id} name={row.name} hue={svc.hue} accent={svc.accent} size={56} />
                   <div className="min-w-0 flex-1">
                     <p className="font-semibold text-lg leading-tight break-words">{row.name}</p>
                     <p className="text-muted text-sm">{row.blurb}</p>
@@ -180,12 +180,14 @@ export function LibraryView() {
                     <Icon name="star" size={22} className={fav ? "fill-current" : ""} />
                   </button>
                 </div>
-                <div className="flex flex-wrap gap-1.5">
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
                   <span className="chip">{CATEGORY_LABELS[row.category]}</span>
-                  {!row.custom && <span className="chip chip-warn">{TESLA_STATUS_LABEL["not-tested"]}</span>}
-                  {row.requiresAccount && <span className="chip">Needs its own account</span>}
-                  {row.parkedUseOnly && <span className="chip">Parked use</span>}
-                  {row.custom && <span className="chip">Your link · not tested</span>}
+                  <span className="chip chip-warn">{row.custom ? "Your link · not tested" : TESLA_STATUS_LABEL["not-tested"]}</span>
+                  {(row.requiresAccount || row.parkedUseOnly) && (
+                    <span className="text-xs text-muted">
+                      {[row.requiresAccount && "Needs its own account", row.parkedUseOnly && "Parked use"].filter(Boolean).join(" · ")}
+                    </span>
+                  )}
                 </div>
                 <div className="flex flex-wrap items-center gap-2 mt-auto">
                   <div className="seg" role="radiogroup" aria-label={`How ${row.name} opens`}>

@@ -8,7 +8,7 @@ import { useNow } from "@/hooks/useBrowser";
 import { usePrefs } from "../PrefsProvider";
 import { Icon, type IconName } from "../Icon";
 import { ViewLink } from "../Nav";
-import { AppCard, LaunchLink, recordLaunch, resolveService, ServiceArt, type ResolvedService } from "../ServiceTile";
+import { AppCard, LaunchLink, recordLaunch, resolveService, AppIcon, type ResolvedService } from "../ServiceTile";
 import { WidgetSidebar } from "../widgets/WidgetSidebar";
 
 const MODE_ICON: Record<PresetId, IconName> = { watch: "tv", listen: "headphones", focus: "briefcase", drive: "route" };
@@ -114,7 +114,7 @@ export function HomeView() {
                     ) : editing ? (
                       <div className="card p-3 h-full min-h-[148px] flex flex-col gap-3 border-dashed cursor-grab">
                         <div className="flex items-center gap-3 min-w-0">
-                          <ServiceArt id={svc.id} name={svc.name} hue={svc.hue} accent={svc.accent} size={40} />
+                          <AppIcon id={svc.id} name={svc.name} hue={svc.hue} accent={svc.accent} size={44} />
                           <span className="font-semibold leading-tight break-words min-w-0">{svc.name}</span>
                         </div>
                         <div className="mt-auto flex gap-2">
@@ -153,7 +153,7 @@ export function HomeView() {
                 {recents.map((svc) => (
                   <li key={svc.id}>
                     <LaunchLink service={svc} onLaunch={() => onLaunch(svc.id)} className="flex items-center gap-2 min-h-[56px] pl-2 pr-4 rounded-2xl border border-line bg-surface-2/60 hover:bg-surface-3">
-                      <ServiceArt id={svc.id} name={svc.name} hue={svc.hue} accent={svc.accent} size={36} />
+                      <AppIcon id={svc.id} name={svc.name} hue={svc.hue} accent={svc.accent} size={36} />
                       <span className="font-medium">{svc.name}</span>
                     </LaunchLink>
                   </li>

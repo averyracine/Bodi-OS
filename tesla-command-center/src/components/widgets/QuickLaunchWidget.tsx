@@ -2,7 +2,7 @@
 
 import type { WidgetSize } from "@/lib/widgets";
 import { usePrefs } from "../PrefsProvider";
-import { LaunchLink, recordLaunch, resolveService, ServiceArt, type ResolvedService } from "../ServiceTile";
+import { LaunchLink, recordLaunch, resolveService, AppIcon, type ResolvedService } from "../ServiceTile";
 import { ViewLink } from "../Nav";
 
 export function QuickLaunchWidget({ size }: { size: WidgetSize }) {
@@ -22,8 +22,8 @@ export function QuickLaunchWidget({ size }: { size: WidgetSize }) {
               ? "flex items-center gap-3 min-h-[56px] px-2 rounded-xl hover:bg-surface-3"
               : "flex flex-col items-center gap-1.5 min-h-[76px] py-1 rounded-xl hover:bg-surface-3 text-center"}
           >
-            <ServiceArt id={svc.id} name={svc.name} hue={svc.hue} accent={svc.accent} size={size === "expanded" ? 40 : 44} />
-            <span className={size === "expanded" ? "font-medium" : "text-[11px] leading-tight text-muted line-clamp-2"}>{svc.name}</span>
+            <AppIcon id={svc.id} name={svc.name} hue={svc.hue} accent={svc.accent} size={size === "expanded" ? 40 : 48} />
+            <span className={size === "expanded" ? "font-medium" : "text-xs leading-tight text-fg/80 line-clamp-2"}>{svc.name}</span>
           </LaunchLink>
         </li>
       ))}

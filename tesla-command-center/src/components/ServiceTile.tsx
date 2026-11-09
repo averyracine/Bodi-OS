@@ -4,15 +4,16 @@ import { useState, type CSSProperties, type ReactNode } from "react";
 import { CATALOG_BY_ID, CATEGORY_LABELS, domainOf, monogram, type Category, type LaunchBehavior } from "@/lib/catalog";
 import type { Preferences } from "@/lib/prefs";
 import { MAX_RECENTS } from "@/lib/prefs";
-import { BRAND_ART } from "@/lib/brand-icons";
+import { BRAND_TILES } from "@/lib/brand-icons";
+import { BRAND_ICON_DATA } from "@/lib/brand-icon-data";
 import { useOnline } from "@/hooks/useBrowser";
 import { Icon } from "./Icon";
 
 /**
- * Third-party logos are off by default (not authorised by their owners).
- * Set NEXT_PUBLIC_SERVICE_LOGOS=on only after obtaining permission.
+ * Brand logos are bundled (data: URIs, no network) and on by default.
+ * Set NEXT_PUBLIC_SERVICE_LOGOS=off to use the monogram icons everywhere.
  */
-const LOGOS_ON = process.env.NEXT_PUBLIC_SERVICE_LOGOS === "on";
+const LOGOS_ON = process.env.NEXT_PUBLIC_SERVICE_LOGOS !== "off";
 
 export interface ResolvedService {
   id: string;
@@ -52,30 +53,42 @@ export function recordLaunch(prefs: Preferences, id: string): Preferences {
   return { ...prefs, recents };
 }
 
-/** Kept for custom-link fallbacks and older call sites. */
-export function Monogram({ name, hue, size = 64 }: { name: string; hue: number; size?: number }) {
+/** Initials on a tint of the accent colour. Used only when no logo is available. */
+export function Monogram({ name, hue, size = 64, accent }: { name: string; hue: number; size?: number; accent?: string }) {
   return (
-    <span className="app-icon" style={{ ["--tint" as string]: `hsl(${hue} 70% 62%)`, width: size, height: size, fontSize: size * 0.34, borderRadius: size * 0.28 }}>
+    <span
+      className="app-icon"
+      data-app-icon
+      data-icon-kind="fallback"
+      style={{ ["--tint" as string]: accent ?? `hsl(${hue} 70% 62%)`, width: size, height: size, fontSize: size * 0.34, borderRadius: size * 0.26 }}
+    >
       {monogram(name)}
     </span>
   );
 }
 
-/** Icon for a service: our own monogram on a tint of its accent colour (logos only when enabled). */
-export function ServiceArt({ id, name, hue, size = 48, accent }: { id: string; name: string; hue: number; size?: number; rounded?: number; accent?: string }) {
-  const tint = accent ?? CATALOG_BY_ID.get(id)?.accent ?? `hsl(${hue} 70% 62%)`;
-  const art = LOGOS_ON ? BRAND_ART[id] : undefined;
+/**
+ * The one app icon used everywhere (favorites, Quick Launch, Library, Discover,
+ * Recently opened, Arrange). Bundled brand logo when we have one; otherwise,
+ * or if the image ever fails, the monogram. Never renders blank.
+ */
+export function AppIcon({ id, name, hue, size = 56, accent }: { id: string; name: string; hue: number; size?: number; accent?: string }) {
+  const [failed, setFailed] = useState(false);
+  const tile = LOGOS_ON ? BRAND_TILES[id] : undefined;
+  const src = tile ? BRAND_ICON_DATA[id] : undefined;
+  const tint = accent ?? CATALOG_BY_ID.get(id)?.accent;
+  if (!tile || !src || failed) return <Monogram name={name} hue={hue} size={size} accent={tint} />;
+  const pct = `${Math.round(tile.scale * 100)}%`;
   return (
     <span
       aria-hidden="true"
-      className="app-icon"
-      style={{ ["--tint" as string]: tint, width: size, height: size, borderRadius: size * 0.28, fontSize: size * 0.34 }}
+      data-app-icon
+      data-icon-kind="brand"
+      className={`brand-icon ${tile.light ? "brand-icon-light" : ""}`}
+      style={{ width: size, height: size, borderRadius: size * 0.26, background: tile.bg }}
     >
-      {art?.path ? (
-        <svg viewBox="0 0 24 24" width={size * 0.5} height={size * 0.5} fill="currentColor"><path d={art.path} /></svg>
-      ) : (
-        monogram(name)
-      )}
+      {/* eslint-disable-next-line @next/next/no-img-element -- bundled data: URI, nothing to optimise */}
+      <img src={src} alt="" draggable={false} onError={() => setFailed(true)} style={{ width: pct, height: pct }} />
     </span>
   );
 }
@@ -141,15 +154,15 @@ export function LaunchLink({
   );
 }
 
-/** Premium app card used on Home and Discover. */
+/** Launcher tile: the logo leads, the name stays visible, a subtle arrow marks it as a launch. */
 export function AppCard({ svc, onLaunch, starred = false, compact = false }: { svc: ResolvedService; onLaunch?: () => void; starred?: boolean; compact?: boolean }) {
   return (
-    <LaunchLink service={svc} onLaunch={onLaunch} className={`app-card group ${compact ? "!min-h-[112px]" : ""}`} style={{ ["--tint" as string]: svc.accent }}>
+    <LaunchLink service={svc} onLaunch={onLaunch} className={`app-card group ${compact ? "!min-h-[120px]" : ""}`} style={{ ["--tint" as string]: svc.accent }}>
       <span className="flex items-start justify-between gap-2">
-        <ServiceArt id={svc.id} name={svc.name} hue={svc.hue} accent={svc.accent} size={compact ? 40 : 52} />
+        <AppIcon id={svc.id} name={svc.name} hue={svc.hue} accent={svc.accent} size={compact ? 48 : 64} />
         <span className="flex items-center gap-1.5 text-muted">
           {starred && <Icon name="star" size={14} className="fill-current text-accent" />}
-          <span className="grid place-items-center w-8 h-8 rounded-full border border-line opacity-70 group-hover:opacity-100 group-hover:text-fg transition-opacity">
+          <span className="launch-hint grid place-items-center w-8 h-8 rounded-full border border-line">
             <Icon name="external" size={15} />
           </span>
         </span>

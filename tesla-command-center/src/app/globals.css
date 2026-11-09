@@ -127,6 +127,19 @@ body {
   transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
 }
 .app-card:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--tint, var(--accent)) 45%, var(--line)); }
+.app-card:active { transform: translateY(0) scale(0.98); border-color: var(--accent); }
+.app-card .launch-hint { opacity: 0.55; transition: opacity 0.18s ease, transform 0.18s ease; }
+.app-card:hover .launch-hint, .app-card:focus-visible .launch-hint { opacity: 1; transform: translate(1px, -1px); color: var(--text); }
+.brand-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  box-shadow: 0 6px 18px -8px rgba(0, 0, 0, 0.7), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+.brand-icon-light { box-shadow: 0 6px 18px -8px rgba(0, 0, 0, 0.7), inset 0 0 0 1px rgba(0, 0, 0, 0.06); }
+.brand-icon img { object-fit: contain; display: block; pointer-events: none; user-select: none; }
+.btn:active:not([disabled]), .seg > button:active { transform: scale(0.97); }
 .app-card:focus-visible { outline-color: var(--tint, var(--accent)); }
 .app-icon {
   display: grid;

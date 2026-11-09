@@ -20,7 +20,7 @@ npm run lint && npm run typecheck && npm test && npm run build
 npm run start -- -p 3100 & BASE_URL=http://localhost:3100 node e2e/smoke.cjs
 ```
 
-`e2e/smoke.cjs` uses the system Playwright/Chromium and runs 69 browser checks in demo mode, at 1280×800, 1440×900, 1920×1080 and 390×844 plus the phone onboarding pages. It writes screenshots to `docs/screenshots/`.
+`e2e/smoke.cjs` uses the system Playwright/Chromium and runs 79 browser checks in demo mode, at 1280×800, 1440×900, 1920×1080 and 390×844 plus the phone onboarding pages. It writes screenshots to `docs/screenshots/`.
 
 `npm run build:demo` (after `npm run build`) writes a single-file browser-only demo to `standalone/dist/`.
 
@@ -32,7 +32,7 @@ npm run start -- -p 3100 & BASE_URL=http://localhost:3100 node e2e/smoke.cjs
 - **Navigation**: compact header (mode, parked-use note, connection, account, time), a slim static ticker, and a floating dock with Home, Library, Focus, Discover and Settings. On phones, Discover and Settings move under *More*.
 - **Library**: 28 apps across Streaming, Music, AI, Productivity, Gaming and Utilities, with category counts. Starring can add to any mode or to Quick Launch.
 - **Discover** (`/app/discover`): ready-made setups. Applying one replaces a mode's apps after an in-page confirmation.
-- **Icons**: original monogram icons tinted with each service's accent colour. Third-party logos are behind `NEXT_PUBLIC_SERVICE_LOGOS=on` and should stay off until each brand owner approves.
+- **Icons**: one shared `AppIcon` component (`src/components/ServiceTile.tsx`) renders every app icon: favorites, Quick Launch, Library, Discover, Recently opened and Arrange. It uses bundled brand logos (`assets/brand-icons/*.svg` → `npm run icons` → `src/lib/brand-icon-data.ts`, all `data:` URIs, so there are no network requests). Each logo sits on its brand-appropriate tile (`src/lib/brand-icons.ts`). Custom links, PlugShare (no published SVG) and any image that fails to load fall back to initials, so an icon is never blank. Sources and notes are in `assets/brand-icons/SOURCES.md`. The logos are their owners' trademarks; set `NEXT_PUBLIC_SERVICE_LOGOS=off` to hide them.
 - **Weather**: `/api/weather` and `/api/geocode` call fixed Open-Meteo hosts with validated input, cache for 10 minutes and rate-limit per client. The free tier is non-commercial only, so production needs `OPEN_METEO_API_KEY` (a paid plan; pricing at open-meteo.com/en/pricing). Without one, the widget shows labelled sample weather. Location is a city you type, or this device's location only after you tap the button and the browser asks for permission. The car's location is never used.
 - **Calendar**: a real local month view plus links to Google Calendar and Outlook. No account is connected, so no events are shown or invented.
 
