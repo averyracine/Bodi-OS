@@ -35,6 +35,9 @@ export function SettingsView() {
   if (!prefs) return <div className="skeleton h-96" aria-busy="true" aria-label="Loading settings" />;
 
   const exportPrefs = () => {
+    if ((globalThis as { __TCC_NO_DOWNLOADS__?: boolean }).__TCC_NO_DOWNLOADS__) {
+      return setMsg({ kind: "error", text: "File export isn't available in this hosted demo. It works when the app runs on its own site." });
+    }
     // Export contains preferences only; notes are excluded on purpose.
     const blob = new Blob([JSON.stringify(prefs, null, 2)], { type: "application/json" });
     const a = document.createElement("a");
