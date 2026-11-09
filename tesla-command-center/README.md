@@ -54,6 +54,20 @@ npm run start -- -p 3100 & BASE_URL=http://localhost:3100 node e2e/smoke.cjs
 | Schema + RLS | `supabase/migrations/20261109000000_init.sql` |
 | Unit tests | `tests/*.test.ts` |
 
+## Live deployment (owner testing)
+
+- **Host**: Vercel project `cruisectrl` (team `juuce1`), production URL https://cruisectrl-seven.vercel.app, deployed from this folder with `npx vercel@65.14.0 deploy --prod`. Billing (Stripe) is **not** configured there, so no payment can be taken.
+- **Database/auth**: Supabase project `cruisectrl` (`bygzzcrphqwsuuykhboh`, us-east-1). Migrations in `supabase/migrations/` are applied.
+- **Vercel env vars**: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `NEXT_PUBLIC_APP_URL`, `PAIRING_PEPPER` (sensitive). Add `SUPABASE_SECRET_KEY` (sensitive) in Vercel → Settings → Environment Variables to enable phone-to-car pairing and preference sync, then redeploy.
+- **Access rule** (`src/lib/access.ts`): `/app` and every premium API require a signed-in user or a paired car whose account has an active Stripe subscription or an unrevoked `owner_test` row in `public.entitlements`. There is no client-side or URL bypass.
+- **Owner grants**: emails in `public.pending_owner_grants` get the entitlement automatically when they first confirm sign-in. Revoke in the Supabase SQL editor:
+  ```sql
+  select public.revoke_owner_access('owner@example.com');
+  delete from public.pending_owner_grants where email = 'owner@example.com';
+  ```
+  Re-grant with `select public.grant_owner_access('owner@example.com');`.
+- **Supabase Auth settings** (dashboard → Authentication → URL Configuration): Site URL `https://cruisectrl-seven.vercel.app`, Redirect URLs `https://cruisectrl-seven.vercel.app/**`. Optional: add `{{ .Token }}` to the Magic Link email template so the email also shows a 6-digit code (typed on the sign-in page).
+
 ## Modes
 
 - **Demo mode** (no env vars): fully functional local dashboard. A visible "Demo mode" badge is shown. Account, billing, sync and pairing show an explicit *not configured* state, and their APIs return `503 not_configured`. No pretend payments.

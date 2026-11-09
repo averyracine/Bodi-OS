@@ -1,4 +1,4 @@
--- Tesla Command Center: initial schema.
+-- CruiseCtrl: initial schema.
 -- RLS is enabled on every table. Users can only read (and where noted, write)
 -- rows where user_id = auth.uid(). Server-owned tables have RLS enabled with
 -- no policies, so only the service role (server routes) can touch them.
@@ -46,7 +46,7 @@ create policy "preferences: update own" on public.preferences for update to auth
 -- Favorites (per preset, ordered) ---------------------------------------------
 create table public.favorites (
   user_id uuid not null references auth.users (id) on delete cascade,
-  preset text not null check (preset in ('watch', 'listen', 'focus')),
+  preset text not null check (preset in ('watch', 'listen', 'focus', 'drive')),
   position smallint not null check (position between 0 and 7),
   service_id text not null check (service_id ~ '^[a-z0-9-]{1,64}$'),
   primary key (user_id, preset, position)
