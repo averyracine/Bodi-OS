@@ -10,7 +10,7 @@ export function getStripe(): Stripe | null {
   if (process.env.NODE_ENV !== "production" && key.startsWith("sk_live_")) {
     throw new Error("Refusing to use a live Stripe key outside production");
   }
-  stripe ??= new Stripe(key, { appInfo: { name: "Tesla Command Center (MVP)" } });
+  stripe ??= new Stripe(key, { appInfo: { name: "CruiseCtrl" } });
   return stripe;
 }
 

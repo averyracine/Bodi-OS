@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { SimplePage } from "@/components/SimplePage";
 import { LoginForm } from "./LoginForm";
 
-export const metadata = { title: "Sign in · Command Center" };
+export const metadata = { title: "Sign in" };
 
 export default function LoginPage() {
   return (

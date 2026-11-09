@@ -1,7 +1,7 @@
 import { SimplePage } from "@/components/SimplePage";
 import { CarPairing } from "./CarPairing";
 
-export const metadata = { title: "Pair this car · Command Center" };
+export const metadata = { title: "Pair this car" };
 
 export default function CarPairPage() {
   return (

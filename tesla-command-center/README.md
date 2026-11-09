@@ -1,8 +1,12 @@
-# Command Center for Tesla (working name: Tesla Command Center)
+# CruiseCtrl
+
+*Your parked time. Upgraded.*
+
+CruiseCtrl is an independent dashboard for use while parked. It isn't affiliated with or endorsed by Tesla, and despite the name it doesn't control the vehicle or any driving feature. (The project folder keeps its original name, `tesla-command-center/`, and saved-data keys keep their `tcc.` prefix so existing preferences survive the rename.)
 
 A premium browser dashboard for **parked** Tesla downtime. Next.js 16 (App Router) + TypeScript + Tailwind v4, with Supabase Auth/Postgres, Stripe Billing (test mode) and phone-to-car pairing.
 
-> Independent project. Not affiliated with Tesla, Inc. Nothing here has been validated on a vehicle yet. See [`docs/TESLA_VALIDATION_CHECKLIST.md`](docs/TESLA_VALIDATION_CHECKLIST.md).
+> Independent project. Not affiliated with Tesla, Inc. Check the "CruiseCtrl" name for trademark conflicts before launch, and keep the "doesn't control the vehicle" disclaimer prominent since the name evokes a driving feature. Nothing here has been validated on a vehicle yet. See [`docs/TESLA_VALIDATION_CHECKLIST.md`](docs/TESLA_VALIDATION_CHECKLIST.md).
 
 ## Run
 

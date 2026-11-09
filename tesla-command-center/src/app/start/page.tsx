@@ -2,7 +2,7 @@ import Link from "next/link";
 import { BrandName } from "@/components/BrandMark";
 import { Icon } from "@/components/Icon";
 
-export const metadata = { title: "Get started · Command Center" };
+export const metadata = { title: "Get started" };
 
 /** Mobile-first onboarding: account and billing happen on the phone, not the car screen. */
 export default function Start() {
@@ -16,7 +16,7 @@ export default function Start() {
       <header className="px-5 h-20 flex items-center"><Link href="/"><BrandName compact /></Link></header>
       <main id="main" className="px-5 pb-16 max-w-xl mx-auto">
         <h1 className="text-3xl font-semibold tracking-tight">Set up in three steps</h1>
-        <p className="text-muted mt-2">Do this on your phone. Your car only needs a 5-minute pairing code.</p>
+        <p className="text-muted mt-2">Do this on your phone. Your car only needs a 5-minute pairing code. CruiseCtrl runs in the car&rsquo;s browser while parked and never controls the vehicle.</p>
         <ol className="mt-8 flex flex-col gap-4">
           {steps.map((s, i) => (
             <li key={s.title} className="card p-5">

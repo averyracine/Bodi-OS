@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { SimplePage } from "@/components/SimplePage";
 import { ApprovePairing } from "./ApprovePairing";
 
-export const metadata = { title: "Approve car · Command Center" };
+export const metadata = { title: "Approve car" };
 
 export default function PairApprovePage() {
   return (

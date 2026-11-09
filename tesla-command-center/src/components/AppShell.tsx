@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useNow, useOnline } from "@/hooks/useBrowser";
-import { PRESETS } from "@/lib/presets";
-import { BrandMark } from "./BrandMark";
+import { BrandMark, Wordmark } from "./BrandMark";
+import { ModeSelector } from "./ModeSelector";
 import { Icon, type IconName } from "./Icon";
 import { usePrefs } from "./PrefsProvider";
 import { ViewLink, type ViewId } from "./Nav";
@@ -41,7 +41,6 @@ export function AppShell({
   const [moreOpen, setMoreOpen] = useState(false);
   const [parkedOpen, setParkedOpen] = useState(false);
   const moreRef = useRef<HTMLDivElement>(null);
-  const mode = PRESETS.find((p) => p.id === prefs?.activePreset);
 
   useEffect(() => {
     if (!moreOpen && !parkedOpen) return;
@@ -57,7 +56,7 @@ export function AppShell({
 
   const dockItem = (active_: boolean) =>
     `relative flex flex-col items-center justify-center gap-1 min-w-[76px] sm:min-w-[88px] min-h-[60px] px-2 rounded-[18px] text-[13px] font-semibold transition-colors ${
-      active_ ? "text-accent bg-accent-soft" : "text-muted hover:text-fg hover:bg-surface-3/70"
+      active_ ? "text-accent bg-accent-soft" : "text-muted hover:text-fg hover:bg-surface-3/60"
     }`;
 
   return (
@@ -68,50 +67,47 @@ export function AppShell({
         className={`app-bg text-fg flex flex-col ${className}`}
       >
         <header className="glass !border-x-0 !border-t-0 sticky top-0 z-30 shrink-0" style={preview ? { position: "relative" } : undefined}>
-          <div className="flex items-center gap-3 h-14 px-4 lg:px-6">
-            <ViewLink view="home" className="flex items-center gap-2.5 rounded-xl" ariaLabel="Command Center home">
-              <BrandMark size={28} />
-              <span className="font-display font-semibold text-[15px] hidden sm:inline">Command Center</span>
+          <div className="flex items-center gap-3 h-[60px] px-4 lg:px-6">
+            <ViewLink view="home" className="flex items-center gap-2.5 rounded-xl shrink-0" ariaLabel="CruiseCtrl home">
+              <BrandMark size={30} />
+              <span className="hidden sm:inline-flex"><Wordmark className="text-[0.98rem]" /></span>
             </ViewLink>
-            {mode && (
-              <span className="chip !text-fg hidden md:inline-flex" aria-label={`Active mode: ${mode.label}`}>
-                <span className="w-1.5 h-1.5 rounded-full bg-accent" aria-hidden="true" /> {mode.label} mode
-              </span>
-            )}
-            <div className="ml-auto flex items-center gap-2">
+            <ModeSelector className="hidden lg:inline-grid mx-auto" compact />
+            <div className="ml-auto lg:ml-0 flex items-center gap-1.5 shrink-0">
               <span className="relative">
                 <button
                   type="button"
-                  className="chip !py-1.5 hover:!text-fg"
+                  className="icon-btn"
                   aria-expanded={parkedOpen}
                   aria-controls="parked-note"
+                  aria-label="Parked use information"
+                  title="For use while parked"
                   onClick={() => setParkedOpen((o) => !o)}
                 >
-                  <Icon name="shield" size={14} /> <span className="hidden lg:inline">Parked use</span>
-                  <span className="sr-only lg:hidden">Parked use information</span>
+                  <Icon name="shield" size={17} />
                 </button>
                 {parkedOpen && (
                   <span id="parked-note" role="note" className="absolute right-0 top-full mt-2 w-72 glass rounded-2xl p-4 text-sm text-muted shadow-2xl z-40 fade-in">
-                    <strong className="text-fg">For use while parked.</strong> This is a web page: it can&rsquo;t see your car&rsquo;s gear, speed or
-                    location, so it can&rsquo;t check for you. Video and interactive apps are for when you&rsquo;re stopped.
+                    <strong className="text-fg">For use while parked.</strong> CruiseCtrl is a web page: it can&rsquo;t see your car&rsquo;s gear, speed or
+                    location, and it doesn&rsquo;t control the vehicle or any driving feature.
                   </span>
                 )}
               </span>
-              <span role="status" className={`chip !py-1.5 ${online ? "" : "chip-warn"}`} title={online ? "Connected" : "No connection"}>
-                <Icon name={online ? "wifi" : "offline"} size={14} />
-                <span className={online ? "hidden md:inline" : ""}>{online ? "Online" : "Offline"}</span>
+              <span role="status" className={online ? "icon-btn" : "chip chip-warn !py-1.5"} title={online ? "Online" : "No connection"}>
+                <Icon name={online ? "wifi" : "offline"} size={17} />
+                {online ? <span className="sr-only">Online</span> : <span>Offline</span>}
               </span>
               <ViewLink
                 view="settings"
                 hash="account"
-                className={`chip !py-1.5 ${demo || preview ? "chip-accent" : "hover:!text-fg"}`}
+                className={`chip !py-1.5 !min-h-[40px] ${demo || preview ? "chip-accent" : "hover:!text-fg"}`}
                 ariaLabel={`Account: ${preview ? "Interactive preview" : demo ? "Demo mode" : accountLabel}`}
               >
-                <Icon name="user" size={14} />
-                <span className="hidden sm:inline">{preview ? "Interactive preview" : demo ? "Demo mode" : accountLabel}</span>
+                <Icon name="user" size={15} />
+                <span className="hidden xl:inline">{preview ? "Preview" : demo ? "Demo" : accountLabel}</span>
               </ViewLink>
-              <span className="font-display text-lg font-semibold tabular-nums min-w-[5ch] text-right" aria-label="Current time">
-                {now ? formatTime(now, prefs?.clockFormat ?? "auto") : " "}
+              <span className="font-display text-lg font-semibold tabular-nums min-w-[5ch] text-right pl-1.5" aria-label="Current time">
+                {now ? formatTime(now, prefs?.clockFormat ?? "auto") : "\u00a0"}
               </span>
             </div>
           </div>
@@ -141,7 +137,7 @@ export function AppShell({
               >
                 <Icon name={d.icon} size={22} />
                 {d.label}
-                {active === d.id && <span aria-hidden="true" className="absolute bottom-1 w-5 h-0.5 rounded-full bg-accent" />}
+                {active === d.id && <span aria-hidden="true" className="absolute top-1 w-6 h-[3px] rounded-full bg-accent shadow-[0_0_10px_var(--accent)]" />}
               </ViewLink>
             ))}
             <span className="relative sm:hidden flex">

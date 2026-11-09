@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BrandName } from "@/components/BrandMark";
+import { BrandName, DISCLAIMER, Wordmark } from "@/components/BrandMark";
 import { DashboardPreview } from "@/components/DashboardPreview";
 import { ExploreCta } from "@/components/ExploreCta";
 import { Icon, type IconName } from "@/components/Icon";
@@ -16,7 +16,7 @@ const FEATURES: { icon: IconName; title: string; body: string }[] = [
 const FAQ: { q: string; a: string }[] = [
   {
     q: "Is this for use while driving?",
-    a: "No. Command Center is for parked downtime, like charging stops or waiting in a lot. A web page can't read your car's gear or speed, so it can't detect Park. It doesn't try to, and it never unlocks anything while you're moving.",
+    a: "No. CruiseCtrl is for parked downtime, like charging stops or waiting in a lot. A web page can't read your car's gear or speed, so it can't detect Park. It doesn't try to, and it never unlocks anything while you're moving.",
   },
   {
     q: "Which apps will play video or music in my car?",
@@ -24,7 +24,7 @@ const FAQ: { q: string; a: string }[] = [
   },
   {
     q: "Do I need other subscriptions?",
-    a: "Yes, for those services. Netflix, Spotify and the rest are billed separately by them, and you sign in on their own sites. Command Center never asks for or stores those passwords.",
+    a: "Yes, for those services. Netflix, Spotify and the rest are billed separately by them, and you sign in on their own sites. CruiseCtrl never asks for or stores those passwords.",
   },
   {
     q: "What does $10/month include?",
@@ -47,8 +47,8 @@ const FAQ: { q: string; a: string }[] = [
     a: "No. Drive is a screen layout for trip prep: maps, charger links, weather and your day. A web page can't read your car's location, battery, gear or speed. Weather uses a city you choose, or this device's location only if you allow it.",
   },
   {
-    q: "Is this made by Tesla?",
-    a: "No. Command Center is an independent web app and isn't affiliated with or endorsed by Tesla, Inc. or any service in the catalog.",
+    q: "Is CruiseCtrl made by Tesla? Does it control the car?",
+    a: "No to both. CruiseCtrl is an independent web app, not affiliated with or endorsed by Tesla, Inc. or any service in the catalog. Despite the name, it doesn't control the vehicle, its speed or any driving feature, and it doesn't read vehicle data. It's a dashboard for your browser while you're parked.",
   },
 ];
 
@@ -69,18 +69,18 @@ export default function Landing() {
         <section className="mx-auto max-w-7xl px-5 lg:px-8 pt-8 pb-12 grid gap-10">
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] items-end">
             <div className="min-w-0">
-              <p className="chip chip-accent mb-5">Command Center · $10/month</p>
+              <p className="chip chip-accent mb-5">CruiseCtrl · $10/month</p>
               <h1 className="font-display text-5xl md:text-7xl font-semibold leading-[1.02] [text-wrap:balance]">
-                Your Tesla. <span className="text-accent">Your Command Center.</span>
+                Your parked time. <span className="bg-gradient-to-r from-accent to-violet bg-clip-text text-transparent">Upgraded.</span>
               </h1>
               <p className="text-xl text-muted mt-5 max-w-xl">
-                Entertainment, AI, productivity and everyday essentials in one personalized dashboard.
+                Streaming, music, AI and everyday essentials in one personalized dashboard for your car&rsquo;s browser, made for charging stops and time spent parked.
               </p>
             </div>
             <div className="flex flex-col gap-3 lg:items-end">
               <div className="flex flex-wrap gap-3">
                 <ExploreCta className="btn btn-primary text-lg px-6" />
-                <Link href="/start" className="btn text-lg px-6">Get Command Center · $10/month</Link>
+                <Link href="/start" className="btn text-lg px-6">Get CruiseCtrl · $10/month</Link>
               </div>
               <p className="text-sm text-muted lg:text-right max-w-sm">
                 The preview below is the real dashboard. Try it, no account needed. Designed for use while parked.
@@ -137,7 +137,7 @@ export default function Landing() {
               </div>
             </div>
             <div className="card p-8">
-              <p className="text-muted font-medium">Command Center</p>
+              <p className="font-medium"><Wordmark className="text-lg text-fg" /></p>
               <p className="mt-2"><span className="font-display text-6xl font-semibold">$10</span><span className="text-muted text-xl">/month</span></p>
               <ul className="mt-6 space-y-3">
                 {["Watch, Listen, Work and Drive modes", "Customizable widgets: weather, markets, calendar and more", "Account sync for apps, modes and settings", "Secure phone-to-car pairing", "Focus timer, notes and checklist", "Cancel anytime in Stripe's portal"].map((x) => (
@@ -176,7 +176,7 @@ export default function Landing() {
 
       <footer className="border-t border-line">
         <div className="mx-auto max-w-7xl px-5 lg:px-8 py-8 text-sm text-muted flex flex-wrap gap-x-6 gap-y-2">
-          <span>Independent app. Not affiliated with or endorsed by Tesla, Inc.</span>
+          <span className="max-w-2xl">{DISCLAIMER}</span>
           <span>Third-party names and logos belong to their owners and don&rsquo;t imply endorsement.</span>
         </div>
       </footer>

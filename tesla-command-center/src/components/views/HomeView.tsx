@@ -1,17 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { PRESETS, MAX_FAVORITES, type PresetId } from "@/lib/presets";
+import { PRESETS, MAX_FAVORITES } from "@/lib/presets";
 import { moveItem, moveItemTo } from "@/lib/prefs";
 import { track, trackOnce } from "@/lib/analytics";
 import { useNow } from "@/hooks/useBrowser";
 import { usePrefs } from "../PrefsProvider";
-import { Icon, type IconName } from "../Icon";
+import { Icon } from "../Icon";
+import { ModeSelector, MODE_ICON } from "../ModeSelector";
 import { ViewLink } from "../Nav";
 import { AppTile, BrandArt, recordLaunch, resolveService, type ResolvedService } from "../ServiceTile";
 import { WidgetSidebar } from "../widgets/WidgetSidebar";
 
-const MODE_ICON: Record<PresetId, IconName> = { watch: "tv", listen: "headphones", focus: "briefcase", drive: "route" };
 
 function greeting(d: Date | null) {
   if (!d) return "Welcome back";
@@ -40,7 +40,6 @@ export function HomeView() {
     setAnnounce(`${name} moved to position ${Math.min(Math.max(i + d, 0), ids.length - 1) + 1} of ${ids.length}.`);
   };
   const remove = (i: number) => setList(ids.filter((_, j) => j !== i));
-  const choosePreset = (id: PresetId) => update((p) => ({ ...p, activePreset: id }));
   const onLaunch = (id: string) => {
     update((p) => recordLaunch(p, id));
     if (!preview) trackOnce("first_dashboard_use", { preset });
@@ -49,32 +48,23 @@ export function HomeView() {
 
   return (
     <div className="flex flex-col gap-5 fade-in">
-      <div className="flex flex-wrap items-end gap-x-4 gap-y-3">
-        <div className="mr-auto min-w-0">
-          <p className="eyebrow">{greeting(now)}</p>
-          <h1 className="font-display text-[2rem] sm:text-4xl font-semibold leading-tight mt-1">Your Command Center</h1>
-        </div>
-        <div role="radiogroup" aria-label="Mode" className="seg !grid grid-cols-4 w-full sm:w-auto">
-          {PRESETS.map((p) => (
-            <button key={p.id} role="radio" aria-checked={p.id === preset} onClick={() => choosePreset(p.id)} className="flex items-center justify-center gap-2 !px-2 sm:!px-4 min-w-0">
-              <Icon name={MODE_ICON[p.id]} size={18} className="hidden sm:block shrink-0" />
-              {p.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
+      <ModeSelector className="lg:hidden w-full sm:w-auto sm:self-start" />
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(300px,34%)] items-start">
         <section aria-labelledby="fav-heading" className="min-w-0 flex flex-col gap-4">
-          <div key={`head-${preset}`} className="mode-fade flex items-center gap-3">
+          <div key={`head-${preset}`} className="mode-fade flex items-start gap-3">
             <div className="mr-auto min-w-0 flex-1">
-              <h2 id="fav-heading" className="text-lg font-semibold">{presetMeta.label} apps</h2>
-              <p className="text-sm text-muted">
+              <p className="eyebrow">{greeting(now)} · {presetMeta.label} mode</p>
+              <h1 id="fav-heading" className="font-display text-3xl sm:text-[2.1rem] font-semibold leading-tight mt-1 flex items-center gap-3">
+                <span className="grid place-items-center w-10 h-10 rounded-xl bg-accent-soft text-accent shrink-0" aria-hidden="true">
+                  <Icon name={MODE_ICON[preset]} size={22} />
+                </span>
+                {presetMeta.label}
+              </h1>
+              <p className="text-sm text-muted mt-2">
                 <span className="hidden sm:inline">{presetMeta.blurb} </span>Tiles open each service&rsquo;s own website{ids.some((id) => prefs.launchOverrides[id] === "same-tab") ? " (tiles marked “Opens here” use this tab)" : " in a new tab"}.
-                {presetMeta.parkedUse && <span> For use while parked.</span>}
               </p>
             </div>
-            <button className={`btn btn-sm shrink-0 ${editing ? "btn-primary" : ""}`} aria-pressed={editing} onClick={() => setEditing((e) => !e)}>
+            <button className={`btn btn-sm shrink-0 mt-6 ${editing ? "btn-primary" : ""}`} aria-pressed={editing} onClick={() => setEditing((e) => !e)}>
               <Icon name={editing ? "check" : "edit"} size={18} /> {editing ? "Done" : "Arrange"}
             </button>
           </div>
@@ -160,7 +150,7 @@ export function HomeView() {
             )}
           </div>
           <p className="text-muted text-xs">
-            None of these apps have been tested in a Tesla browser yet. Their accounts and subscriptions are separate from ours, and logos belong to their owners.
+            For use while parked. None of these apps have been tested in a Tesla browser yet; their accounts and subscriptions are separate, and logos belong to their owners.
           </p>
         </section>
 

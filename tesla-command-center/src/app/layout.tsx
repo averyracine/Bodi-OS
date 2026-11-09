@@ -9,13 +9,13 @@ const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope", displa
 const sora = Sora({ subsets: ["latin"], variable: "--font-sora", weight: ["500", "600", "700"], display: "swap" });
 
 export const metadata: Metadata = {
-  title: "Command Center for Tesla",
+  title: { default: "CruiseCtrl · Your parked time. Upgraded.", template: "%s · CruiseCtrl" },
   description:
-    "Entertainment, AI, productivity and everyday essentials in one personalized dashboard for your car's browser. $10/month.",
+    "CruiseCtrl: your parked time, upgraded. An independent dashboard for your car's browser while parked, with streaming, music, AI and productivity apps, widgets and modes. $10/month. Not affiliated with Tesla; doesn't control the vehicle.",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#080b10",
+  themeColor: "#08090e",
   colorScheme: "dark",
 };
 

@@ -12,8 +12,8 @@ import { Icon } from "../Icon";
 import { WatchlistEditor } from "../markets/WatchlistEditor";
 
 const THEMES: { id: Theme; label: string; swatch: string[] }[] = [
-  { id: "graphite", label: "Graphite", swatch: ["#14171c", "#222730", "#52cfe4"] },
-  { id: "midnight", label: "Midnight", swatch: ["#0f1424", "#1c2339", "#6fc8ff"] },
+  { id: "graphite", label: "Cockpit", swatch: ["#08090e", "#1a2438", "#22d3ee"] },
+  { id: "midnight", label: "Midnight", swatch: ["#050714", "#1a2350", "#a594ff"] },
   { id: "contrast", label: "High contrast", swatch: ["#000", "#1d1d1d", "#7ff3ff"] },
 ];
 
@@ -43,7 +43,7 @@ export function SettingsView() {
     const blob = new Blob([JSON.stringify(prefs, null, 2)], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = "command-center-preferences.json";
+    a.download = "cruisectrl-preferences.json";
     a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
     setMsg({ kind: "ok", text: "Preferences exported." });
@@ -107,10 +107,10 @@ export function SettingsView() {
             className="btn btn-sm mt-3"
             onClick={() => {
               update((p) => ({ ...p, presets: { ...p.presets, [p.activePreset]: [...DEFAULT_PRESET_FAVORITES[p.activePreset]] } }));
-              setMsg({ kind: "ok", text: "Preset favorites restored." });
+              setMsg({ kind: "ok", text: "Default apps restored for this mode." });
             }}
           >
-            <Icon name="reset" size={18} /> Restore default favorites for this preset
+            <Icon name="reset" size={18} /> Restore default apps for this mode
           </button>
         </Section>
 

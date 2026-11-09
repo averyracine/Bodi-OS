@@ -30,7 +30,7 @@ async function noHorizontalScroll(page) {
     await page.goto(`${BASE}/`);
     await page.getByRole("button", { name: "No thanks" }).click();
     await page.getByRole("region", { name: "Interactive dashboard preview" }).getByRole("list", { name: "Watch favorites" }).waitFor();
-    check(`landing headline @${w}x${h}`, await visible(page.getByRole("heading", { name: "Your Tesla. Your Command Center." })));
+    check(`landing headline @${w}x${h}`, await visible(page.getByRole("heading", { name: "Your parked time. Upgraded." })));
     check(`landing no horizontal scroll @${w}x${h}`, await noHorizontalScroll(page));
     await page.screenshot({ path: `${SHOTS}/landing-${w}x${h}.png` });
 
@@ -232,7 +232,7 @@ async function noHorizontalScroll(page) {
   await page.reload();
   check("Drive mode persists across reload", await visible(page.getByRole("list", { name: "Drive favorites" })));
   await page.getByRole("radio", { name: "Work" }).click();
-  check("switching modes leaves one apps heading", (await page.locator("#fav-heading").count()) === 1 && (await page.locator("#fav-heading").innerText()) === "Work apps");
+  check("switching modes leaves one apps heading", (await page.locator("#fav-heading").count()) === 1 && (await page.locator("#fav-heading").innerText()).trim() === "Work");
   check("Work mode icons are all brand logos", (await iconKinds(page.getByRole("list", { name: "Work favorites" }))).every((i) => i.kind === "brand"));
   check("Work mode shows AI apps", (await page.getByRole("list", { name: "Work favorites" }).locator("a").first().getAttribute("href")) === "https://chatgpt.com/");
 
@@ -319,6 +319,15 @@ async function noHorizontalScroll(page) {
   await page.getByRole("radio", { name: "Drive" }).click();
   check("v1 data gains default Drive apps", (await page.getByRole("list", { name: "Drive favorites" }).locator("li").count()) === 6);
 
+  // Brand: no leftover product names anywhere in the app.
+  for (const path of ["/", "/app", "/app/library", "/app/focus", "/app/discover", "/app/settings", "/start", "/login", "/pair", "/pair/car"]) {
+    await page.goto(`${BASE}${path}`);
+    await page.locator("h1").first().waitFor();
+    const txt = (await page.locator("body").innerText()) + " " + (await page.title());
+    if (/Command Center|FSDash/i.test(txt)) check(`no old brand name on ${path}`, false, path);
+  }
+  check("CruiseCtrl title and wordmark present", /CruiseCtrl/.test(await page.title()) && (await page.getByRole("link", { name: "CruiseCtrl home" }).count()) > 0);
+
   check("no external image or font requests", externalAssets.length === 0, externalAssets.slice(0, 3).join(" "));
   check("no uncaught page errors", errors.length === 0, errors.join(" | "));
   await ctx.close();
@@ -343,6 +352,7 @@ async function noHorizontalScroll(page) {
   await mdp.getByRole("button", { name: "No thanks" }).click().catch(() => {});
   await mdp.getByRole("list", { name: "Watch favorites" }).waitFor();
   check("mobile dashboard no horizontal scroll", await noHorizontalScroll(mdp));
+  check("mobile header fits the screen", await mdp.evaluate(() => document.querySelector("header").scrollWidth <= window.innerWidth));
   check("mobile shows brand logos", (await mdp.getByRole("list", { name: "Watch favorites" }).locator("[data-icon-kind=brand]").count()) === 8);
   await mdp.screenshot({ path: `${SHOTS}/app-home-390x844.png` });
   await mdp.screenshot({ path: `${SHOTS}/app-home-390x844-full.png`, fullPage: true });

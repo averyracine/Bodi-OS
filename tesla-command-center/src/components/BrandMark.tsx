@@ -1,27 +1,36 @@
-/** Original mark: a rounded "command" bracket around a dot. Not derived from any vehicle brand. */
-export function BrandMark({ size = 32 }: { size?: number }) {
+/**
+ * CruiseCtrl brand. Original mark: a keycap with a control caret (⌃).
+ * Typographic only; it doesn't reference any vehicle maker's logo.
+ */
+export function BrandMark({ size = 30 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden="true">
-      <defs>
-        <linearGradient id="tcc-g" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="var(--accent)" />
-          <stop offset="1" stopColor="color-mix(in srgb, var(--accent) 40%, #1d6b7a)" />
-        </linearGradient>
-      </defs>
-      <rect x="1" y="1" width="30" height="30" rx="9" fill="var(--surface-3)" stroke="var(--line)" />
-      <path d="M12 9H9.5A1.5 1.5 0 0 0 8 10.5v11A1.5 1.5 0 0 0 9.5 23H12M20 9h2.5a1.5 1.5 0 0 1 1.5 1.5v11a1.5 1.5 0 0 1-1.5 1.5H20" fill="none" stroke="url(#tcc-g)" strokeWidth="2.4" strokeLinecap="round" />
-      <circle cx="16" cy="16" r="2.6" fill="var(--accent)" />
+    <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden="true" className="shrink-0">
+      <rect x="1.5" y="1.5" width="29" height="29" rx="8" style={{ fill: "var(--surface-2)", stroke: "var(--line-strong)" }} />
+      <rect x="1.5" y="26" width="29" height="4.5" rx="2.25" style={{ fill: "var(--surface-3)" }} opacity="0.7" />
+      <path d="M10 17.5 16 11.5l6 6" fill="none" style={{ stroke: "var(--accent)" }} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
+  );
+}
+
+/** "CRUISE CTRL" wordmark; CTRL sits in a subtle keycap. */
+export function Wordmark({ className = "" }: { className?: string }) {
+  return (
+    <span className={`inline-flex items-center gap-[0.32em] font-display font-bold leading-none tracking-[0.06em] ${className}`} aria-label="CruiseCtrl">
+      <span aria-hidden="true">CRUISE</span>
+      <span aria-hidden="true" className="keycap">CTRL</span>
+    </span>
   );
 }
 
 export function BrandName({ compact = false }: { compact?: boolean }) {
   return (
-    <span className="flex items-center gap-2.5 font-semibold tracking-tight">
+    <span className="flex items-center gap-2.5">
       <BrandMark size={compact ? 28 : 32} />
-      <span className={`font-display ${compact ? "text-base" : "text-lg"}`}>
-        Command Center<span className="text-muted font-normal"> for Tesla</span>
-      </span>
+      <Wordmark className={compact ? "text-[1.02rem]" : "text-[1.15rem]"} />
     </span>
   );
 }
+
+/** Short independent-product disclaimer used on every public page. */
+export const DISCLAIMER =
+  "CruiseCtrl is an independent dashboard for use while parked. It isn't affiliated with or endorsed by Tesla, and it doesn't control your vehicle or any of its driving features.";

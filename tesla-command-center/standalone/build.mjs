@@ -33,12 +33,12 @@ const cssFiles = readdirSync(cssDir).filter((f) => f.endsWith(".css"));
 if (cssFiles.length === 0) throw new Error("Run `npm run build` first; the compiled Tailwind CSS is reused.");
 const css = cssFiles.map((f) => readFileSync(path.join(cssDir, f), "utf8")).join("\n").replace(/<\/style/gi, "<\\/style");
 
-const html = `<title>Command Center for Tesla</title>
-<meta name="description" content="Browser-only demo of the parked-use dashboard.">
+const html = `<title>CruiseCtrl</title>
+<meta name="description" content="CruiseCtrl: your parked time, upgraded. Independent parked-use dashboard, browser-only demo.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&family=Sora:wght@500..700&display=swap">
 <style>
 :root { color-scheme: dark; --font-manrope: "Manrope"; --font-sora: "Sora"; }
-html, body { background: #080b10; color: #f2f5f9; }
+html, body { background: #08090e; color: #f3f6fb; }
 ${css}
 </style>
 <div id="root"></div>
