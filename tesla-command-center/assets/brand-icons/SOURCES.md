@@ -6,13 +6,13 @@ These logos identify the third-party service a tile links to. They remain tradem
 
 | File | Source | Notes |
 | --- | --- | --- |
-| youtube, netflix, twitch, plex, spotify, apple-music, youtube-music, geforce-now (NVIDIA mark), notion, hbo-max, paramount-plus, apple-tv, claude, perplexity, waze, supercharger-map (Tesla mark) | [Simple Icons](https://simpleicons.org) 16.37.0, CC0-1.0 SVG data | Single-colour paths; colour set to the brand colour |
+| youtube, netflix, twitch, plex, spotify, apple-music, youtube-music, geforce-now (NVIDIA mark), notion, hbo-max, paramount-plus, apple-tv, claude, perplexity, waze, supercharger-map (Tesla mark) | [Simple Icons](https://simpleicons.org) 16.37.0, CC0-1.0 SVG data | Single-colour paths; colour set to the brand colour (Twitch white, for its purple tile) |
 | gemini | Simple Icons `googlegemini` path | Gradient fill approximates Google's Gemini spark colours |
 | chatgpt | Wikimedia Commons, `OpenAI_logo_2025_(symbol).svg` | |
 | espn | Wikimedia Commons, `ESPN_wordmark.svg` | |
 | prime-video | Wikimedia Commons, `Amazon_Prime_Video_logo_(2024).svg` | |
-| disney-plus | Wikimedia Commons, `Disney+_logo.svg` | |
-| xbox-cloud | Wikimedia Commons, `Xbox_one_logo.svg` | viewBox added |
+| disney-plus | Wikimedia Commons, `Disney+_logo.svg` | Wordmark recoloured white for the dark tile (Disney+ uses a white mark on navy) |
+| xbox-cloud | Wikimedia Commons, `Xbox_one_logo.svg` | viewBox added; recoloured white for use on Xbox green |
 | gmail, google-maps, google-calendar, google-drive, google-docs | Wikimedia Commons 2020 icon files | Google Docs: inline styles converted to fill attributes |
 
 Not available as a freely published SVG: **PlugShare**. Its tile uses the monogram fallback.

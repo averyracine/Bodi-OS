@@ -130,6 +130,44 @@ body {
 .app-card:active { transform: translateY(0) scale(0.98); border-color: var(--accent); }
 .app-card .launch-hint { opacity: 0.55; transition: opacity 0.18s ease, transform 0.18s ease; }
 .app-card:hover .launch-hint, .app-card:focus-visible .launch-hint { opacity: 1; transform: translate(1px, -1px); color: var(--text); }
+/* Branded app tiles ------------------------------------------------------- */
+.brand-tile {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 16px;
+  overflow: hidden;
+  container-type: inline-size;
+  box-shadow: 0 10px 24px -14px rgba(0, 0, 0, 0.9), inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.brand-tile-light { box-shadow: 0 10px 24px -14px rgba(0, 0, 0, 0.9), inset 0 0 0 1px rgba(0, 0, 0, 0.05); }
+.brand-tile img { object-fit: contain; width: auto; display: block; pointer-events: none; user-select: none; }
+.brand-tile-fallback {
+  background: linear-gradient(150deg, color-mix(in srgb, var(--tint) 58%, #0b0f14), color-mix(in srgb, var(--tint) 22%, #080b10));
+}
+.brand-tile-initials { font-family: var(--font-display); font-weight: 700; font-size: 30cqw; line-height: 1; color: #fff; letter-spacing: -0.02em; }
+.app-tile { display: flex; flex-direction: column; gap: 0.5rem; border-radius: 18px; outline: none; -webkit-tap-highlight-color: transparent; }
+.app-tile:hover .brand-tile { transform: translateY(-2px); box-shadow: 0 16px 30px -14px rgba(0, 0, 0, 0.95), inset 0 0 0 1px rgba(255, 255, 255, 0.14); }
+.app-tile:active .brand-tile { transform: scale(0.97); }
+.app-tile:focus-visible .brand-tile { outline: 3px solid var(--accent); outline-offset: 3px; }
+.app-tile-label { font-size: 0.9rem; font-weight: 600; line-height: 1.2; text-align: center; color: color-mix(in srgb, var(--text) 88%, transparent); padding: 0 0.15rem; overflow-wrap: anywhere; }
+.app-tile-compact { gap: 0.35rem; }
+.app-tile-compact .brand-tile { border-radius: 12px; }
+.app-tile-compact .app-tile-label { font-size: 0.75rem; font-weight: 500; color: var(--muted); }
+.tile-hint {
+  position: absolute; top: 7px; right: 7px; display: grid; place-items: center;
+  width: 22px; height: 22px; border-radius: 999px; color: #fff;
+  background: rgba(0, 0, 0, 0.32); opacity: 0.45; transition: opacity 0.18s ease;
+}
+.app-tile-compact .tile-hint { width: 18px; height: 18px; top: 5px; right: 5px; opacity: 0; }
+.app-tile:hover .tile-hint, .app-tile:focus-visible .tile-hint { opacity: 1; }
+.tile-badge {
+  position: absolute; left: 7px; bottom: 7px; padding: 2px 7px; border-radius: 999px;
+  font-size: 10px; font-weight: 700; color: #fff; background: rgba(0, 0, 0, 0.55);
+}
 .brand-icon {
   display: grid;
   place-items: center;

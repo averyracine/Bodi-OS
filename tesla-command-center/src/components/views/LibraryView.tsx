@@ -8,7 +8,7 @@ import { validateCustomUrl } from "@/lib/url";
 import { track } from "@/lib/analytics";
 import { usePrefs } from "../PrefsProvider";
 import { Icon } from "../Icon";
-import { LaunchLink, recordLaunch, resolveService, AppIcon } from "../ServiceTile";
+import { BrandArt, LaunchLink, recordLaunch, resolveService } from "../ServiceTile";
 
 type Filter = "all" | Category;
 const FILTERS: Filter[] = ["all", "video", "music", "ai", "productivity", "games", "utilities", "custom"];
@@ -165,7 +165,7 @@ export function LibraryView() {
             return (
               <li key={row.id} className="card p-4 flex flex-col gap-3" style={{ ["--tint" as string]: svc.accent }}>
                 <div className="flex items-start gap-3">
-                  <AppIcon id={row.id} name={row.name} hue={svc.hue} accent={svc.accent} size={56} />
+                  <BrandArt id={row.id} name={row.name} accent={svc.accent} className="!w-[92px] shrink-0 !rounded-xl" />
                   <div className="min-w-0 flex-1">
                     <p className="font-semibold text-lg leading-tight break-words">{row.name}</p>
                     <p className="text-muted text-sm">{row.blurb}</p>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type CSSProperties, type ReactNode } from "react";
-import { CATALOG_BY_ID, CATEGORY_LABELS, domainOf, monogram, type Category, type LaunchBehavior } from "@/lib/catalog";
+import { CATALOG_BY_ID, domainOf, monogram, type Category, type LaunchBehavior } from "@/lib/catalog";
 import type { Preferences } from "@/lib/prefs";
 import { MAX_RECENTS } from "@/lib/prefs";
 import { BRAND_TILES } from "@/lib/brand-icons";
@@ -53,42 +53,38 @@ export function recordLaunch(prefs: Preferences, id: string): Preferences {
   return { ...prefs, recents };
 }
 
-/** Initials on a tint of the accent colour. Used only when no logo is available. */
-export function Monogram({ name, hue, size = 64, accent }: { name: string; hue: number; size?: number; accent?: string }) {
-  return (
-    <span
-      className="app-icon"
-      data-app-icon
-      data-icon-kind="fallback"
-      style={{ ["--tint" as string]: accent ?? `hsl(${hue} 70% 62%)`, width: size, height: size, fontSize: size * 0.34, borderRadius: size * 0.26 }}
-    >
-      {monogram(name)}
-    </span>
-  );
-}
-
 /**
- * The one app icon used everywhere (favorites, Quick Launch, Library, Discover,
- * Recently opened, Arrange). Bundled brand logo when we have one; otherwise,
- * or if the image ever fails, the monogram. Never renders blank.
+ * The branded 4:3 tile used in every app grid. Brand background edge to edge,
+ * logo centred at its own proportions and sized per app (see brand-icons.ts).
+ * Initials only for custom links, apps without a logo, or a failed image.
  */
-export function AppIcon({ id, name, hue, size = 56, accent }: { id: string; name: string; hue: number; size?: number; accent?: string }) {
+export function BrandArt({ id, name, accent, className = "" }: { id: string; name: string; accent: string; className?: string }) {
   const [failed, setFailed] = useState(false);
   const tile = LOGOS_ON ? BRAND_TILES[id] : undefined;
   const src = tile ? BRAND_ICON_DATA[id] : undefined;
-  const tint = accent ?? CATALOG_BY_ID.get(id)?.accent;
-  if (!tile || !src || failed) return <Monogram name={name} hue={hue} size={size} accent={tint} />;
-  const pct = `${Math.round(tile.scale * 100)}%`;
+  if (!tile || !src || failed) {
+    return (
+      <span
+        aria-hidden="true"
+        data-app-icon
+        data-icon-kind="fallback"
+        className={`brand-tile brand-tile-fallback ${className}`}
+        style={{ ["--tint" as string]: accent }}
+      >
+        <span className="brand-tile-initials">{monogram(name)}</span>
+      </span>
+    );
+  }
   return (
-    <span
-      aria-hidden="true"
-      data-app-icon
-      data-icon-kind="brand"
-      className={`brand-icon ${tile.light ? "brand-icon-light" : ""}`}
-      style={{ width: size, height: size, borderRadius: size * 0.26, background: tile.bg }}
-    >
+    <span aria-hidden="true" data-app-icon data-icon-kind="brand" className={`brand-tile ${tile.light ? "brand-tile-light" : ""} ${className}`} style={{ background: tile.bg }}>
       {/* eslint-disable-next-line @next/next/no-img-element -- bundled data: URI, nothing to optimise */}
-      <img src={src} alt="" draggable={false} onError={() => setFailed(true)} style={{ width: pct, height: pct }} />
+      <img
+        src={src}
+        alt=""
+        draggable={false}
+        onError={() => setFailed(true)}
+        style={{ height: `${tile.h * 100}%`, maxWidth: `${(tile.maxW ?? 0.78) * 100}%` }}
+      />
     </span>
   );
 }
@@ -154,25 +150,19 @@ export function LaunchLink({
   );
 }
 
-/** Launcher tile: the logo leads, the name stays visible, a subtle arrow marks it as a launch. */
-export function AppCard({ svc, onLaunch, starred = false, compact = false }: { svc: ResolvedService; onLaunch?: () => void; starred?: boolean; compact?: boolean }) {
+/**
+ * Launcher tile: the branded tile is the target, the name sits underneath.
+ * The whole thing is one link, so the touch target covers tile and label.
+ */
+export function AppTile({ svc, onLaunch, compact = false }: { svc: ResolvedService; onLaunch?: () => void; compact?: boolean }) {
   return (
-    <LaunchLink service={svc} onLaunch={onLaunch} className={`app-card group ${compact ? "!min-h-[120px]" : ""}`} style={{ ["--tint" as string]: svc.accent }}>
-      <span className="flex items-start justify-between gap-2">
-        <AppIcon id={svc.id} name={svc.name} hue={svc.hue} accent={svc.accent} size={compact ? 48 : 64} />
-        <span className="flex items-center gap-1.5 text-muted">
-          {starred && <Icon name="star" size={14} className="fill-current text-accent" />}
-          <span className="launch-hint grid place-items-center w-8 h-8 rounded-full border border-line">
-            <Icon name="external" size={15} />
-          </span>
-        </span>
+    <LaunchLink service={svc} onLaunch={onLaunch} className={`app-tile group ${compact ? "app-tile-compact" : ""}`}>
+      <span className="relative block">
+        <BrandArt id={svc.id} name={svc.name} accent={svc.accent} />
+        <span className="tile-hint" aria-hidden="true"><Icon name="external" size={compact ? 11 : 13} /></span>
+        {svc.launch === "same-tab" && !compact && <span className="tile-badge">Opens here</span>}
       </span>
-      <span className="mt-auto min-w-0">
-        <span className="block text-[1.05rem] font-semibold leading-tight break-words">{svc.name}</span>
-        <span className="block text-xs text-muted mt-0.5">
-          {CATEGORY_LABELS[svc.category]} · {svc.launch === "new-tab" ? "new tab" : "this tab"}
-        </span>
-      </span>
+      <span className="app-tile-label">{svc.name}</span>
     </LaunchLink>
   );
 }

@@ -6,7 +6,7 @@ import { PRESETS, type PresetId } from "@/lib/presets";
 import { usePrefs } from "../PrefsProvider";
 import { Icon, type IconName } from "../Icon";
 import { ViewLink } from "../Nav";
-import { AppCard, recordLaunch, resolveService, type ResolvedService } from "../ServiceTile";
+import { AppTile, recordLaunch, resolveService, type ResolvedService } from "../ServiceTile";
 
 interface Setup {
   id: string;
@@ -86,8 +86,8 @@ export function DiscoverView() {
 
       <section aria-labelledby="spot-h" className="flex flex-col gap-3">
         <h2 id="spot-h" className="text-lg font-semibold">Worth a look</h2>
-        <ul className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          {spotlight.map((svc) => <li key={svc.id}><AppCard svc={svc} onLaunch={() => update((p) => recordLaunch(p, svc.id))} /></li>)}
+        <ul className="grid grid-cols-2 sm:grid-cols-4 gap-x-3 gap-y-4">
+          {spotlight.map((svc) => <li key={svc.id}><AppTile svc={svc} onLaunch={() => update((p) => recordLaunch(p, svc.id))} /></li>)}
         </ul>
       </section>
 

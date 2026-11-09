@@ -8,7 +8,7 @@ import { useNow } from "@/hooks/useBrowser";
 import { usePrefs } from "../PrefsProvider";
 import { Icon, type IconName } from "../Icon";
 import { ViewLink } from "../Nav";
-import { AppCard, LaunchLink, recordLaunch, resolveService, AppIcon, type ResolvedService } from "../ServiceTile";
+import { AppTile, BrandArt, recordLaunch, resolveService, type ResolvedService } from "../ServiceTile";
 import { WidgetSidebar } from "../widgets/WidgetSidebar";
 
 const MODE_ICON: Record<PresetId, IconName> = { watch: "tv", listen: "headphones", focus: "briefcase", drive: "route" };
@@ -66,15 +66,15 @@ export function HomeView() {
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(300px,34%)] items-start">
         <section aria-labelledby="fav-heading" className="min-w-0 flex flex-col gap-4">
-          <div key={preset} className="mode-fade flex flex-wrap items-center gap-3">
-            <div className="mr-auto min-w-0">
+          <div key={`head-${preset}`} className="mode-fade flex items-center gap-3">
+            <div className="mr-auto min-w-0 flex-1">
               <h2 id="fav-heading" className="text-lg font-semibold">{presetMeta.label} apps</h2>
               <p className="text-sm text-muted">
-                {presetMeta.blurb}
-                {presetMeta.parkedUse && <span className="text-muted"> For use while parked.</span>}
+                <span className="hidden sm:inline">{presetMeta.blurb} </span>Tiles open each service&rsquo;s own website{ids.some((id) => prefs.launchOverrides[id] === "same-tab") ? " (tiles marked “Opens here” use this tab)" : " in a new tab"}.
+                {presetMeta.parkedUse && <span> For use while parked.</span>}
               </p>
             </div>
-            <button className={`btn btn-sm ${editing ? "btn-primary" : ""}`} aria-pressed={editing} onClick={() => setEditing((e) => !e)}>
+            <button className={`btn btn-sm shrink-0 ${editing ? "btn-primary" : ""}`} aria-pressed={editing} onClick={() => setEditing((e) => !e)}>
               <Icon name={editing ? "check" : "edit"} size={18} /> {editing ? "Done" : "Arrange"}
             </button>
           </div>
@@ -88,7 +88,7 @@ export function HomeView() {
               <ViewLink view="library" className="btn btn-primary mt-4"><Icon name="grid" size={20} /> Browse the library</ViewLink>
             </div>
           ) : (
-            <ol key={preset} className="mode-fade grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4" aria-label={`${presetMeta.label} favorites`}>
+            <ol key={`grid-${preset}`} className="mode-fade grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-x-3 gap-y-4 sm:gap-x-4 sm:gap-y-5" aria-label={`${presetMeta.label} favorites`}>
               {ids.map((id, i) => {
                 const svc = resolveService(id, prefs);
                 const dragProps = editing
@@ -106,32 +106,33 @@ export function HomeView() {
                 return (
                   <li key={id} {...dragProps} className={`relative ${dragFrom === i ? "opacity-50" : ""}`}>
                     {!svc ? (
-                      <div className="card p-4 h-full min-h-[148px] flex flex-col gap-2">
+                      <div className="card p-4 h-full flex flex-col gap-2 aspect-[4/3]">
                         <p className="font-semibold">Unavailable</p>
                         <p className="text-sm text-muted">No longer in the catalog or your links.</p>
                         <button className="btn btn-sm btn-danger mt-auto self-start" onClick={() => remove(i)}>Remove</button>
                       </div>
                     ) : editing ? (
-                      <div className="card p-3 h-full min-h-[148px] flex flex-col gap-3 border-dashed cursor-grab">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <AppIcon id={svc.id} name={svc.name} hue={svc.hue} accent={svc.accent} size={44} />
-                          <span className="font-semibold leading-tight break-words min-w-0">{svc.name}</span>
-                        </div>
-                        <div className="mt-auto flex gap-2">
-                          <button className="btn btn-sm" aria-label={`Move ${svc.name} earlier`} disabled={i === 0} onClick={() => move(i, -1)}><Icon name="left" size={20} /></button>
-                          <button className="btn btn-sm" aria-label={`Move ${svc.name} later`} disabled={i === ids.length - 1} onClick={() => move(i, 1)}><Icon name="right" size={20} /></button>
-                          <button className="btn btn-sm btn-danger ml-auto" aria-label={`Remove ${svc.name} from ${presetMeta.label}`} onClick={() => remove(i)}><Icon name="x" size={20} /></button>
+                      <div className="flex flex-col gap-2 cursor-grab" aria-label={`${svc.name}, position ${i + 1}`}>
+                        <span className="relative block">
+                          <BrandArt id={svc.id} name={svc.name} accent={svc.accent} className="opacity-90 outline-2 outline-dashed outline-offset-2 outline-line-strong" />
+                          <Icon name="drag" size={18} className="absolute top-2 left-2 text-white/80 drop-shadow" />
+                        </span>
+                        <span className="app-tile-label">{svc.name}</span>
+                        <div className="flex gap-1.5 justify-center">
+                          <button className="btn btn-sm !px-2" aria-label={`Move ${svc.name} earlier`} disabled={i === 0} onClick={() => move(i, -1)}><Icon name="left" size={20} /></button>
+                          <button className="btn btn-sm !px-2" aria-label={`Move ${svc.name} later`} disabled={i === ids.length - 1} onClick={() => move(i, 1)}><Icon name="right" size={20} /></button>
+                          <button className="btn btn-sm btn-danger !px-2" aria-label={`Remove ${svc.name} from ${presetMeta.label}`} onClick={() => remove(i)}><Icon name="x" size={20} /></button>
                         </div>
                       </div>
                     ) : (
-                      <AppCard svc={svc} onLaunch={() => onLaunch(id)} />
+                      <AppTile svc={svc} onLaunch={() => onLaunch(id)} />
                     )}
                   </li>
                 );
               })}
               {editing && ids.length < MAX_FAVORITES && (
                 <li className="list-none">
-                  <ViewLink view="library" className="card border-dashed h-full min-h-[148px] flex flex-col items-center justify-center gap-2 text-muted hover:text-fg">
+                  <ViewLink view="library" className="card border-dashed w-full aspect-[4/3] flex flex-col items-center justify-center gap-2 text-muted hover:text-fg">
                     <Icon name="plus" size={24} /> Add apps
                   </ViewLink>
                 </li>
@@ -149,20 +150,17 @@ export function HomeView() {
             {recents.length === 0 ? (
               <p className="text-muted text-sm mt-2">Apps you open will show up here.</p>
             ) : (
-              <ul className="mt-3 flex flex-wrap gap-2">
+              <ul className="mt-3 grid grid-cols-3 sm:grid-cols-6 gap-3" aria-label="Recently opened apps">
                 {recents.map((svc) => (
                   <li key={svc.id}>
-                    <LaunchLink service={svc} onLaunch={() => onLaunch(svc.id)} className="flex items-center gap-2 min-h-[56px] pl-2 pr-4 rounded-2xl border border-line bg-surface-2/60 hover:bg-surface-3">
-                      <AppIcon id={svc.id} name={svc.name} hue={svc.hue} accent={svc.accent} size={36} />
-                      <span className="font-medium">{svc.name}</span>
-                    </LaunchLink>
+                    <AppTile svc={svc} compact onLaunch={() => onLaunch(svc.id)} />
                   </li>
                 ))}
               </ul>
             )}
           </div>
           <p className="text-muted text-xs">
-            Apps open each service&rsquo;s own website. None have been tested in a Tesla browser yet, and their accounts and subscriptions are separate from ours.
+            None of these apps have been tested in a Tesla browser yet. Their accounts and subscriptions are separate from ours, and logos belong to their owners.
           </p>
         </section>
 

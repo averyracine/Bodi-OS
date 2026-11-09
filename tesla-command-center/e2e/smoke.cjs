@@ -232,6 +232,7 @@ async function noHorizontalScroll(page) {
   await page.reload();
   check("Drive mode persists across reload", await visible(page.getByRole("list", { name: "Drive favorites" })));
   await page.getByRole("radio", { name: "Work" }).click();
+  check("switching modes leaves one apps heading", (await page.locator("#fav-heading").count()) === 1 && (await page.locator("#fav-heading").innerText()) === "Work apps");
   check("Work mode icons are all brand logos", (await iconKinds(page.getByRole("list", { name: "Work favorites" }))).every((i) => i.kind === "brand"));
   check("Work mode shows AI apps", (await page.getByRole("list", { name: "Work favorites" }).locator("a").first().getAttribute("href")) === "https://chatgpt.com/");
 
@@ -328,7 +329,7 @@ async function noHorizontalScroll(page) {
   await rp.goto(`${BASE}/app`);
   await rp.getByRole("list", { name: "Watch favorites" }).waitFor();
   const motion = await rp.evaluate(() => {
-    const card = document.querySelector(".app-card");
+    const card = document.querySelector(".brand-tile");
     const fade = document.querySelector(".fade-in");
     return getComputedStyle(card).transitionDuration.split(",").every((d) => parseFloat(d) === 0) && getComputedStyle(fade).animationName === "none";
   });

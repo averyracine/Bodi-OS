@@ -6,7 +6,7 @@ import { Timer } from "../widgets/Timer";
 import { Scratchpad } from "../widgets/Scratchpad";
 import { Checklist } from "../widgets/Checklist";
 import { ViewLink } from "../Nav";
-import { AppCard, recordLaunch, resolveService, type ResolvedService } from "../ServiceTile";
+import { AppTile, recordLaunch, resolveService, type ResolvedService } from "../ServiceTile";
 import { Icon } from "../Icon";
 
 type Widget = "timer" | "notes" | "checklist";
@@ -76,9 +76,9 @@ export function FocusView() {
         {workApps.length === 0 ? (
           <p className="text-sm text-muted">Add apps to your Work mode in the Library.</p>
         ) : (
-          <ul className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <ul className="grid grid-cols-3 sm:grid-cols-4 gap-x-3 gap-y-4">
             {workApps.map((svc) => (
-              <li key={svc.id}><AppCard svc={svc} compact onLaunch={() => update((p) => recordLaunch(p, svc.id))} /></li>
+              <li key={svc.id}><AppTile svc={svc} compact onLaunch={() => update((p) => recordLaunch(p, svc.id))} /></li>
             ))}
           </ul>
         )}
