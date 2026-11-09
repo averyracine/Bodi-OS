@@ -9,6 +9,7 @@ import { track } from "@/lib/analytics";
 import { useSession, type SessionInfo } from "@/hooks/useSession";
 import { usePrefs } from "../PrefsProvider";
 import { Icon } from "../Icon";
+import { WatchlistEditor } from "../markets/WatchlistEditor";
 
 const THEMES: { id: Theme; label: string; swatch: string[] }[] = [
   { id: "graphite", label: "Graphite", swatch: ["#14171c", "#222730", "#52cfe4"] },
@@ -111,6 +112,10 @@ export function SettingsView() {
           >
             <Icon name="reset" size={18} /> Restore default favorites for this preset
           </button>
+        </Section>
+
+        <Section id="markets" title="Markets" desc="Your watchlist for the ticker and the Markets card. Quotes are live only when a quote provider is connected; otherwise sample prices are shown and labelled.">
+          <WatchlistEditor />
         </Section>
 
         <Section id="data" title="Your data on this device" desc={preview ? "Preview only. Nothing here is saved." : "Stored in this browser. Notes are never included in exports or sync."}>

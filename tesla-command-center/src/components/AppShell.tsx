@@ -6,6 +6,8 @@ import { BrandName } from "./BrandMark";
 import { Icon, type IconName } from "./Icon";
 import { usePrefs } from "./PrefsProvider";
 import { ViewLink, type ViewId } from "./Nav";
+import { QuotesProvider } from "./markets/QuotesProvider";
+import { TickerBar } from "./markets/TickerBar";
 
 const DOCK: { id: ViewId; label: string; icon: IconName }[] = [
   { id: "home", label: "Home", icon: "home" },
@@ -32,6 +34,7 @@ export function AppShell({
   const now = useNow(15_000);
 
   return (
+    <QuotesProvider>
     <div
       data-theme={prefs?.theme ?? "graphite"}
       data-motion={prefs?.reducedMotion === "on" ? "reduce" : prefs?.reducedMotion === "off" ? "full" : "system"}
@@ -60,6 +63,7 @@ export function AppShell({
           </span>
         </div>
       </header>
+      <TickerBar />
 
       <main id="main" className="flex-1 min-h-0 overflow-y-auto px-5 lg:px-8 pt-5 pb-32">
         {children}
@@ -95,5 +99,6 @@ export function AppShell({
         </ViewLink>
       </nav>
     </div>
+    </QuotesProvider>
   );
 }

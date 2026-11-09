@@ -5,6 +5,7 @@ import { CATALOG_BY_ID, domainOf, monogram, type LaunchBehavior } from "@/lib/ca
 import type { Preferences } from "@/lib/prefs";
 import { MAX_RECENTS } from "@/lib/prefs";
 import { useOnline } from "@/hooks/useBrowser";
+import { BRAND_ART } from "@/lib/brand-icons";
 import { Icon } from "./Icon";
 
 export interface ResolvedService {
@@ -41,6 +42,54 @@ export function Monogram({ name, hue, size = 64 }: { name: string; hue: number; 
   return (
     <span className="tile-mark shrink-0" style={{ ["--h" as string]: hue, width: size, height: size, fontSize: size * 0.34 }}>
       {monogram(name)}
+    </span>
+  );
+}
+
+/** Perceived-brightness check so text on a brand colour stays readable. */
+export function isLight(hex: string): boolean {
+  const n = parseInt(hex.replace("#", ""), 16);
+  const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+  return 0.299 * r + 0.587 * g + 0.114 * b > 170;
+}
+
+/** The service's logo (or brand-colour wordmark) on its own colour; monogram for custom links. */
+export function ServiceArt({ id, name, hue, size = 64, rounded = 16 }: { id: string; name: string; hue: number; size?: number; rounded?: number }) {
+  const art = BRAND_ART[id];
+  if (!art) return <Monogram name={name} hue={hue} size={size} />;
+  return (
+    <span
+      aria-hidden="true"
+      className="grid place-items-center shrink-0 overflow-hidden shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]"
+      style={{ width: size, height: size, background: art.bg, color: art.fg, borderRadius: rounded }}
+    >
+      {art.path ? (
+        <svg viewBox="0 0 24 24" width={size * 0.56} height={size * 0.56} fill="currentColor">
+          <path d={art.path} />
+        </svg>
+      ) : (
+        <BrandWordmark art={art} size={size} />
+      )}
+    </span>
+  );
+}
+
+function BrandWordmark({ art, size }: { art: NonNullable<(typeof BRAND_ART)[string]>; size: number }) {
+  const w = art.wordmark!;
+  const len = w.text.length;
+  return (
+    <span
+      style={{
+        fontSize: size * (len > 6 ? 0.2 : 0.3),
+        fontWeight: w.weight ?? 800,
+        fontStyle: w.italic ? "italic" : undefined,
+        letterSpacing: len > 6 ? "-0.01em" : "0.02em",
+        lineHeight: 1,
+        textAlign: "center",
+        padding: "0 6%",
+      }}
+    >
+      {w.text}
     </span>
   );
 }

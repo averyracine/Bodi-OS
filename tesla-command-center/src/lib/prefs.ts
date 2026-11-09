@@ -1,6 +1,7 @@
 import { CATALOG_BY_ID, type LaunchBehavior } from "./catalog";
 import { DEFAULT_PRESET_FAVORITES, MAX_FAVORITES, type PresetId } from "./presets";
 import { validateCustomUrl } from "./url";
+import { DEFAULT_WATCHLIST, sanitizeWatchlist } from "./markets";
 
 export type Theme = "graphite" | "midnight" | "contrast";
 export type ReducedMotion = "system" | "on" | "off";
@@ -28,6 +29,7 @@ export interface Preferences {
   recents: RecentLaunch[];
   focus: { layout: "single" | "split"; minutes: number };
   analyticsConsent: Consent;
+  markets: { watchlist: string[]; showTicker: boolean };
   updatedAt: number;
 }
 
@@ -52,6 +54,7 @@ export function defaultPreferences(): Preferences {
     recents: [],
     focus: { layout: "single", minutes: 25 },
     analyticsConsent: "unset",
+    markets: { watchlist: [...DEFAULT_WATCHLIST], showTicker: true },
     updatedAt: 0,
   };
 }
@@ -138,6 +141,10 @@ export function sanitizePreferences(input: unknown): Preferences {
       minutes: Math.min(120, Math.max(1, minutes)),
     },
     analyticsConsent: oneOf(input.analyticsConsent, ["unset", "granted", "denied"] as const, d.analyticsConsent),
+    markets: {
+      watchlist: sanitizeWatchlist(isObj(input.markets) ? input.markets.watchlist : undefined),
+      showTicker: isObj(input.markets) && typeof input.markets.showTicker === "boolean" ? input.markets.showTicker : true,
+    },
     updatedAt: typeof input.updatedAt === "number" && Number.isFinite(input.updatedAt) ? input.updatedAt : 0,
   };
 }

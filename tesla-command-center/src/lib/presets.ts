@@ -14,7 +14,7 @@ export const PRESETS: PresetMeta[] = [
 ];
 
 export const DEFAULT_PRESET_FAVORITES: Record<PresetId, string[]> = {
-  watch: ["youtube", "netflix", "disney-plus", "prime-video", "twitch", "plex"],
+  watch: ["youtube", "netflix", "espn", "prime-video", "disney-plus", "hbo-max", "xbox-cloud", "twitch"],
   listen: ["spotify", "apple-music", "youtube-music", "youtube", "plex", "twitch"],
   focus: ["google-calendar", "google-docs", "notion", "spotify", "youtube-music", "youtube"],
 };

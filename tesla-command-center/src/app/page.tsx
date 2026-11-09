@@ -5,9 +5,10 @@ import { ExploreCta } from "@/components/ExploreCta";
 import { Icon, type IconName } from "@/components/Icon";
 
 const FEATURES: { icon: IconName; title: string; body: string }[] = [
-  { icon: "grid", title: "Big, readable favorites", body: "Six to eight large tiles with full app names, sized for a touchscreen at arm's length." },
+  { icon: "grid", title: "Big, readable favorites", body: "Up to eight large tiles in each service's colours, with full names, sized for a touchscreen at arm's length." },
   { icon: "star", title: "Watch, Listen and Focus presets", body: "Each preset keeps its own favorites. Switch with one tap, and rearrange with Move buttons or drag." },
   { icon: "search", title: "A searchable app library", body: "A curated starter catalog plus your own HTTPS links. You choose how each one opens." },
+  { icon: "chart", title: "Markets at a glance", body: "A ticker band and a watchlist with sparklines. Live when a quote provider is connected, clearly marked as sample data when it isn't." },
   { icon: "focus", title: "Focus workspace", body: "A built-in timer, scratchpad and checklist, in one pane or side by side." },
   { icon: "phone", title: "Pair from your phone", body: "Approve your car with a short code or QR on your phone, so you never type a password on the car screen." },
   { icon: "shield", title: "Honest by design", body: "No fake safety locks and no restriction workarounds. Links open each service's own site." },
@@ -37,6 +38,10 @@ const FAQ: { q: string; a: string }[] = [
   {
     q: "What do you collect?",
     a: "Only what's needed to run your account and subscription. Analytics are off until you allow them, and even then they're a few named events with no notes, links or codes. Your scratchpad never leaves your browser.",
+  },
+  {
+    q: "Are the stock prices real?",
+    a: "Only when the live quote feed is connected, and they may be delayed. Until then the ticker and Markets card show sample prices, labelled \"Sample data · not real prices\". Either way it's for information only, not investment advice.",
   },
   {
     q: "Is this made by Tesla?",
@@ -161,7 +166,7 @@ export default function Landing() {
       <footer className="border-t border-line">
         <div className="mx-auto max-w-7xl px-5 lg:px-8 py-8 text-sm text-muted flex flex-wrap gap-x-6 gap-y-2">
           <span>Independent app. Not affiliated with or endorsed by Tesla, Inc.</span>
-          <span>Third-party names belong to their owners and don&rsquo;t imply endorsement.</span>
+          <span>Third-party names and logos belong to their owners and don&rsquo;t imply endorsement.</span>
         </div>
       </footer>
     </div>

@@ -28,9 +28,9 @@ const result = await build({
 });
 const js = result.outputFiles[0].text.replace(/<\/script/gi, "<\\/script");
 const cssDir = path.join(root, ".next/static/chunks");
-const cssFile = readdirSync(cssDir).find((f) => f.endsWith(".css"));
-if (!cssFile) throw new Error("Run `npm run build` first; the compiled Tailwind CSS is reused.");
-const css = readFileSync(path.join(cssDir, cssFile), "utf8").replace(/<\/style/gi, "<\\/style");
+const cssFiles = readdirSync(cssDir).filter((f) => f.endsWith(".css"));
+if (cssFiles.length === 0) throw new Error("Run `npm run build` first; the compiled Tailwind CSS is reused.");
+const css = cssFiles.map((f) => readFileSync(path.join(cssDir, f), "utf8")).join("\n").replace(/<\/style/gi, "<\\/style");
 
 const html = `<title>Command Center for Tesla</title>
 <meta name="description" content="Browser-only demo of the parked-use dashboard.">

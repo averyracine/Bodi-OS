@@ -8,7 +8,7 @@ import { validateCustomUrl } from "@/lib/url";
 import { track } from "@/lib/analytics";
 import { usePrefs } from "../PrefsProvider";
 import { Icon } from "../Icon";
-import { LaunchLink, Monogram, recordLaunch, resolveService } from "../ServiceTile";
+import { LaunchLink, recordLaunch, resolveService, ServiceArt } from "../ServiceTile";
 
 type Filter = "all" | Category;
 const FILTERS: Filter[] = ["all", "video", "music", "games", "productivity", "custom"];
@@ -140,7 +140,7 @@ export function LibraryView() {
             return (
               <li key={row.id} className="card p-4 flex flex-col gap-3">
                 <div className="flex items-start gap-3">
-                  <Monogram name={row.name} hue={svc.hue} size={52} />
+                  <ServiceArt id={row.id} name={row.name} hue={svc.hue} size={52} rounded={14} />
                   <div className="min-w-0 flex-1">
                     <p className="font-semibold text-lg leading-tight break-words">{row.name}</p>
                     <p className="text-muted text-sm break-all">{domainOf(row.url)}</p>

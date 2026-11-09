@@ -29,13 +29,13 @@ async function noHorizontalScroll(page) {
     const page = await ctx.newPage();
     await page.goto(`${BASE}/`);
     await page.getByRole("button", { name: "No thanks" }).click();
-    await page.getByRole("region", { name: "Interactive dashboard preview" }).getByText("Watch favorites").waitFor();
+    await page.getByRole("region", { name: "Interactive dashboard preview" }).getByRole("list", { name: "Watch favorites" }).waitFor();
     check(`landing headline @${w}x${h}`, await visible(page.getByRole("heading", { name: "Your Tesla downtime, upgraded." })));
     check(`landing no horizontal scroll @${w}x${h}`, await noHorizontalScroll(page));
     await page.screenshot({ path: `${SHOTS}/landing-${w}x${h}.png` });
 
     await page.goto(`${BASE}/app`);
-    await page.getByRole("heading", { name: "Watch favorites" }).waitFor();
+    await page.getByRole("list", { name: "Watch favorites" }).waitFor();
     check(`dashboard no horizontal scroll @${w}x${h}`, await noHorizontalScroll(page));
     await page.getByRole("button", { name: "No thanks" }).click().catch(() => {});
     await page.screenshot({ path: `${SHOTS}/app-home-${w}x${h}.png` });
@@ -55,9 +55,11 @@ async function noHorizontalScroll(page) {
   page.on("pageerror", (e) => errors.push(e.message));
 
   await page.goto(`${BASE}/app`);
-  await page.getByRole("heading", { name: "Watch favorites" }).waitFor();
+  await page.getByRole("list", { name: "Watch favorites" }).waitFor();
   const favList = page.getByRole("list", { name: "Watch favorites" });
-  check("6 default Watch favorites", (await favList.locator("li").count()) === 6);
+  check("8 default Watch favorites", (await favList.locator("li").count()) === 8);
+  check("markets card shows sample label", await visible(page.getByText("Sample data · not real prices")));
+  check("ticker band renders", await visible(page.getByRole("region", { name: "Market ticker" })));
 
   // External link semantics
   const first = favList.locator("a").first();
@@ -70,15 +72,15 @@ async function noHorizontalScroll(page) {
   await page.getByRole("button", { name: "Move YouTube later" }).click();
   await page.getByRole("button", { name: "Done" }).click();
   await page.reload();
-  await page.getByRole("heading", { name: "Watch favorites" }).waitFor();
+  await page.getByRole("list", { name: "Watch favorites" }).waitFor();
   const firstHref = await page.getByRole("list", { name: "Watch favorites" }).locator("a").first().getAttribute("href");
   check("Move button reorder persists across reload", firstHref === "https://www.netflix.com/", firstHref);
 
   // Presets
   await page.getByRole("radio", { name: "Listen" }).click();
-  await page.getByRole("heading", { name: "Listen favorites" }).waitFor();
+  await page.getByRole("list", { name: "Listen favorites" }).waitFor();
   await page.reload();
-  check("active preset persists across reload", await page.getByRole("heading", { name: "Listen favorites" }).waitFor({ timeout: 5000 }).then(() => true, () => false));
+  check("active preset persists across reload", await page.getByRole("list", { name: "Listen favorites" }).waitFor({ timeout: 5000 }).then(() => true, () => false));
   check("Listen preset has its own favorites", (await page.getByRole("list", { name: "Listen favorites" }).locator("a").first().getAttribute("href")) === "https://open.spotify.com/");
 
   // Library search + favorite toggle
@@ -120,7 +122,7 @@ async function noHorizontalScroll(page) {
 
   // Keyboard navigation: skip link, then dock
   await page.goto(`${BASE}/app`);
-  await page.getByRole("heading", { name: "Listen favorites" }).waitFor();
+  await page.getByRole("list", { name: "Listen favorites" }).waitFor();
   await page.keyboard.press("Tab");
   check("skip link is first focus", (await page.evaluate(() => document.activeElement?.textContent)) === "Skip to content");
   let reached = false;
@@ -144,6 +146,15 @@ async function noHorizontalScroll(page) {
   await page.getByRole("radio", { name: "Split (prototype)" }).click();
   check("split layout renders two panes", (await page.getByRole("region", { name: /pane/ }).count()) === 2);
 
+  // Watchlist editing
+  await page.goto(`${BASE}/app/settings`);
+  await page.getByPlaceholder("Add a symbol, e.g. RIVN").fill("rivn");
+  await page.getByRole("button", { name: "Add", exact: true }).click();
+  check("adds watchlist symbol", await visible(page.getByRole("list", { name: "Watchlist" }).getByText("RIVN")));
+  await page.getByPlaceholder("Add a symbol, e.g. RIVN").fill("not a ticker");
+  await page.getByRole("button", { name: "Add", exact: true }).click();
+  check("rejects invalid symbol", await visible(page.locator("#markets [role=alert]")));
+
   // Settings: theme + export
   await page.goto(`${BASE}/app/settings`);
   await page.getByText("Midnight").click();
@@ -160,7 +171,7 @@ async function noHorizontalScroll(page) {
 
   // Failure: offline
   await page.goto(`${BASE}/app`);
-  await page.getByRole("heading", { name: /favorites/ }).waitFor();
+  await page.getByRole("list", { name: /favorites/ }).waitFor();
   await ctx.setOffline(true);
   await page.waitForTimeout(200);
   check("offline badge visible", await visible(page.getByRole("status").filter({ hasText: "Offline" })));
@@ -179,7 +190,7 @@ async function noHorizontalScroll(page) {
   await page.getByRole("button", { name: "Reset everything…" }).click();
   await page.getByRole("button", { name: "Yes, reset" }).click();
   await page.goto(`${BASE}/app`);
-  check("reset restores defaults", await visible(page.getByRole("heading", { name: "Watch favorites" })));
+  check("reset restores defaults", await visible(page.getByRole("list", { name: "Watch favorites" })));
 
   check("no uncaught page errors", errors.length === 0, errors.join(" | "));
   await ctx.close();
