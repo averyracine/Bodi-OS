@@ -9,6 +9,7 @@ import { track } from "@/lib/analytics";
 import { usePrefs } from "../PrefsProvider";
 import { Icon } from "../Icon";
 import { BrandArt, LaunchLink, recordLaunch, resolveService } from "../ServiceTile";
+import { GuideButton } from "../GameGuide";
 
 type Filter = "all" | Category;
 const FILTERS: Filter[] = ["all", "video", "music", "ai", "productivity", "games", "utilities", "custom"];
@@ -24,6 +25,8 @@ interface Row {
   defaultLaunch: LaunchBehavior;
   custom: boolean;
   blurb: string;
+  featured: boolean;
+  guide: boolean;
 }
 
 export function LibraryView() {
@@ -38,10 +41,12 @@ export function LibraryView() {
     const base: Row[] = CATALOG.map((s) => ({
       id: s.id, name: s.name, category: s.category, url: s.url, requiresAccount: s.requiresAccount,
       parkedUseOnly: s.parkedUseOnly, defaultLaunch: s.launch, custom: false, blurb: s.blurb,
+      featured: Boolean(s.featured), guide: Boolean(s.guide),
     }));
     const custom: Row[] = (prefs?.customLinks ?? []).map((c) => ({
       id: c.id, name: c.name, category: "custom", url: c.url, requiresAccount: false,
       parkedUseOnly: false, defaultLaunch: "new-tab", custom: true, blurb: "Your link.",
+      featured: false, guide: false,
     }));
     return [...custom, ...base];
   }, [prefs?.customLinks]);
@@ -132,7 +137,7 @@ export function LibraryView() {
 
       <div className="flex flex-wrap items-center gap-3 card px-4 py-3">
         <span className="text-sm text-muted">Starring adds to</span>
-        <div className="seg" role="radiogroup" aria-label="Add apps to">
+        <div className="seg flex-wrap max-w-full" role="radiogroup" aria-label="Add apps to">
           {[...PRESETS.map((p) => ({ id: p.id as Target, label: p.label })), { id: "quick" as Target, label: "Quick Launch" }].map((o) => (
             <button key={o.id} role="radio" aria-checked={tgt === o.id} onClick={() => setTarget(o.id)} className="!min-h-[44px]">{o.label}</button>
           ))}
@@ -163,14 +168,16 @@ export function LibraryView() {
             const launch = prefs.launchOverrides[row.id] ?? row.defaultLaunch;
             const fav = favs.includes(row.id);
             return (
-              <li key={row.id} className="card p-4 flex flex-col gap-3" style={{ ["--tint" as string]: svc.accent }}>
+              <li key={row.id} className={`card p-4 flex flex-col gap-3 ${row.featured ? "card-featured" : ""}`} style={{ ["--tint" as string]: svc.accent }}>
                 <div className="flex items-start gap-3">
                   <BrandArt id={row.id} name={row.name} accent={svc.accent} className="!w-[92px] shrink-0 !rounded-xl" />
                   <div className="min-w-0 flex-1">
+                    {row.featured && <p className="eyebrow text-accent">Featured</p>}
                     <p className="font-semibold text-lg leading-tight break-words">{row.name}</p>
                     <p className="text-muted text-sm">{row.blurb}</p>
                     <p className="text-muted text-xs break-all mt-0.5">{domainOf(row.url)}</p>
                   </div>
+                  {row.guide && <GuideButton name={row.name} className="!bg-surface-3 !border-line shrink-0" />}
                   <button
                     className={`btn btn-sm ${fav ? "text-accent border-accent/40" : "text-muted"}`}
                     aria-pressed={fav}
