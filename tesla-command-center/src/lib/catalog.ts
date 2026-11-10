@@ -29,6 +29,12 @@ export interface CatalogService {
   /** Kept for custom-link compatibility; derived from accent for catalog items. */
   hue: number;
   blurb: string;
+  /** Short line shown under the tile label (featured entries only). */
+  note?: string;
+  /** Opens an in-app setup sheet from the tile's info button. */
+  guide?: "gta-xbox";
+  /** Plain text tile in CruiseCtrl's own style (no third-party artwork). */
+  textTile?: { title: string; caption: string };
 }
 
 /** Internal keys stay stable ("video", "games") so saved data and URLs keep working. */
@@ -37,7 +43,7 @@ export const CATEGORY_LABELS: Record<Category, string> = {
   music: "Music",
   ai: "AI",
   productivity: "Productivity",
-  games: "Gaming",
+  games: "Games",
   utilities: "Utilities",
   custom: "My links",
 };
@@ -62,7 +68,7 @@ const s = (
   url: string,
   accent: string,
   blurb: string,
-  opts: Partial<Pick<CatalogService, "requiresAccount" | "parkedUseOnly" | "launch">> = {},
+  opts: Partial<Pick<CatalogService, "requiresAccount" | "parkedUseOnly" | "launch" | "note" | "guide" | "textTile">> = {},
 ): CatalogService => ({
   id,
   name,
@@ -71,6 +77,9 @@ const s = (
   accent,
   hue: hueOf(accent),
   blurb,
+  note: opts.note,
+  guide: opts.guide,
+  textTile: opts.textTile,
   launch: opts.launch ?? "new-tab",
   requiresAccount: opts.requiresAccount ?? true,
   teslaStatus: "not-tested",
@@ -104,7 +113,22 @@ export const CATALOG: CatalogService[] = [
   s("google-drive", "Google Drive", "productivity", "https://drive.google.com/", "#1FA463", "Files and folders."),
   s("google-docs", "Google Docs", "productivity", "https://docs.google.com/", "#4C8BF5", "Documents."),
   s("notion", "Notion", "productivity", "https://www.notion.so/", "#C8CDD5", "Notes, docs and wikis."),
-  // Gaming
+  // Games. We only link to the official services; nothing is streamed or embedded here.
+  s(
+    "gta-vi-xbox",
+    "GTA VI on Xbox Cloud Gaming",
+    "games",
+    "https://www.xbox.com/play",
+    "#8B7CF6",
+    "Launches Nov 19, 2026. Requires Xbox Game Pass and a controller.",
+    {
+      // Same-tab top-level navigation: Xbox is expected to block being framed.
+      launch: "same-tab",
+      note: "Launches Nov 19, 2026. Requires Xbox Game Pass and a controller.",
+      guide: "gta-xbox",
+      textTile: { title: "GTA VI", caption: "Cloud gaming" },
+    },
+  ),
   s("xbox-cloud", "Xbox Cloud Gaming", "games", "https://www.xbox.com/play", "#107C10", "Stream Xbox games."),
   s("geforce-now", "GeForce NOW", "games", "https://play.geforcenow.com/", "#76B900", "Stream PC games."),
   // Utilities (trip prep and charging stops; plan before you drive)

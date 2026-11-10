@@ -68,6 +68,7 @@ export function defaultPreferences(): Preferences {
       listen: [...DEFAULT_PRESET_FAVORITES.listen],
       focus: [...DEFAULT_PRESET_FAVORITES.focus],
       drive: [...DEFAULT_PRESET_FAVORITES.drive],
+      games: [...DEFAULT_PRESET_FAVORITES.games],
     },
     customLinks: [],
     launchOverrides: {},

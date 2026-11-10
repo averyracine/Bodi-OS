@@ -94,7 +94,7 @@ export function SettingsView() {
           </fieldset>
         </Section>
 
-        <Section id="presets" title="Modes" desc="Watch, Listen, Work and Drive each keep their own apps and widgets. These are screen layouts, not vehicle modes.">
+        <Section id="presets" title="Modes" desc="Watch, Listen, Work, Games and Drive each keep their own apps and widgets. These are screen layouts, not vehicle modes.">
           <div className="seg" role="radiogroup" aria-label="Active preset">
             {PRESETS.map((p) => (
               <button key={p.id} role="radio" aria-checked={prefs.activePreset === p.id} onClick={() => update((x) => ({ ...x, activePreset: p.id }))}>

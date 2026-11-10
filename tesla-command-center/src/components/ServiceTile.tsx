@@ -7,6 +7,7 @@ import { MAX_RECENTS } from "@/lib/prefs";
 import { BRAND_TILES } from "@/lib/brand-icons";
 import { BRAND_ICON_DATA } from "@/lib/brand-icon-data";
 import { useOnline } from "@/hooks/useBrowser";
+import { HowToPlaySheet } from "./HowToPlaySheet";
 import { Icon } from "./Icon";
 
 /**
@@ -25,6 +26,8 @@ export interface ResolvedService {
   launch: LaunchBehavior;
   parkedUseOnly: boolean;
   custom: boolean;
+  note?: string;
+  guide?: "gta-xbox";
 }
 
 /** Resolves a favorite id against the catalog and the user's custom links. */
@@ -34,6 +37,7 @@ export function resolveService(id: string, prefs: Preferences): ResolvedService 
     return {
       id, name: svc.name, url: svc.url, hue: svc.hue, accent: svc.accent, category: svc.category,
       launch: prefs.launchOverrides[id] ?? svc.launch, parkedUseOnly: svc.parkedUseOnly, custom: false,
+      note: svc.note, guide: svc.guide,
     };
   }
   const c = prefs.customLinks.find((l) => l.id === id);
@@ -60,6 +64,19 @@ export function recordLaunch(prefs: Preferences, id: string): Preferences {
  */
 export function BrandArt({ id, name, accent, className = "" }: { id: string; name: string; accent: string; className?: string }) {
   const [failed, setFailed] = useState(false);
+  const text = CATALOG_BY_ID.get(id)?.textTile;
+  if (text) {
+    // Our own text treatment: no third-party logos, cover art or screenshots.
+    return (
+      <span aria-hidden="true" data-app-icon data-icon-kind="text" className={`brand-tile brand-tile-text ${className}`}>
+        <span className="flex flex-col items-center gap-[4cqw] text-center">
+          <Icon name="gamepad" size={28} className="text-accent" />
+          <span className="brand-tile-text-title">{text.title}</span>
+          <span className="brand-tile-text-caption">{text.caption}</span>
+        </span>
+      </span>
+    );
+  }
   const tile = LOGOS_ON ? BRAND_TILES[id] : undefined;
   const src = tile ? BRAND_ICON_DATA[id] : undefined;
   if (!tile || !src || failed) {
@@ -155,15 +172,29 @@ export function LaunchLink({
  * The whole thing is one link, so the touch target covers tile and label.
  */
 export function AppTile({ svc, onLaunch, compact = false }: { svc: ResolvedService; onLaunch?: () => void; compact?: boolean }) {
+  const [guideOpen, setGuideOpen] = useState(false);
   return (
-    <LaunchLink service={svc} onLaunch={onLaunch} className={`app-tile group ${compact ? "app-tile-compact" : ""}`}>
-      <span className="relative block">
-        <BrandArt id={svc.id} name={svc.name} accent={svc.accent} />
-        <span className="tile-hint" aria-hidden="true"><Icon name="external" size={compact ? 11 : 13} /></span>
-        {svc.launch === "same-tab" && !compact && <span className="tile-badge">Opens here</span>}
-      </span>
-      <span className="app-tile-label">{svc.name}</span>
-    </LaunchLink>
+    <div className="relative h-full">
+      <LaunchLink service={svc} onLaunch={onLaunch} className={`app-tile group ${compact ? "app-tile-compact" : ""}`}>
+        <span className="relative block">
+          <BrandArt id={svc.id} name={svc.name} accent={svc.accent} />
+          <span className="tile-hint" aria-hidden="true"><Icon name="external" size={compact ? 11 : 13} /></span>
+          {svc.launch === "same-tab" && !compact && <span className="tile-badge">Opens here</span>}
+        </span>
+        <span className="app-tile-label">{svc.name}</span>
+        {svc.note && !compact && <span className="app-tile-note">{svc.note}</span>}
+        {svc.note && !compact && <span className="app-tile-note !text-warn">Not yet tested on Tesla</span>}
+      </LaunchLink>
+      {svc.guide && !compact && (
+        <>
+          {/* Sibling of the link, not inside it, so opening the guide never launches the app. */}
+          <button type="button" className="tile-info" aria-label={`How to play: ${svc.name}`} aria-haspopup="dialog" onClick={() => setGuideOpen(true)}>
+            <Icon name="info" size={16} />
+          </button>
+          <HowToPlaySheet open={guideOpen} onClose={() => setGuideOpen(false)} />
+        </>
+      )}
+    </div>
   );
 }
 

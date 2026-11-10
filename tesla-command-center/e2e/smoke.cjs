@@ -116,7 +116,8 @@ async function noHorizontalScroll(page) {
   check("active preset persists across reload", await page.getByRole("list", { name: "Listen favorites" }).waitFor({ timeout: 5000 }).then(() => true, () => false));
   check("Listen preset has its own favorites", (await page.getByRole("list", { name: "Listen favorites" }).locator("a").first().getAttribute("href")) === "https://open.spotify.com/");
 
-  // Library: every catalog app shows its logo; only PlugShare (no published SVG) falls back.
+  // Library: every catalog app shows its logo; PlugShare (no published SVG) falls back to initials,
+  // and the GTA VI tile is a CruiseCtrl text tile by design.
   await page.goto(`${BASE}/app/library`);
   await page.getByRole("searchbox", { name: "Search apps" }).waitFor();
   await page.waitForFunction(() => [...document.querySelectorAll("[data-icon-kind=brand] img")].every((i) => i.complete));
@@ -125,8 +126,10 @@ async function noHorizontalScroll(page) {
     kind: li.querySelector("[data-app-icon]")?.getAttribute("data-icon-kind"),
     ok: (li.querySelector("[data-app-icon] img")?.naturalWidth ?? 1) > 0,
   })));
-  const fallbacks = libIcons.filter((i) => i.kind !== "brand").map((i) => i.name);
-  check("library: 27 brand logos, PlugShare is the only fallback", libIcons.length === 28 && libIcons.every((i) => i.ok) && fallbacks.join() === "PlugShare", fallbacks.join());
+  const fallbacks = libIcons.filter((i) => i.kind === "fallback").map((i) => i.name);
+  const textTiles = libIcons.filter((i) => i.kind === "text").map((i) => i.name);
+  check("library: 27 brand logos, PlugShare is the only fallback", libIcons.length === 29 && libIcons.every((i) => i.ok) && fallbacks.join() === "PlugShare", fallbacks.join());
+  check("library: GTA VI uses our own text tile (no third-party art)", textTiles.join() === "GTA VI on Xbox Cloud Gaming", textTiles.join());
 
   // Library search + favorite toggle
   await page.getByRole("searchbox", { name: "Search apps" }).fill("geforce");
@@ -140,8 +143,10 @@ async function noHorizontalScroll(page) {
   await page.getByRole("button", { name: "Clear search" }).click();
 
   // Category filter
-  await page.getByRole("tab", { name: "Gaming" }).click();
-  check("category filter", (await cards.count()) === 2);
+  await page.getByRole("tab", { name: "Games" }).click();
+  check("category filter", (await cards.count()) === 3);
+  check("Games category lists GTA VI, Xbox Cloud Gaming and GeForce NOW",
+    (await cards.locator("p.font-semibold").allInnerTexts()).join("|") === "GTA VI on Xbox Cloud Gaming|Xbox Cloud Gaming|GeForce NOW");
   await page.getByRole("tab", { name: "All" }).click();
 
   // Custom links: reject dangerous, accept https
@@ -202,7 +207,7 @@ async function noHorizontalScroll(page) {
     return icon.right <= ir.left + padLeft && Math.abs((icon.top + icon.bottom) / 2 - (ir.top + ir.bottom) / 2) < 2;
   });
   check("search icon aligned inside input", align);
-  check("category chips show counts", /\d/.test(await page.getByRole("tab", { name: /Gaming/ }).innerText()));
+  check("category chips show counts", /\d/.test(await page.getByRole("tab", { name: /Games/ }).innerText()));
 
   // Quick Launch target from the library
   await page.getByRole("radiogroup", { name: "Add apps to" }).getByRole("radio", { name: "Quick Launch" }).click();
@@ -361,6 +366,92 @@ async function noHorizontalScroll(page) {
   await mdp.waitForURL("**/app/discover");
   check("mobile More menu reaches Discover", mdp.url().endsWith("/app/discover"));
   await md.close();
+
+  // ---------- Games / GTA tile and consent banner at the requested viewports ----------
+  for (const [w, h] of [[390, 844], [1280, 800], [1920, 1200]]) {
+    const vc = await browser.newContext({ viewport: { width: w, height: h }, ...(w < 500 ? { isMobile: true, hasTouch: true } : {}) });
+    const vp = await vc.newPage();
+    const consoleErrors = [];
+    // Known, pre-existing: in demo mode /api/quotes answers 503 "not configured" and the browser logs it.
+    // It's excluded by exact URL only and reported as a NOTE; every other console error fails the check.
+    const knownQuote503 = [];
+    vp.on("response", (r) => { if (r.status() === 503 && new URL(r.url()).pathname === "/api/quotes") knownQuote503.push(r.url()); });
+    vp.on("console", (m) => {
+      if (m.type() !== "error") return;
+      if (/status of 503/.test(m.text()) && knownQuote503.length > 0) return;
+      consoleErrors.push(m.text());
+    });
+    vp.on("pageerror", (e) => consoleErrors.push(e.message));
+    // Never load the real Xbox site in tests: answer the navigation locally.
+    await vp.route("https://www.xbox.com/**", (r) => r.fulfill({ status: 200, contentType: "text/html", body: "<title>xbox stub</title>" }));
+    const tag = `@${w}x${h}`;
+    await vp.goto(`${BASE}/app`);
+    await vp.getByRole("list", { name: /favorites/ }).waitFor();
+    const banner = vp.getByRole("region", { name: "Analytics consent" });
+    check(`consent banner showing ${tag}`, await visible(banner));
+    // Dock is fully usable while the banner shows: no overlap and each dock item is the topmost element.
+    const dockFree = await vp.evaluate(() => {
+      const dock = document.querySelector('nav[aria-label="Primary"]').getBoundingClientRect();
+      const b = document.querySelector('[aria-label="Analytics consent"]').getBoundingClientRect();
+      const overlap = !(b.bottom <= dock.top || b.top >= dock.bottom || b.right <= dock.left || b.left >= dock.right);
+      const items = [...document.querySelectorAll('nav[aria-label="Primary"] a, nav[aria-label="Primary"] > div > span > button')]
+        .filter((el) => el.getBoundingClientRect().width > 0);
+      const topmost = items.every((el) => { const r = el.getBoundingClientRect(); const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return el.contains(hit); });
+      return !overlap && topmost && items.length >= 4;
+    });
+    check(`dock not covered by consent banner ${tag}`, dockFree);
+    await vp.locator('nav[aria-label="Primary"]').getByRole("link", { name: "Library" }).click();
+    await vp.waitForURL("**/app/library");
+    check(`dock Library reachable with banner showing ${tag}`, vp.url().endsWith("/app/library") && (await banner.isVisible()));
+    await vp.getByRole("searchbox", { name: "Search apps" }).waitFor();
+    check(`Library has no horizontal scroll ${tag}`, await noHorizontalScroll(vp));
+    if (w < 640) {
+      await vp.locator('nav[aria-label="Primary"]').getByRole("button", { name: "More" }).click();
+      await vp.getByRole("link", { name: "Settings" }).click();
+    } else {
+      await vp.locator('nav[aria-label="Primary"]').getByRole("link", { name: "Settings" }).click();
+    }
+    await vp.waitForURL("**/app/settings");
+    check(`dock Settings reachable with banner showing ${tag}`, vp.url().endsWith("/app/settings"));
+    await vp.getByRole("heading", { name: "Settings" }).waitFor();
+    check(`Settings has no horizontal scroll ${tag}`, await noHorizontalScroll(vp));
+    await vp.locator('nav[aria-label="Primary"]').getByRole("link", { name: "Focus" }).click();
+    await vp.waitForURL("**/app/focus");
+    check(`dock Focus reachable with banner showing ${tag}`, vp.url().endsWith("/app/focus"));
+    await vp.getByRole("heading", { name: "Focus", exact: true }).waitFor();
+    check(`Focus has no horizontal scroll ${tag}`, await noHorizontalScroll(vp));
+    // Games mode + GTA tile.
+    await vp.goto(`${BASE}/app`);
+    await vp.getByRole("radio", { name: "Games" }).click();
+    const gamesList = vp.getByRole("list", { name: "Games favorites" });
+    await gamesList.waitFor();
+    const gtaLink = gamesList.getByRole("link", { name: /GTA VI on Xbox Cloud Gaming/ });
+    check(`GTA tile first in Games mode ${tag}`, (await gamesList.locator("li").first().innerText()).includes("GTA VI on Xbox Cloud Gaming"));
+    check(`GTA tile shows launch note and untested label ${tag}`,
+      (await gamesList.locator("li").first().innerText()).includes("Launches Nov 19, 2026. Requires Xbox Game Pass and a controller.") &&
+      (await gamesList.locator("li").first().innerText()).includes("Not yet tested on Tesla"));
+    check(`GTA tile is a same-tab top-level link to xbox.com/play ${tag}`,
+      (await gtaLink.getAttribute("href")) === "https://www.xbox.com/play" && (await gtaLink.getAttribute("target")) === null && (await vp.locator("iframe").count()) === 0);
+    await vp.getByRole("button", { name: "How to play: GTA VI on Xbox Cloud Gaming" }).click();
+    const sheet = vp.getByRole("dialog", { name: "How to play GTA VI on Xbox Cloud Gaming" });
+    check(`How to play sheet opens ${tag}`, await visible(sheet));
+    check(`How to play sheet is above header, dock and banner ${tag}`, await sheet.getByRole("button", { name: "Close" }).first().evaluate((el) => {
+      const r = el.getBoundingClientRect(); return el.contains(document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2));
+    }));
+    const sheetText = await sheet.innerText();
+    check(`How to play sheet has all steps and the unverified note ${tag}`,
+      ["Park the car", "PS5 DualSense", "Xbox wireless controllers have been reported to fail", "hotspot", "Game Pass", "5, 10 or 15 hours", "Unverified on current Tesla software"].every((t) => sheetText.includes(t)));
+    check(`How to play sheet stays on CruiseCtrl (info button didn't launch) ${tag}`, vp.url().startsWith(BASE));
+    await vp.keyboard.press("Escape");
+    check(`How to play sheet closes with Escape ${tag}`, (await sheet.count()) === 0);
+    check(`no horizontal scroll with Games mode ${tag}`, await noHorizontalScroll(vp));
+    await gtaLink.click();
+    await vp.waitForURL("https://www.xbox.com/play", { timeout: 10000 }).catch(() => {});
+    check(`GTA tile navigates this tab to xbox.com/play ${tag}`, vp.url() === "https://www.xbox.com/play", vp.url());
+    check(`no console errors (other than the known demo /api/quotes 503) ${tag}`, consoleErrors.length === 0, consoleErrors.slice(0, 2).join(" | "));
+    if (knownQuote503.length) console.log(`NOTE  ${tag}: /api/quotes returned 503 (demo, no FINNHUB_API_KEY) ${knownQuote503.length}x; logged by the browser as a console error. Pre-existing.`);
+    await vc.close();
+  }
 
   // ---------- Mobile onboarding ----------
   const { devices } = require("playwright");

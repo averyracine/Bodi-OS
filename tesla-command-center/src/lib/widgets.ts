@@ -31,6 +31,7 @@ export const DEFAULT_WIDGET_LAYOUTS: Record<PresetId, WidgetLayout> = {
   listen: { order: ["clock", "weather", "quicklaunch", "notes"], sizes: {} },
   focus: { order: ["clock", "calendar", "notes", "markets"], sizes: { notes: "expanded" } },
   drive: { order: ["weather", "clock", "calendar", "notes"], sizes: { weather: "expanded" } },
+  games: { order: ["clock", "quicklaunch", "notes"], sizes: {} },
 };
 
 const isObj = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null && !Array.isArray(v);
