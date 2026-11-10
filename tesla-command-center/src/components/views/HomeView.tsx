@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { PRESETS, MAX_FAVORITES } from "@/lib/presets";
+import { CATALOG, CATEGORY_LABELS } from "@/lib/catalog";
 import { moveItem, moveItemTo } from "@/lib/prefs";
 import { track, trackOnce } from "@/lib/analytics";
 import { useNow } from "@/hooks/useBrowser";
@@ -130,6 +131,13 @@ export function HomeView() {
             </ol>
           )}
 
+          {preset !== "drive" && (
+            <GamesRow
+              apps={GAME_IDS.map((id) => resolveService(id, prefs)).filter((x): x is ResolvedService => x !== null)}
+              onLaunch={onLaunch}
+            />
+          )}
+
           <div className="card p-4">
             <div className="flex items-center gap-3">
               <h2 className="eyebrow">Recently opened</h2>
@@ -165,6 +173,33 @@ export function HomeView() {
       </div>
       {!preview && <TrackDemoOpen />}
     </div>
+  );
+}
+
+/** Catalog games, featured first. Not part of the editable mode favorites. */
+const GAME_IDS = CATALOG.filter((s) => s.category === "games")
+  .sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)))
+  .map((s) => s.id);
+
+/** A fixed Games row on Home (hidden in Drive mode). Each tile only links out to the official service. */
+function GamesRow({ apps, onLaunch }: { apps: ResolvedService[]; onLaunch: (id: string) => void }) {
+  if (apps.length === 0) return null;
+  return (
+    <section aria-labelledby="games-heading" className="card p-4 flex flex-col gap-3">
+      <div className="flex items-center gap-3">
+        <h2 id="games-heading" className="eyebrow flex items-center gap-2">
+          <Icon name="gamepad" size={16} /> {CATEGORY_LABELS.games}
+        </h2>
+        <span className="text-xs text-muted ml-auto">Parked use · bring a controller</span>
+      </div>
+      <ul className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-x-3 gap-y-4 sm:gap-x-4" aria-label="Games">
+        {apps.map((svc) => (
+          <li key={svc.id}>
+            <AppTile svc={svc} onLaunch={() => onLaunch(svc.id)} />
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 

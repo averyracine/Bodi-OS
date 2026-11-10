@@ -22,7 +22,7 @@ const SETUPS: Setup[] = [
   { id: "game-day", title: "Game day", blurb: "Sports and live streams for a long charge.", icon: "tv", preset: "watch", apps: ["espn", "youtube", "paramount-plus", "prime-video", "twitch", "hbo-max"] },
   { id: "ai-desk", title: "AI desk", blurb: "Four assistants plus mail, calendar and files.", icon: "sparkle", preset: "focus", apps: ["claude", "chatgpt", "gemini", "perplexity", "gmail", "google-calendar", "google-drive", "notion"] },
   { id: "road-trip", title: "Road-trip prep", blurb: "Plan the next leg and charger before you set off.", icon: "route", preset: "drive", apps: ["google-maps", "waze", "plugshare", "supercharger-map", "spotify", "google-calendar"] },
-  { id: "cloud-arcade", title: "Cloud arcade", blurb: "Game streaming services. Bring a controller and a strong connection.", icon: "gamepad", preset: "watch", apps: ["xbox-cloud", "geforce-now", "twitch", "youtube"] },
+  { id: "cloud-arcade", title: "Cloud arcade", blurb: "Game streaming services. Bring a controller and a strong connection.", icon: "gamepad", preset: "watch", apps: ["gta-vi-xbox", "xbox-cloud", "geforce-now", "twitch", "youtube"] },
 ];
 
 const SPOTLIGHT = ["claude", "chatgpt", "perplexity", "plugshare"];

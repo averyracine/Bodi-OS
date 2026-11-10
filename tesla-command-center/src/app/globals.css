@@ -163,6 +163,17 @@ body {
 .brand-tile-fallback {
   background: linear-gradient(150deg, color-mix(in srgb, var(--tint) 58%, #0b0f14), color-mix(in srgb, var(--tint) 22%, #080b10));
 }
+.brand-tile-text { display: flex; flex-direction: column; gap: 4cqw; }
+.brand-tile-text-icon { width: 22cqw; height: 22cqw; color: rgba(255, 255, 255, 0.85); }
+.brand-tile-text-label { font-family: var(--font-display); font-weight: 800; font-size: 19cqw; line-height: 1; color: #fff; letter-spacing: -0.01em; }
+/* Clear of the dock: dock bottom offset (14px) + dock height + a gap. */
+.consent-banner { bottom: calc(14px + var(--dock-h) + 12px + env(safe-area-inset-bottom, 0px)); }
+.card-featured { border-color: color-mix(in srgb, var(--tint, var(--accent)) 45%, var(--line)); }
+.guide-btn {
+  display: grid; place-items: center; width: 44px; height: 44px; border-radius: 999px; color: #fff;
+  background: rgba(0, 0, 0, 0.45); border: 1px solid rgba(255, 255, 255, 0.18); z-index: 1;
+}
+.guide-btn:hover { background: rgba(0, 0, 0, 0.65); }
 .brand-tile-initials { font-family: var(--font-display); font-weight: 700; font-size: 30cqw; line-height: 1; color: #fff; letter-spacing: -0.02em; }
 .app-tile { display: flex; flex-direction: column; gap: 0.5rem; border-radius: 18px; outline: none; -webkit-tap-highlight-color: transparent; }
 .app-tile:hover .brand-tile { transform: translateY(-2px); outline-color: color-mix(in srgb, var(--accent) 55%, transparent); }

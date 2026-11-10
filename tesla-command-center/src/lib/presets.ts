@@ -23,7 +23,7 @@ export const PRESETS: PresetMeta[] = [
 export const PRESET_IDS: PresetId[] = PRESETS.map((p) => p.id);
 
 export const DEFAULT_PRESET_FAVORITES: Record<PresetId, string[]> = {
-  watch: ["youtube", "netflix", "espn", "prime-video", "disney-plus", "hbo-max", "xbox-cloud", "twitch"],
+  watch: ["youtube", "netflix", "espn", "prime-video", "disney-plus", "hbo-max", "paramount-plus", "twitch"],
   listen: ["spotify", "apple-music", "youtube-music", "youtube", "plex", "twitch"],
   focus: ["chatgpt", "claude", "gemini", "gmail", "google-calendar", "google-drive", "notion", "perplexity"],
   drive: ["google-maps", "waze", "plugshare", "supercharger-map", "google-calendar", "spotify"],

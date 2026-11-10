@@ -29,6 +29,15 @@ export interface CatalogService {
   /** Kept for custom-link compatibility; derived from accent for catalog items. */
   hue: number;
   blurb: string;
+  /** Highlighted at the top of its category on Home and in the Library. */
+  featured?: boolean;
+  /**
+   * Our own text/icon tile instead of a logo. Used where we deliberately show
+   * no third-party logos, cover art or screenshots.
+   */
+  textTile?: { label: string; icon: "gamepad" };
+  /** Opens a "How to play" setup sheet from an info button on the tile. */
+  guide?: "cloud-gaming";
 }
 
 /** Internal keys stay stable ("video", "games") so saved data and URLs keep working. */
@@ -37,7 +46,7 @@ export const CATEGORY_LABELS: Record<Category, string> = {
   music: "Music",
   ai: "AI",
   productivity: "Productivity",
-  games: "Gaming",
+  games: "Games",
   utilities: "Utilities",
   custom: "My links",
 };
@@ -62,7 +71,7 @@ const s = (
   url: string,
   accent: string,
   blurb: string,
-  opts: Partial<Pick<CatalogService, "requiresAccount" | "parkedUseOnly" | "launch">> = {},
+  opts: Partial<Pick<CatalogService, "requiresAccount" | "parkedUseOnly" | "launch" | "featured" | "textTile" | "guide">> = {},
 ): CatalogService => ({
   id,
   name,
@@ -75,7 +84,13 @@ const s = (
   requiresAccount: opts.requiresAccount ?? true,
   teslaStatus: "not-tested",
   parkedUseOnly: opts.parkedUseOnly ?? (category === "video" || category === "games"),
+  ...(opts.featured ? { featured: true } : {}),
+  ...(opts.textTile ? { textTile: opts.textTile } : {}),
+  ...(opts.guide ? { guide: opts.guide } : {}),
 });
+
+/** The featured GTA VI launch tile. It is only a link to Xbox Cloud Gaming's own site. */
+export const GTA_VI_XBOX_ID = "gta-vi-xbox";
 
 export const CATALOG: CatalogService[] = [
   // Streaming
@@ -104,7 +119,11 @@ export const CATALOG: CatalogService[] = [
   s("google-drive", "Google Drive", "productivity", "https://drive.google.com/", "#1FA463", "Files and folders."),
   s("google-docs", "Google Docs", "productivity", "https://docs.google.com/", "#4C8BF5", "Documents."),
   s("notion", "Notion", "productivity", "https://www.notion.so/", "#C8CDD5", "Notes, docs and wikis."),
-  // Gaming
+  // Games. Links out to each service's official site; we never stream games ourselves.
+  // Same-tab, top-level navigation: Xbox is expected to refuse embedding.
+  s(GTA_VI_XBOX_ID, "GTA VI on Xbox Cloud Gaming", "games", "https://www.xbox.com/play", "#7C5CFF",
+    "Launches Nov 19, 2026. Requires Xbox Game Pass and a controller.",
+    { launch: "same-tab", featured: true, textTile: { label: "GTA VI", icon: "gamepad" }, guide: "cloud-gaming" }),
   s("xbox-cloud", "Xbox Cloud Gaming", "games", "https://www.xbox.com/play", "#107C10", "Stream Xbox games."),
   s("geforce-now", "GeForce NOW", "games", "https://play.geforcenow.com/", "#76B900", "Stream PC games."),
   // Utilities (trip prep and charging stops; plan before you drive)

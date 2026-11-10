@@ -5,7 +5,10 @@ import { CATALOG } from "@/lib/catalog";
 import { BRAND_TILES } from "@/lib/brand-icons";
 import { BRAND_ICON_DATA } from "@/lib/brand-icon-data";
 
-const NO_LOGO = new Set(["plugshare"]); // no freely published SVG; uses the monogram fallback
+const NO_LOGO = new Set([
+  "plugshare", // no freely published SVG; uses the monogram fallback
+  "gta-vi-xbox", // deliberately our own text/icon tile: no Rockstar or Xbox logos or art
+]);
 const UNSAFE = /<script|<foreignObject|\bon[a-z]+\s*=|<image|<style|href\s*=\s*"(?!#)|url\((?!#)|@import/i;
 
 describe("brand icons", () => {

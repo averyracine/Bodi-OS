@@ -8,6 +8,7 @@ import { BRAND_TILES } from "@/lib/brand-icons";
 import { BRAND_ICON_DATA } from "@/lib/brand-icon-data";
 import { useOnline } from "@/hooks/useBrowser";
 import { Icon } from "./Icon";
+import { GuideButton } from "./GameGuide";
 
 /**
  * Brand logos are bundled (data: URIs, no network) and on by default.
@@ -60,6 +61,22 @@ export function recordLaunch(prefs: Preferences, id: string): Preferences {
  */
 export function BrandArt({ id, name, accent, className = "" }: { id: string; name: string; accent: string; className?: string }) {
   const [failed, setFailed] = useState(false);
+  const text = CATALOG_BY_ID.get(id)?.textTile;
+  if (text) {
+    // Our own text/icon tile: no third-party logos, cover art or screenshots.
+    return (
+      <span
+        aria-hidden="true"
+        data-app-icon
+        data-icon-kind="text"
+        className={`brand-tile brand-tile-fallback brand-tile-text ${className}`}
+        style={{ ["--tint" as string]: accent }}
+      >
+        <Icon name={text.icon} size={28} className="brand-tile-text-icon" />
+        <span className="brand-tile-text-label">{text.label}</span>
+      </span>
+    );
+  }
   const tile = LOGOS_ON ? BRAND_TILES[id] : undefined;
   const src = tile ? BRAND_ICON_DATA[id] : undefined;
   if (!tile || !src || failed) {
@@ -155,6 +172,20 @@ export function LaunchLink({
  * The whole thing is one link, so the touch target covers tile and label.
  */
 export function AppTile({ svc, onLaunch, compact = false }: { svc: ResolvedService; onLaunch?: () => void; compact?: boolean }) {
+  const guide = !compact && !svc.custom ? CATALOG_BY_ID.get(svc.id)?.guide : undefined;
+  if (guide) {
+    // The info button can't live inside the link, so it sits beside it over the tile.
+    return (
+      <span className="relative block">
+        <AppTileLink svc={svc} onLaunch={onLaunch} compact={compact} />
+        <GuideButton name={svc.name} className="absolute top-1 left-1" />
+      </span>
+    );
+  }
+  return <AppTileLink svc={svc} onLaunch={onLaunch} compact={compact} />;
+}
+
+function AppTileLink({ svc, onLaunch, compact }: { svc: ResolvedService; onLaunch?: () => void; compact: boolean }) {
   return (
     <LaunchLink service={svc} onLaunch={onLaunch} className={`app-tile group ${compact ? "app-tile-compact" : ""}`}>
       <span className="relative block">
