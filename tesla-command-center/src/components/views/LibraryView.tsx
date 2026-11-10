@@ -9,6 +9,7 @@ import { track } from "@/lib/analytics";
 import { usePrefs } from "../PrefsProvider";
 import { Icon } from "../Icon";
 import { BrandArt, LaunchLink, recordLaunch, resolveService } from "../ServiceTile";
+import { HowToPlaySheet } from "../HowToPlaySheet";
 
 type Filter = "all" | Category;
 const FILTERS: Filter[] = ["all", "video", "music", "ai", "productivity", "games", "utilities", "custom"];
@@ -32,6 +33,7 @@ export function LibraryView() {
   const [filter, setFilter] = useState<Filter>("all");
   const [notice, setNotice] = useState("");
   const [target, setTarget] = useState<Target | null>(null);
+  const [guideOpen, setGuideOpen] = useState(false);
   const deferredQuery = useDeferredValue(query);
 
   const rows: Row[] = useMemo(() => {
@@ -132,7 +134,7 @@ export function LibraryView() {
 
       <div className="flex flex-wrap items-center gap-3 card px-4 py-3">
         <span className="text-sm text-muted">Starring adds to</span>
-        <div className="seg" role="radiogroup" aria-label="Add apps to">
+        <div className="seg flex-wrap max-w-full" role="radiogroup" aria-label="Add apps to">
           {[...PRESETS.map((p) => ({ id: p.id as Target, label: p.label })), { id: "quick" as Target, label: "Quick Launch" }].map((o) => (
             <button key={o.id} role="radio" aria-checked={tgt === o.id} onClick={() => setTarget(o.id)} className="!min-h-[44px]">{o.label}</button>
           ))}
@@ -204,6 +206,11 @@ export function LibraryView() {
                   >
                     Open <Icon name="external" size={16} />
                   </LaunchLink>
+                  {svc.guide && (
+                    <button className="btn btn-sm" aria-haspopup="dialog" onClick={() => setGuideOpen(true)}>
+                      <Icon name="info" size={16} /> How to play
+                    </button>
+                  )}
                   {row.custom && (
                     <button className="btn btn-sm btn-danger" onClick={() => removeCustom(row.id)} aria-label={`Delete custom link ${row.name}`}>
                       Delete
@@ -215,6 +222,7 @@ export function LibraryView() {
           })}
         </ul>
       )}
+      <HowToPlaySheet open={guideOpen} onClose={() => setGuideOpen(false)} />
       <p className="text-muted text-sm">
         Links open the service&rsquo;s official site as a normal page. We don&rsquo;t embed, proxy or sign in to third-party services, and a link here isn&rsquo;t a promise that playback works in your car.
       </p>

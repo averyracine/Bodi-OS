@@ -5,7 +5,9 @@ import { CATALOG } from "@/lib/catalog";
 import { BRAND_TILES } from "@/lib/brand-icons";
 import { BRAND_ICON_DATA } from "@/lib/brand-icon-data";
 
-const NO_LOGO = new Set(["plugshare"]); // no freely published SVG; uses the monogram fallback
+// plugshare: no freely published SVG (monogram fallback).
+// gta-vi-xbox: deliberately a CruiseCtrl text tile; no Rockstar or Xbox artwork.
+const NO_LOGO = new Set(["plugshare", "gta-vi-xbox"]);
 const UNSAFE = /<script|<foreignObject|\bon[a-z]+\s*=|<image|<style|href\s*=\s*"(?!#)|url\((?!#)|@import/i;
 
 describe("brand icons", () => {

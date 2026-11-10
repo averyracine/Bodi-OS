@@ -261,7 +261,7 @@ textarea.input { padding: 0.9rem 1rem; line-height: 1.5; }
 .chip-warn { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 40%, transparent); background: var(--warn-soft); }
 .chip-accent { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 40%, transparent); background: var(--accent-soft); }
 
-.seg { display: inline-flex; padding: 4px; gap: 4px; border-radius: 16px; background: var(--bg); border: 1px solid var(--line); }
+.seg { display: inline-flex; flex-wrap: wrap; max-width: 100%; padding: 4px; gap: 4px; border-radius: 16px; background: var(--bg); border: 1px solid var(--line); }
 .seg > button { min-height: 48px; padding: 0 1.1rem; border-radius: 12px; font-weight: 600; color: var(--muted); }
 .seg > button { transition: background 0.16s ease, color 0.16s ease; }
 .seg > button:hover { color: var(--text); }
@@ -334,4 +334,25 @@ button.icon-btn:hover, button.icon-btn[aria-expanded="true"] { color: var(--text
   border: 1px solid var(--line-strong);
   box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.45), 0 0 14px -8px var(--accent);
   letter-spacing: 0.08em;
+}
+
+/* Text tile (our own style, used where we show no third-party artwork) */
+.brand-tile-text {
+  background:
+    radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--violet) 38%, transparent), transparent 60%),
+    linear-gradient(150deg, #151a33, #0b0f1f);
+}
+.brand-tile-text > span { margin-bottom: 9%; }
+.brand-tile-text-title { font-family: var(--font-display); font-weight: 700; font-size: 17cqw; line-height: 1; letter-spacing: -0.02em; color: #fff; }
+.brand-tile-text-caption { font-size: 7cqw; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+.app-tile-note { font-size: 0.75rem; line-height: 1.3; text-align: center; color: var(--muted); margin-top: -0.25rem; padding: 0 0.15rem; }
+.tile-info {
+  position: absolute; top: 7px; left: 7px; z-index: 2; display: grid; place-items: center;
+  width: 44px; height: 44px; border-radius: 999px; color: #fff;
+  background: rgba(0, 0, 0, 0.45); border: 1px solid rgba(255, 255, 255, 0.18);
+  transition: background 0.16s ease;
+}
+.tile-info:hover, .tile-info:focus-visible { background: color-mix(in srgb, var(--accent) 35%, rgba(0, 0, 0, 0.6)); }
+@media (max-width: 639px) {
+  .mode-seg > button { padding: 0 0.3rem; font-size: 0.85rem; }
 }

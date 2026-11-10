@@ -4,9 +4,9 @@ import { PRESETS, type PresetId } from "@/lib/presets";
 import { usePrefs } from "./PrefsProvider";
 import { Icon, type IconName } from "./Icon";
 
-export const MODE_ICON: Record<PresetId, IconName> = { watch: "tv", listen: "headphones", focus: "briefcase", drive: "route" };
+export const MODE_ICON: Record<PresetId, IconName> = { watch: "tv", listen: "headphones", focus: "briefcase", drive: "route", games: "gamepad" };
 
-/** Watch / Listen / Work / Drive. Screen layouts, not vehicle modes. */
+/** Watch / Listen / Work / Games / Drive. Screen layouts, not vehicle modes. */
 export function ModeSelector({ className = "", compact = false }: { className?: string; compact?: boolean }) {
   const { prefs, update } = usePrefs();
   if (!prefs) return <div className={`skeleton h-12 w-72 ${className}`} />;
