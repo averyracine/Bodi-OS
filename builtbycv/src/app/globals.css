@@ -1,0 +1,123 @@
+@import "tailwindcss";
+
+/* Design tokens: warm paper / sand / ink with one restrained copper accent */
+@theme {
+  --color-paper: #f5f2ed;
+  --color-sand-50: #faf8f5;
+  --color-sand-100: #ede7de;
+  --color-sand-200: #ddd3c5;
+  --color-sand-400: #b9a993;
+  --color-stone: #5f5a53;
+  --color-muted: #7a746b;
+  --color-line: #e2dbd0;
+  --color-ink: #161513;
+  --color-ink-2: #262421;
+  --color-accent: #8a5535;
+  --color-accent-dark: #6f4329;
+  --color-ok: #2f6b45;
+  --color-warn: #a15c00;
+  --color-danger: #a8322d;
+
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-display), ui-serif, Georgia, serif;
+
+  --text-display: clamp(2.6rem, 1.4rem + 5.2vw, 5.75rem);
+  --text-h2: clamp(2rem, 1.4rem + 2.4vw, 3.4rem);
+  --text-h3: clamp(1.35rem, 1.15rem + 0.8vw, 1.8rem);
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+}
+
+@utility container-x {
+  @apply mx-auto w-full max-w-[1320px] px-5 sm:px-8 lg:px-12;
+}
+@utility eyebrow {
+  @apply text-[0.72rem] font-medium uppercase tracking-[0.18em] text-muted;
+}
+@utility h-display {
+  @apply font-serif font-light leading-[1.02] tracking-[-0.02em];
+  font-size: var(--text-display);
+}
+@utility h2 {
+  @apply font-serif font-light leading-[1.08] tracking-[-0.015em];
+  font-size: var(--text-h2);
+}
+@utility h3 {
+  @apply font-serif font-normal leading-[1.2] tracking-[-0.01em];
+  font-size: var(--text-h3);
+}
+@utility lede {
+  @apply text-lg leading-relaxed text-stone sm:text-xl;
+}
+@utility btn {
+  @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-6 text-[0.95rem] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-60;
+}
+@utility btn-primary {
+  @apply btn bg-accent text-white hover:bg-accent-dark focus-visible:outline-accent;
+}
+@utility btn-ghost {
+  @apply btn border border-current/30 hover:border-current;
+}
+@utility link-arrow {
+  @apply inline-flex items-center gap-2 font-medium underline decoration-1 underline-offset-[6px] decoration-current/30 hover:decoration-current;
+}
+@utility field {
+  @apply block w-full rounded-lg border border-line bg-white px-4 py-3 text-base text-ink placeholder:text-muted/70 focus:border-ink focus:outline-none focus:ring-1 focus:ring-ink aria-[invalid=true]:border-danger;
+}
+@utility label {
+  @apply mb-1.5 block text-sm font-medium text-ink-2;
+}
+@utility card {
+  @apply rounded-2xl border border-line bg-white;
+}
+
+/* Word-by-word heading reveal. Text stays real text with real spaces. */
+.reveal-word {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.35em);
+  animation: reveal-word 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+@keyframes reveal-word {
+  to { opacity: 1; transform: none; }
+}
+.fade-up {
+  opacity: 0;
+  transform: translateY(12px);
+  animation: reveal-word 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal-word, .fade-up { animation: none; opacity: 1; transform: none; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; }
+}
+
+/* Placeholder image surface */
+.ph-surface {
+  background:
+    radial-gradient(120% 90% at 20% 10%, #3a342d 0%, transparent 60%),
+    radial-gradient(90% 80% at 90% 90%, #4a3b2e 0%, transparent 55%),
+    linear-gradient(135deg, #2a2622, #1b1916);
+}
+.ph-surface-light {
+  background:
+    repeating-linear-gradient(135deg, transparent 0 14px, rgba(22,21,19,0.035) 14px 15px),
+    linear-gradient(160deg, #ede7de, #ddd3c5);
+}
+
+input[type="range"].ba-range {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+input[type="range"].ba-range::-webkit-slider-thumb { -webkit-appearance: none; width: 44px; height: 100vh; cursor: ew-resize; }
+input[type="range"].ba-range::-moz-range-thumb { width: 44px; height: 1000px; border: 0; background: transparent; cursor: ew-resize; }
