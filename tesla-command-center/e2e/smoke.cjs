@@ -305,8 +305,9 @@ async function noHorizontalScroll(page) {
 
   // Pairing in demo mode
   await page.goto(`${BASE}/pair/car`);
-  await page.getByRole("button", { name: "Show pairing code" }).click();
+  // The car page starts pairing on its own (no tap needed); in demo mode it explains why it can't.
   check("pairing unavailable in demo is explained", await visible(page.getByText("isn't available in demo mode")));
+  check("car sign-in page offers email as a fallback", await visible(page.getByRole("link", { name: "Sign in with email instead" })));
 
   // Reset
   await page.goto(`${BASE}/app/settings`);
