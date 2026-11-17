@@ -35,7 +35,7 @@ export default async function CrmLayout({ children }: { children: React.ReactNod
         </div>
       </header>
 
-      <main className="min-w-0 px-4 pb-28 pt-5 sm:px-6 lg:px-10 lg:pb-12 lg:pt-10">{children}</main>
+      <main className="min-w-0 px-4 pb-28 pt-5 sm:px-6 lg:px-10 lg:pb-12 lg:pt-10 [&_.grid>*]:min-w-0">{children}</main>
       <BottomNav badge={n} />
     </div>
   );
