@@ -69,13 +69,23 @@ export const stats = [
 export const founder = {
   name: "Noah Alexander Burris",
   title: "Founder & CEO",
-  photo: null as string | null, // needs an approved portrait
+  photo: "/team/noah-burris.jpg" as string | null, // from the current builtbycv.com
   bio: [
     "Noah Burris is an Arizona entrepreneur, real estate investor and construction executive. He founded CV Capital to bring an investor's discipline to residential and commercial construction.",
     "He leads the company's direction, construction operations and client relationships. His view is simple: every project should improve how a property looks, how it works, how long it lasts, and what it's worth.",
   ],
   quote: "Creating value at every stage, from the first conversation to the final walkthrough.",
 };
+
+/** Partners shown on Our Story. Claims marked verified: false are hidden at launch until confirmed. */
+export const partners = [
+  {
+    name: "Michael Penka",
+    role: "Exclusive real estate listing partner",
+    photo: "/team/michael-penka.jpg",
+    claim: { text: "Top 3% of realtors in Arizona, with over $60M in closed transactions.", verified: false },
+  },
+];
 
 export const nav = [
   { label: "Services", href: "/services" },
