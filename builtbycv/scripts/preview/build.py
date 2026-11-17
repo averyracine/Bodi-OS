@@ -134,29 +134,15 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 main{min-height:60vh}
 """
 
-pricing = [
-    {"key": "kitchen", "label": "Kitchen remodel", "sizeLabel": "Kitchen size", "sizes": ["Small (under 150 sq ft)", "Medium (150–250 sq ft)", "Large (250+ sq ft)"], "startingAt": 17000, "range": None},
-    {"key": "bathroom", "label": "Bathroom remodel", "sizeLabel": "Bathroom type", "sizes": ["Powder room", "Guest / hall bath", "Primary bath"], "startingAt": 7500, "range": None},
-    {"key": "wholeHome", "label": "Whole-home renovation", "sizeLabel": "Home size", "sizes": ["Under 1,800 sq ft", "1,800–3,000 sq ft", "3,000–4,500 sq ft", "4,500+ sq ft"], "startingAt": 50000, "range": [50000, 500000]},
-    {"key": "addition", "label": "Home addition", "sizeLabel": "Addition size", "sizes": ["Under 400 sq ft", "400–800 sq ft", "800+ sq ft"], "startingAt": 50000, "range": None},
-    {"key": "adu", "label": "ADU / casita", "sizeLabel": "Unit size", "sizes": ["Studio (under 450 sq ft)", "1 bed (450–750 sq ft)", "2 bed (750+ sq ft)"], "startingAt": 75000, "range": None},
-    {"key": "customHome", "label": "Ground-up custom home", "sizeLabel": "Home size", "sizes": ["Under 3,000 sq ft", "3,000–5,000 sq ft", "5,000+ sq ft"], "startingAt": None, "range": None},
-    {"key": "outdoor", "label": "Outdoor living (patio, pergola, outdoor kitchen)", "sizeLabel": "Scope", "sizes": ["Single feature", "Several features", "Full backyard"], "startingAt": None, "range": None},
-    {"key": "commercial", "label": "Commercial / tenant improvement", "sizeLabel": "Space size", "sizes": ["Under 2,000 sq ft", "2,000–10,000 sq ft", "10,000+ sq ft"], "startingAt": None, "range": None},
-]
-finishes = [
-    {"key": "essential", "label": "Essential", "description": "Quality materials, functional improvements, clean finishes and efficient construction."},
-    {"key": "premium", "label": "Premium", "description": "Custom cabinetry, upgraded fixtures, stone countertops, designer finishes and bigger layout changes."},
-    {"key": "luxury", "label": "Luxury / Bespoke", "description": "Fully custom interiors, natural stone, architectural changes and high-end materials throughout."},
-]
-disclaimer = "This is a planning-level figure, not a quote. Every property is unique. Final pricing depends on scope, square footage, material selections, site access, permits and complexity, and is set in a written proposal after an on-site consultation. Starting prices apply to qualifying project scopes."
+import subprocess
+APP_ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
+content = json.loads(subprocess.run(["npx", "tsx", "scripts/preview/dump-content.ts"], cwd=APP_ROOT, check=True, capture_output=True, text=True).stdout)
 
 nav = [("Home", "home"), ("Services", "services"), ("Projects", "projects"), ("Process", "process"), ("Why CV", "why-cv"),
        ("Our Story", "our-story"), ("Financing", "financing"), ("FAQ", "faq"), ("Contact", "contact")]
 
 script = open(HERE + "/preview.js").read()
-data = {"titles": titles, "headerHome": header_home, "headerSolid": header_solid, "pricing": pricing,
-        "finishes": finishes, "disclaimer": disclaimer, "nav": nav}
+data = {"titles": titles, "headerHome": header_home, "headerSolid": header_solid, "nav": nav, **content}
 
 templates = "\n".join(f'<template id="r-{n}">{h}</template>' for n, h in pages.items())
 templates += "\n" + "\n".join(f'<template id="r-{n}" data-crm="1">{h}</template>' for n, h in crm_pages.items())

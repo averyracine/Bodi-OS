@@ -1,12 +1,19 @@
 /** Smaller content blocks used on the home page and inner pages. */
+import { startingPriceDisclaimer } from "./pricing";
 
 export const hero = {
-  eyebrow: "CV Capital · Licensed Arizona General Contractor",
-  heading: "Phoenix homes, remodeled start to finish.",
-  sub: "Kitchens, baths, whole-home renovations, additions, ADUs and outdoor living, planned and built by one licensed team.",
+  eyebrow: "Licensed residential & commercial general contractor · Arizona",
+  heading: "Exceptional Spaces. Built to Last.",
+  sub: "CV Capital is a licensed residential and commercial general contractor delivering luxury renovations, custom homes, additions, ADUs and commercial improvements across the Phoenix metro.",
   // Put a real, company-owned photo or short muted video in /public/hero/ and set these.
   image: null as string | null,
   video: null as string | null,
+};
+
+/** Intro beside the price calculator on the home page. */
+export const calculatorIntro = {
+  lede: "Get a planning-level figure in about a minute. Bathroom remodels start at $7,500; kitchens receive a custom project estimate.",
+  points: ["Based on CV Capital's published starting prices", "No ZIP-code surcharges", "Your written proposal follows a free on-site visit"],
 };
 
 export const offers = [
@@ -54,7 +61,7 @@ export const faqs = [
   },
   {
     q: "How much will my project cost?",
-    a: "Bathroom remodels start at $7,500 and kitchen remodels at $17,000 for qualifying scopes. Additions start at $50,000 and ADUs at $75,000. Whole-home and luxury renovations typically run $50,000 to $500,000. Custom homes and commercial work receive a tailored proposal. Use the price calculator for a planning figure; your written proposal sets the real number.",
+    a: `Bathroom remodels start at $7,500, home additions at $50,000 and ADUs and casitas at $75,000. Whole-home renovations typically run $50,000 to $500,000, depending on scope. Kitchens and outdoor living receive custom project estimates, custom homes are individually quoted, and commercial work receives a custom commercial proposal. ${startingPriceDisclaimer} Use the price calculator for a planning figure; your written proposal sets the real number.`,
   },
   {
     q: "Do you handle permits?",

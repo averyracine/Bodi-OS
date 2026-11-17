@@ -15,7 +15,7 @@ export const site = {
   tagline: "Creating Value. Building Excellence.",
   promise: "From concept to completion. Creating value at every stage.",
   positioning:
-    "Licensed Arizona general contractor specializing in luxury renovations, ADUs, residential development and commercial construction.",
+    "Premium, full-service residential and commercial general contractor in Arizona: luxury renovations, custom homes, additions, ADUs and commercial improvements.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.builtbycv.com",
   phone: "(602) 743-6957",
   phoneHref: "tel:+16027436957",
@@ -50,7 +50,7 @@ export const site = {
     url: null as string | null,
   },
   cta: {
-    primary: "Schedule a Free Consultation",
+    primary: "Schedule a Consultation",
     primaryShort: "Free Consultation",
     secondary: "Price My Project",
     href: "/contact",

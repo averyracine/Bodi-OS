@@ -128,7 +128,7 @@
       var ul = sec.querySelector("ul");
       ul.querySelectorAll("li").forEach(function (li) {
         li.setAttribute("draggable", "true");
-        li.addEventListener("dragstart", function (e) { dragged = li; li.style.opacity = "0.4"; e.dataTransfer.effectAllowed = "move"; try { e.dataTransfer.setData("text/plain", "card"); } catch (x) {} });
+        li.addEventListener("dragstart", function (e) { dragged = li; li.style.opacity = "0.4"; e.dataTransfer.effectAllowed = "move"; try { e.dataTransfer.setData("text/plain", "card"); } catch { /* not supported */ } });
         li.addEventListener("dragend", function () { li.style.opacity = ""; dragged = null; sections.forEach(function (s) { s.classList.remove("ring-2", "ring-accent/40"); }); });
       });
       sec.addEventListener("dragover", function (e) { if (dragged) { e.preventDefault(); sec.classList.add("ring-2", "ring-accent/40"); } });
@@ -155,7 +155,7 @@
       var cards = sec ? sec.querySelectorAll("ul > li") : [];
       var opts = sections.map(function (s, i) { return '<option value="' + i + '"' + (i === idx ? " selected" : "") + ">" + esc(s.getAttribute("aria-label")) + "</option>"; }).join("");
       mlist.innerHTML = cards.length ? "" : '<li class="rounded-xl border border-dashed border-line p-6 text-center text-sm text-muted">No projects in this stage.</li>';
-      Array.prototype.forEach.call(cards, function (c, ci) {
+      Array.prototype.forEach.call(cards, function (c) {
         var li = document.createElement("li");
         li.className = "card p-4";
         li.innerHTML = c.innerHTML + '<label class="mt-3 flex items-center gap-2 text-sm"><span class="text-muted">Move to</span><select class="field min-h-10 flex-1 py-2 text-sm">' + opts + "</select></label>";

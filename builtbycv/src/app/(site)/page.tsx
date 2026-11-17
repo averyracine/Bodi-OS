@@ -1,13 +1,15 @@
 import Link from "next/link";
 import Image from "next/image";
 import { site } from "@/content/site";
-import { hero, beforeAfter, faqs } from "@/content/copy";
+import { hero, beforeAfter, faqs, calculatorIntro } from "@/content/copy";
+import { LicenseBlock } from "@/components/site/LicenseBlock";
 import { AnimatedHeading } from "@/components/site/AnimatedHeading";
 import { Section, SectionHeader } from "@/components/site/Section";
 import { PriceCalculator } from "@/components/site/PriceCalculator";
 import { BeforeAfter } from "@/components/site/BeforeAfter";
 import { JsonLd } from "@/components/site/JsonLd";
 import { PlaceholderTag } from "@/components/site/Placeholder";
+import { PhoneIcon } from "@/components/site/Header";
 import {
   OffersBlock, ServicesGrid, FeaturedProjects, ComparisonTable, StatsBand, FounderBlock,
   Testimonials, FinancingBlock, FaqList, FinalCta,
@@ -15,9 +17,9 @@ import {
 import { pageMeta, faqJsonLd } from "@/lib/seo";
 
 export const metadata = pageMeta({
-  title: "CV Capital | Phoenix Remodeling, ADUs & Custom Construction",
+  title: "CV Capital | Residential & Commercial General Contractor in Phoenix",
   description:
-    "Kitchen and bath remodels, whole-home renovations, additions, ADUs and outdoor living across the Phoenix metro. Licensed KB-1 Arizona contractor, ROC #368875. Free consultations.",
+    "Licensed residential and commercial general contractor in the Phoenix metro: luxury renovations, custom homes, additions, ADUs and commercial improvements. Arizona ROC #368875, KB-1. Free consultations.",
   path: "/",
   absoluteTitle: true,
 });
@@ -48,6 +50,7 @@ export default function HomePage() {
           <p className="fade-up mt-6 max-w-xl text-lg leading-relaxed text-white/80 sm:text-xl" style={{ animationDelay: "650ms" }}>{hero.sub}</p>
           <div className="fade-up mt-10 flex flex-col gap-3 sm:flex-row" style={{ animationDelay: "800ms" }}>
             <Link href={site.cta.href} className="btn-primary">{site.cta.primary}</Link>
+            <a href={site.phoneHref} className="btn-ghost text-white"><PhoneIcon /> Call Now</a>
             <a href="#price-my-project" className="btn-ghost text-white">{site.cta.secondary}</a>
           </div>
           <p className="fade-up mt-10 text-sm text-white/65" style={{ animationDelay: "950ms" }}>
@@ -56,6 +59,9 @@ export default function HomePage() {
           {!hero.image && !hero.video && <p className="mt-3"><PlaceholderTag note="Add a company-owned hero photo or short muted video in src/content/copy.ts">Higher-res hero photo or video needed</PlaceholderTag></p>}
         </div>
       </section>
+
+      {/* License block, directly under the hero */}
+      <LicenseBlock />
 
       {/* 2. Free offers */}
       <OffersBlock />
@@ -66,11 +72,9 @@ export default function HomePage() {
           <div>
             <p className="eyebrow mb-4">Price my project</p>
             <h2 id="calc-h" className="h2">What will my project cost?</h2>
-            <p className="lede mt-5">Get a planning-level figure in about a minute. Kitchen remodels from $17,000, bathrooms from $7,500.</p>
+            <p className="lede mt-5">{calculatorIntro.lede}</p>
             <ul className="mt-8 space-y-3 text-sm text-stone">
-              <li>· Based on CV Capital&apos;s published starting prices</li>
-              <li>· No ZIP-code surcharges</li>
-              <li>· Your written proposal follows a free on-site visit</li>
+              {calculatorIntro.points.map((t) => <li key={t}>· {t}</li>)}
             </ul>
           </div>
           <PriceCalculator />

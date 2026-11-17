@@ -12,7 +12,6 @@
   function esc(s) {
     return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; });
   }
-  function usd(n) { return "$" + n.toLocaleString("en-US"); }
 
   /* ---------- Header ---------- */
   function paintHeader() {
@@ -47,8 +46,8 @@
       menuSlot.innerHTML =
         '<div id="mobile-menu" class="fixed inset-x-0 bottom-0 top-[76px] z-40 overflow-y-auto bg-paper text-ink lg:hidden">' +
         '<nav aria-label="Mobile" class="container-x pb-28 pt-8"><ul class="divide-y divide-line border-y border-line">' + links + "</ul>" +
-        '<div class="mt-8 grid gap-3"><a href="#contact" class="btn-primary">Schedule a Free Consultation</a>' +
-        '<a href="tel:+16027436957" class="btn-ghost">Call (602) 743-6957</a></div></nav></div>';
+        '<div class="mt-8 grid gap-3"><a href="#contact" class="btn-primary">' + esc(D.cta) + '</a>' +
+        '<a href="' + D.phoneHref + '" class="btn-ghost">Call ' + esc(D.phone) + '</a></div></nav></div>';
       var top = Math.max(0, header.getBoundingClientRect().bottom);
       menuSlot.firstChild.style.top = top + "px";
       document.body.style.overflow = "hidden";
@@ -105,7 +104,7 @@
     if (document.getElementById("r-" + target)) {
       e.preventDefault();
       if (location.hash !== "#" + target) {
-        try { history.pushState(null, "", "#" + target); } catch (err) { location.hash = target; }
+        try { history.pushState(null, "", "#" + target); } catch { location.hash = target; }
       }
       show(target, scroll);
     } else if (scroll || target) {
@@ -139,14 +138,9 @@
     });
   }
 
-  /* Price calculator: same rules as the live site (src/content/pricing.ts) */
+  /* Price calculator: results are exported from src/content/pricing.ts by dump-content.ts */
   function calculate(p, finishKey) {
-    var f = D.finishes.filter(function (x) { return x.key === finishKey; })[0];
-    var fl = f ? f.label : finishKey;
-    var label = p.label.toLowerCase();
-    if (p.range) return { headline: usd(p.range[0]) + " – " + usd(p.range[1]), detail: "Typical investment for a " + label + ". " + fl + " finishes and the size of your home move you within this range. We'll narrow it at your consultation." };
-    if (p.startingAt) return { headline: "Starting at " + usd(p.startingAt), detail: "Qualifying " + label + " projects start here. " + fl + " finishes, size and layout changes increase the investment. We'll give you a written figure after an on-site visit." };
-    return { headline: "Tailored proposal", detail: "Every " + label + " is different, so we don't publish a generic range. After a free consultation we'll prepare a detailed, personalized investment proposal." };
+    return D.results[p.key][finishKey];
   }
 
   function wireCalculator(card) {
@@ -228,7 +222,7 @@
         (outside ? '<p class="mt-4 rounded-lg bg-sand-100 p-4 text-sm">ZIP ' + esc(st.zip) + " looks outside our usual Phoenix-metro service area. We'll confirm availability when we call.</p>" : "") +
         '<p class="mt-6 border-l-2 border-sand-400 pl-4 text-sm leading-relaxed text-muted">' + esc(D.disclaimer) + "</p>" +
         '<p class="pv-demo"><b>Preview:</b> on the live site this saves ' + esc(st.name) + " as a new lead in your CRM, emails you, and creates a \"Call new lead\" task for the next business day.</p>" +
-        '<div class="mt-8 flex flex-col gap-3 sm:flex-row"><a href="#contact" class="btn-primary">Schedule a Free Consultation</a><button type="button" class="btn-ghost" id="pv-again">Price another project</button></div></div>';
+        '<div class="mt-8 flex flex-col gap-3 sm:flex-row"><a href="#contact" class="btn-primary">' + esc(D.cta) + '</a><button type="button" class="btn-ghost" id="pv-again">Price another project</button></div></div>';
       body.querySelector("#pv-again").addEventListener("click", function () { st.step = 1; st.size = ""; render(); });
       body.querySelector("#pv-result").focus({ preventScroll: true });
     }

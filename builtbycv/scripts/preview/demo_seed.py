@@ -19,9 +19,9 @@ owner = "(SELECT id FROM users WHERE role='admin' ORDER BY created_at LIMIT 1)"
 
 people = [
   # first, last, phone, email, address, city, zip, project type, stage, value, created(hours ago), lead kind, status, source dict, extra
-  ("Jessica", "Moreno", "+16025550142", "jessica.moreno@example.com", "4421 E Arcadia Ln", "Phoenix", "85018", "Kitchen Remodeling", "New lead", 17000, 2, "calculator", "new",
+  ("Jessica", "Moreno", "+16025550142", "jessica.moreno@example.com", "4421 E Arcadia Ln", "Phoenix", "85018", "Kitchen Remodeling", "New lead", None, 2, "calculator", "new",
    {"utm_source": "google", "utm_medium": "cpc", "utm_campaign": "kitchen-remodel-phoenix", "gclid": "Cj0KCQiA-demo", "landing_page": "/?utm_source=google&utm_medium=cpc&utm_campaign=kitchen-remodel-phoenix"},
-   {"calc": {"projectType": "Kitchen remodel", "size": "Medium (150–250 sq ft)", "finish": "Premium", "zip": "85018", "result": "Starting at $17,000"}, "low": 17000}),
+   {"calc": {"projectType": "Kitchen remodel", "size": "Medium (150–250 sq ft)", "finish": "Premium", "zip": "85018", "result": "Custom Project Estimates"}}),
   ("Daniel", "Kim", "+14805550188", "dkim@example.com", "7810 E Camelback Rd", "Scottsdale", "85251", "Bathroom Remodeling", "New lead", 25000, 5, "estimate", "new",
    {"referrer": "https://www.instagram.com/", "landing_page": "/projects"},
    {"budget": "$15,000 – $35,000", "timeline": "Within 3 months", "heard": "Instagram", "msg": "Primary bath is original to the house (1998). Want a walk-in shower instead of the tub and a double vanity.", "photo": True}),

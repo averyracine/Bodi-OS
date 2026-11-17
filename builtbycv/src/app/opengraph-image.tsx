@@ -12,7 +12,7 @@ export default function OgImage() {
           <div style={{ fontSize: 44, letterSpacing: 1 }}>CV Capital</div>
           <div style={{ fontSize: 18, letterSpacing: 8, opacity: 0.6, marginTop: 8 }}>CREATING VALUE</div>
         </div>
-        <div style={{ fontSize: 76, lineHeight: 1.05, maxWidth: 950 }}>Phoenix homes, remodeled start to finish.</div>
+        <div style={{ fontSize: 76, lineHeight: 1.05, maxWidth: 950 }}>Exceptional Spaces. Built to Last.</div>
         <div style={{ fontSize: 24, opacity: 0.7, fontFamily: "sans-serif" }}>Arizona ROC #368875 · KB-1 General Dual Building Contractor</div>
       </div>
     ),

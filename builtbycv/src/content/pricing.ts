@@ -1,12 +1,16 @@
 /**
  * Price calculator rules. EDIT HERE.
  *
- * Confirmed by the owner (questionnaire):
- *   - Bathroom from $7,500, kitchen from $17,000, additions from $50,000, ADUs from $75,000
- *   - Whole-home and luxury renovations: $50,000–$500,000
- *   - Custom homes, commercial, casitas, roofing, outdoor living, structural: tailored proposal
+ * Confirmed by the owner (questionnaire + preview revisions):
+ *   - Bathroom from $7,500, additions from $50,000, ADUs from $75,000
+ *   - Whole-home and luxury renovations: $50,000–$500,000, depending on scope
+ *   - Kitchens and outdoor living: custom project estimates
+ *   - Custom homes: individually quoted; commercial: custom commercial proposals
  *   - No ZIP-code surcharges
  *   - Do NOT publish arbitrary ceilings
+ *
+ * `priceLabel` is the exact wording shown wherever a service's price appears
+ * (services grid, service pages, service-area pages, calculator result).
  *
  * Optional: once the owner confirms ranges per finish level, fill in `finishRanges`
  * (dollars, per project) and the calculator will show that range instead of the
@@ -28,22 +32,31 @@ export type ProjectPricing = {
   startingAt: number | null;
   range: { low: number; high: number } | null;
   tailored: boolean;
+  priceLabel: string;
   finishRanges: Partial<Record<FinishLevel, { low: number; high: number }>> | null;
 };
 
 export const projectPricing: ProjectPricing[] = [
-  { key: "kitchen", label: "Kitchen remodel", sizeLabel: "Kitchen size", sizes: ["Small (under 150 sq ft)", "Medium (150–250 sq ft)", "Large (250+ sq ft)"], startingAt: 17000, range: null, tailored: false, finishRanges: null },
-  { key: "bathroom", label: "Bathroom remodel", sizeLabel: "Bathroom type", sizes: ["Powder room", "Guest / hall bath", "Primary bath"], startingAt: 7500, range: null, tailored: false, finishRanges: null },
-  { key: "wholeHome", label: "Whole-home renovation", sizeLabel: "Home size", sizes: ["Under 1,800 sq ft", "1,800–3,000 sq ft", "3,000–4,500 sq ft", "4,500+ sq ft"], startingAt: 50000, range: { low: 50000, high: 500000 }, tailored: false, finishRanges: null },
-  { key: "addition", label: "Home addition", sizeLabel: "Addition size", sizes: ["Under 400 sq ft", "400–800 sq ft", "800+ sq ft"], startingAt: 50000, range: null, tailored: false, finishRanges: null },
-  { key: "adu", label: "ADU / casita", sizeLabel: "Unit size", sizes: ["Studio (under 450 sq ft)", "1 bed (450–750 sq ft)", "2 bed (750+ sq ft)"], startingAt: 75000, range: null, tailored: false, finishRanges: null },
-  { key: "customHome", label: "Ground-up custom home", sizeLabel: "Home size", sizes: ["Under 3,000 sq ft", "3,000–5,000 sq ft", "5,000+ sq ft"], startingAt: null, range: null, tailored: true, finishRanges: null },
-  { key: "outdoor", label: "Outdoor living (patio, pergola, outdoor kitchen)", sizeLabel: "Scope", sizes: ["Single feature", "Several features", "Full backyard"], startingAt: null, range: null, tailored: true, finishRanges: null },
-  { key: "commercial", label: "Commercial / tenant improvement", sizeLabel: "Space size", sizes: ["Under 2,000 sq ft", "2,000–10,000 sq ft", "10,000+ sq ft"], startingAt: null, range: null, tailored: true, finishRanges: null },
+  { key: "kitchen", label: "Kitchen remodel", sizeLabel: "Kitchen size", sizes: ["Small (under 150 sq ft)", "Medium (150–250 sq ft)", "Large (250+ sq ft)"], startingAt: null, range: null, tailored: true, priceLabel: "Custom Project Estimates", finishRanges: null },
+  { key: "bathroom", label: "Bathroom remodel", sizeLabel: "Bathroom type", sizes: ["Powder room", "Guest / hall bath", "Primary bath"], startingAt: 7500, range: null, tailored: false, priceLabel: "Starting at $7,500", finishRanges: null },
+  { key: "wholeHome", label: "Whole-home renovation", sizeLabel: "Home size", sizes: ["Under 1,800 sq ft", "1,800–3,000 sq ft", "3,000–4,500 sq ft", "4,500+ sq ft"], startingAt: 50000, range: { low: 50000, high: 500000 }, tailored: false, priceLabel: "$50,000–$500,000, depending on scope", finishRanges: null },
+  { key: "addition", label: "Home addition", sizeLabel: "Addition size", sizes: ["Under 400 sq ft", "400–800 sq ft", "800+ sq ft"], startingAt: 50000, range: null, tailored: false, priceLabel: "Starting at $50,000", finishRanges: null },
+  { key: "adu", label: "ADU / casita", sizeLabel: "Unit size", sizes: ["Studio (under 450 sq ft)", "1 bed (450–750 sq ft)", "2 bed (750+ sq ft)"], startingAt: 75000, range: null, tailored: false, priceLabel: "Starting at $75,000", finishRanges: null },
+  { key: "customHome", label: "Ground-up custom home", sizeLabel: "Home size", sizes: ["Under 3,000 sq ft", "3,000–5,000 sq ft", "5,000+ sq ft"], startingAt: null, range: null, tailored: true, priceLabel: "Individually Quoted", finishRanges: null },
+  { key: "outdoor", label: "Outdoor living (patio, pergola, outdoor kitchen)", sizeLabel: "Scope", sizes: ["Single feature", "Several features", "Full backyard"], startingAt: null, range: null, tailored: true, priceLabel: "Custom Project Estimates", finishRanges: null },
+  { key: "commercial", label: "Commercial / tenant improvement", sizeLabel: "Space size", sizes: ["Under 2,000 sq ft", "2,000–10,000 sq ft", "10,000+ sq ft"], startingAt: null, range: null, tailored: true, priceLabel: "Custom Commercial Proposals", finishRanges: null },
 ];
 
-export const calculatorDisclaimer =
-  "This is a planning-level figure, not a quote. Every property is unique. Final pricing depends on scope, square footage, material selections, site access, permits and complexity, and is set in a written proposal after an on-site consultation. Starting prices apply to qualifying project scopes.";
+/** Shown wherever a starting price or range appears. */
+export const startingPriceDisclaimer =
+  "Starting prices depend on scope, materials, permits, engineering, and site conditions.";
+
+/** Shown for services priced individually (no starting price), on service pages and in the calculator. */
+export const customEstimateText =
+  "Every project is individually scoped and priced to reflect your property's requirements, architectural vision, materials, and construction complexity.";
+
+/** Calculator disclaimer; includes the starting-price disclaimer so only one note is shown. */
+export const calculatorDisclaimer = `This is a planning-level figure, not a quote. ${startingPriceDisclaimer} Final pricing is set in a written proposal after an on-site consultation.`;
 
 export type CalculatorResult = {
   kind: "range" | "starting" | "tailored";
@@ -64,12 +77,12 @@ export function calculate(typeKey: string, finish: FinishLevel): CalculatorResul
     return { kind: "range", low: fr.low, high: fr.high, headline: `${usd(fr.low)} – ${usd(fr.high)}`, detail: `Typical planning range for a ${finishLabel.toLowerCase()} ${p.label.toLowerCase()}.` };
   }
   if (p.range) {
-    return { kind: "range", low: p.range.low, high: p.range.high, headline: `${usd(p.range.low)} – ${usd(p.range.high)}`, detail: `Typical investment for a ${p.label.toLowerCase()}. ${finishLabel} finishes and the size of your home move you within this range. We'll narrow it at your consultation.` };
+    return { kind: "range", low: p.range.low, high: p.range.high, headline: p.priceLabel, detail: `Typical investment for a ${p.label.toLowerCase()}. ${finishLabel} finishes and the size of your home move you within this range. We'll narrow it at your consultation.` };
   }
   if (p.startingAt) {
-    return { kind: "starting", low: p.startingAt, high: null, headline: `Starting at ${usd(p.startingAt)}`, detail: `Qualifying ${p.label.toLowerCase()} projects start here. ${finishLabel} finishes, size and layout changes increase the investment. We'll give you a written figure after an on-site visit.` };
+    return { kind: "starting", low: p.startingAt, high: null, headline: p.priceLabel, detail: `Qualifying ${p.label.toLowerCase()} projects start here. ${finishLabel} finishes, size and layout changes increase the investment. We'll give you a written figure after an on-site visit.` };
   }
-  return { kind: "tailored", low: null, high: null, headline: "Tailored proposal", detail: `Every ${p.label.toLowerCase()} is different, so we don't publish a generic range. After a free consultation we'll prepare a detailed, personalized investment proposal.` };
+  return { kind: "tailored", low: null, high: null, headline: p.priceLabel, detail: customEstimateText };
 }
 
 /** Budget options on the estimate form, with a midpoint used as the CRM pipeline value. */

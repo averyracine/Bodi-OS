@@ -8,7 +8,7 @@ const body = Instrument_Sans({ subsets: ["latin"], variable: "--font-body", disp
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
-  title: { default: `${site.name} | Remodeling & Construction in Phoenix, AZ`, template: `%s | ${site.name}` },
+  title: { default: `${site.name} | Residential & Commercial General Contractor, Phoenix AZ`, template: `%s | ${site.name}` },
   description: site.positioning,
   applicationName: site.name,
   formatDetection: { telephone: true },

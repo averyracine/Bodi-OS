@@ -9,7 +9,7 @@ import { Section } from "@/components/site/Section";
 import { JsonLd } from "@/components/site/JsonLd";
 import { PhotoPlaceholder } from "@/components/site/Placeholder";
 import { PageHero, Breadcrumbs, ProjectCard, FinalCta, priceNote } from "@/components/site/blocks";
-import { calculatorDisclaimer } from "@/content/pricing";
+import { projectPricing, startingPriceDisclaimer, customEstimateText } from "@/content/pricing";
 
 export function generateStaticParams() {
   return services.map((s) => ({ slug: s.slug }));
@@ -25,13 +25,15 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
   const s = getService((await params).slug);
   if (!s) notFound();
   const related = projects.filter((p) => p.service === s.slug);
+  const tailored = projectPricing.find((p) => p.key === s.pricingKey)?.tailored ?? false;
   const crumbs = [{ name: "Home", path: "/" }, { name: "Services", path: "/services" }, { name: s.name, path: `/services/${s.slug}` }];
   return (
     <>
       <JsonLd data={breadcrumbJsonLd(crumbs)} />
       <JsonLd data={{ "@context": "https://schema.org", "@type": "Service", name: s.name, serviceType: s.name, description: s.intro, provider: { "@id": `${site.url}/#business` }, areaServed: "Phoenix metropolitan area, AZ" }} />
-      <PageHero eyebrow={priceNote(s.pricingKey) ?? undefined} title={s.name} lede={s.short}>
-        <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+      <PageHero eyebrow="Services" title={s.name} lede={s.short}>
+        <p className="mt-5 text-lg font-medium text-accent">{priceNote(s.pricingKey)}</p>
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <Link href={site.cta.href} className="btn-primary">{site.cta.primary}</Link>
           <Link href="/#price-my-project" className="btn-ghost">{site.cta.secondary}</Link>
         </div>
@@ -53,7 +55,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
             <div className="card p-6">
               <h2 className="font-medium">Investment</h2>
               <p className="mt-2 font-serif text-3xl font-light">{priceNote(s.pricingKey)}</p>
-              <p className="mt-3 text-xs leading-relaxed text-muted">{calculatorDisclaimer}</p>
+              <p className="mt-3 text-sm leading-relaxed text-stone">{tailored ? customEstimateText : startingPriceDisclaimer}</p>
             </div>
           </aside>
         </div>

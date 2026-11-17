@@ -3,19 +3,13 @@ import Image from "next/image";
 import { site, stats, founder, showPlaceholders } from "@/content/site";
 import { services } from "@/content/services";
 import { projects as allProjects, statusLabel, type PortfolioProject } from "@/content/projects";
-import { projectPricing } from "@/content/pricing";
+import { projectPricing, startingPriceDisclaimer } from "@/content/pricing";
 import { comparison, faqs as allFaqs, financing, testimonials, testimonialsHeading, offers } from "@/content/copy";
 import { Section, SectionHeader } from "./Section";
 import { PhotoPlaceholder, PlaceholderTag } from "./Placeholder";
 
-const usd = (n: number) => `$${n.toLocaleString("en-US")}`;
-
 export function priceNote(pricingKey: string) {
-  const p = projectPricing.find((x) => x.key === pricingKey);
-  if (!p) return null;
-  if (p.range) return `${usd(p.range.low)}–${usd(p.range.high)}`;
-  if (p.startingAt) return `From ${usd(p.startingAt)}`;
-  return "Tailored proposal";
+  return projectPricing.find((x) => x.key === pricingKey)?.priceLabel ?? null;
 }
 
 /** Inner-page hero: restrained, text-led. */
@@ -77,7 +71,7 @@ export function ServicesGrid({ headingId = "services-h", showHeader = true }: { 
         {services.map((s) => (
           <li key={s.slug} className="group bg-white">
             <Link href={`/services/${s.slug}`} className="flex h-full flex-col p-7 transition-colors hover:bg-sand-50">
-              <span className="text-xs font-medium uppercase tracking-[0.14em] text-accent">{priceNote(s.pricingKey)}</span>
+              <span className="text-sm font-medium text-accent">{priceNote(s.pricingKey)}</span>
               <h3 className="mt-4 font-serif text-2xl font-normal leading-tight">{s.name}</h3>
               <p className="mt-3 flex-1 text-[0.95rem] leading-relaxed text-stone">{s.short}</p>
               <span className="mt-6 text-sm font-medium underline decoration-current/30 underline-offset-[6px] group-hover:decoration-current">
@@ -87,6 +81,7 @@ export function ServicesGrid({ headingId = "services-h", showHeader = true }: { 
           </li>
         ))}
       </ul>
+      <p className="mt-5 text-sm text-muted">{startingPriceDisclaimer}</p>
     </>
   );
 }

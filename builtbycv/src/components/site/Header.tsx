@@ -72,8 +72,8 @@ export function Header() {
           <a href={site.phoneHref} className="hidden items-center gap-2 px-2 py-2 text-[0.92rem] font-medium md:inline-flex">
             <PhoneIcon /> {site.phone}
           </a>
-          <a href={site.phoneHref} aria-label={`Call ${site.phone}`} className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-current/25 md:hidden">
-            <PhoneIcon />
+          <a href={site.phoneHref} className="btn-ghost min-h-11 whitespace-nowrap px-4 text-sm md:hidden">
+            <PhoneIcon /> Call Now
           </a>
           <Link href={site.cta.href} className="btn-primary hidden min-h-11 px-5 sm:inline-flex">
             {site.cta.primaryShort}
@@ -121,8 +121,8 @@ export function Header() {
 export function MobileActionBar() {
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-2 gap-2 border-t border-line bg-paper/95 p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] backdrop-blur sm:hidden">
-      <a href={site.phoneHref} className="btn-ghost min-h-12 text-ink"><PhoneIcon /> Call</a>
-      <Link href={site.cta.href} className="btn-primary min-h-12">{site.cta.primaryShort}</Link>
+      <a href={site.phoneHref} className="btn-ghost min-h-12 whitespace-nowrap px-4 text-ink"><PhoneIcon /> Call</a>
+      <Link href={site.cta.href} className="btn-primary min-h-12 whitespace-nowrap px-4">{site.cta.primaryShort}</Link>
     </div>
   );
 }

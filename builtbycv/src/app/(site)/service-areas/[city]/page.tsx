@@ -5,6 +5,7 @@ import { areas, getArea } from "@/content/areas";
 import { getService } from "@/content/services";
 import { projects } from "@/content/projects";
 import { site } from "@/content/site";
+import { startingPriceDisclaimer } from "@/content/pricing";
 import { pageMeta, breadcrumbJsonLd } from "@/lib/seo";
 import { Section } from "@/components/site/Section";
 import { JsonLd } from "@/components/site/JsonLd";
@@ -63,6 +64,7 @@ export default async function AreaPage({ params }: { params: Promise<{ city: str
                 );
               })}
             </ul>
+            <p className="mt-4 text-sm text-muted">{startingPriceDisclaimer}</p>
           </div>
         </div>
       </Section>
