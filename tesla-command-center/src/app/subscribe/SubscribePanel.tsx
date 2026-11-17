@@ -15,7 +15,7 @@ export function SubscribePanel() {
     return <a className="btn btn-primary mt-6" href="/app">Open the dashboard</a>;
   }
   if (!s.actor) {
-    return <a className="btn btn-primary mt-6" href="/login?next=/app">Sign in</a>;
+    return <a className="btn btn-primary mt-6" href="/pair/car">Sign in</a>;
   }
   return (
     <div className="card p-5 mt-6 flex flex-col gap-3">

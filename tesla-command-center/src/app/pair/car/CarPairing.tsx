@@ -13,15 +13,17 @@ type State =
   | { kind: "expired" }
   | { kind: "error"; msg: string; retry: boolean };
 
-/** Car side of pairing. The poll secret lives only in memory on this page. */
+/**
+ * Car side of pairing. Starts automatically so the car shows a QR code straight
+ * away: no typing on the car screen. The poll secret lives only in memory here.
+ */
 export function CarPairing() {
-  const [state, setState] = useState<State>({ kind: "idle" });
+  const [state, setState] = useState<State>({ kind: "starting" });
   const now = useNow(1000);
   const polling = useRef(false);
   const router = useRouter();
 
-  const start = useCallback(async () => {
-    setState({ kind: "starting" });
+  const request = useCallback(async () => {
     try {
       const r = await fetch("/api/pair/start", { method: "POST" });
       const j = await r.json().catch(() => ({}));
@@ -34,6 +36,17 @@ export function CarPairing() {
       setState({ kind: "error", msg: navigator.onLine ? "Couldn't start pairing." : "This browser is offline.", retry: true });
     }
   }, []);
+
+  const start = useCallback(() => {
+    setState({ kind: "starting" });
+    void request();
+  }, [request]);
+
+  // Show a code as soon as the page opens.
+  useEffect(() => {
+    const t = setTimeout(() => void request(), 0);
+    return () => clearTimeout(t);
+  }, [request]);
 
   useEffect(() => {
     if (state.kind !== "waiting") return;
