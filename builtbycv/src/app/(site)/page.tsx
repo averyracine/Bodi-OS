@@ -53,7 +53,7 @@ export default function HomePage() {
           <p className="fade-up mt-10 text-sm text-white/65" style={{ animationDelay: "950ms" }}>
             Arizona ROC #{site.license.number} · {site.license.classification}
           </p>
-          {!hero.image && !hero.video && <p className="mt-3"><PlaceholderTag note="Add a company-owned hero photo or short muted video in src/content/copy.ts">Hero photo/video needed</PlaceholderTag></p>}
+          {!hero.image && !hero.video && <p className="mt-3"><PlaceholderTag note="Add a company-owned hero photo or short muted video in src/content/copy.ts">Higher-res hero photo or video needed</PlaceholderTag></p>}
         </div>
       </section>
 

@@ -6,7 +6,7 @@ export function PlaceholderTag({ children = "Placeholder", note }: { children?: 
   return (
     <span
       title={note}
-      className="inline-flex items-center gap-1 rounded border border-dashed border-amber-500 bg-amber-100 px-1.5 py-0.5 align-middle font-sans text-[11px] font-medium normal-case tracking-normal text-amber-900"
+      className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded border border-dashed border-amber-500 bg-amber-100 px-1.5 py-0.5 align-middle font-sans text-[11px] font-medium normal-case tracking-normal text-amber-900"
     >
       ⚑ {children}
       {note && <span className="sr-only">: {note}</span>}

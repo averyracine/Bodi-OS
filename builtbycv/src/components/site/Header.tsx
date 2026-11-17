@@ -41,13 +41,14 @@ export function Header() {
   const transparent = overHero && !scrolled && !open;
 
   return (
+    <>
     <header
       className={`sticky top-0 z-50 transition-colors duration-300 ${
         transparent ? "border-b border-transparent bg-transparent text-white" : "border-b border-line bg-paper/95 text-ink backdrop-blur"
       }`}
     >
       <div className="container-x flex h-[76px] items-center justify-between gap-4">
-        <Link href="/" aria-label={`${site.name} home`} className="shrink-0">
+        <Link href="/" className="shrink-0">
           <Logo light={transparent} />
         </Link>
 
@@ -92,26 +93,27 @@ export function Header() {
         </div>
       </div>
 
-      {open && (
-        <div id="mobile-menu" className="fixed inset-x-0 bottom-0 top-[76px] z-40 overflow-y-auto bg-paper text-ink lg:hidden">
-          <nav aria-label="Mobile" className="container-x py-8">
-            <ul className="divide-y divide-line border-y border-line">
-              {[{ label: "Home", href: "/" }, ...nav, { label: "Contact", href: "/contact" }].map((n) => (
-                <li key={n.href}>
-                  <Link href={n.href} className="block py-4 font-serif text-2xl">
-                    {n.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-            <div className="mt-8 grid gap-3">
-              <Link href={site.cta.href} className="btn-primary">{site.cta.primary}</Link>
-              <a href={site.phoneHref} className="btn-ghost"><PhoneIcon /> Call {site.phone}</a>
-            </div>
-          </nav>
-        </div>
-      )}
     </header>
+      {open && (
+      <div id="mobile-menu" className="fixed inset-x-0 bottom-0 top-[76px] z-40 overflow-y-auto bg-paper text-ink lg:hidden">
+        <nav aria-label="Mobile" className="container-x pb-28 pt-8">
+          <ul className="divide-y divide-line border-y border-line">
+            {[{ label: "Home", href: "/" }, ...nav, { label: "Contact", href: "/contact" }].map((n) => (
+              <li key={n.href}>
+                <Link href={n.href} onClick={() => setOpen(false)} className="block py-4 font-serif text-2xl">
+                  {n.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-8 grid gap-3">
+            <Link href={site.cta.href} className="btn-primary">{site.cta.primary}</Link>
+            <a href={site.phoneHref} className="btn-ghost"><PhoneIcon /> Call {site.phone}</a>
+          </div>
+        </nav>
+      </div>
+    )}
+    </>
   );
 }
 

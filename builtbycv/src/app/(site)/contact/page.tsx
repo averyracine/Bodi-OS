@@ -10,8 +10,7 @@ export const metadata = pageMeta({
   path: "/contact",
 });
 
-export default async function ContactPage({ searchParams }: { searchParams: Promise<{ project?: string }> }) {
-  const { project } = await searchParams;
+export default function ContactPage() {
   return (
     <>
       <PageHero eyebrow="Free consultation" title="Tell us about your project." lede="We reply within one business day to schedule your free on-site consultation." />
@@ -35,7 +34,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
               <p className="text-stone">Arizona ROC #{site.license.number}<br />{site.license.classification}</p>
             </div>
           </aside>
-          <EstimateForm defaultProject={project} />
+          <EstimateForm />
         </div>
       </Section>
     </>

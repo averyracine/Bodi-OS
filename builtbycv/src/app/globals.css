@@ -6,9 +6,9 @@
   --color-sand-50: #faf8f5;
   --color-sand-100: #ede7de;
   --color-sand-200: #ddd3c5;
-  --color-sand-400: #b9a993;
+  --color-sand-400: #94846f;
   --color-stone: #5f5a53;
-  --color-muted: #7a746b;
+  --color-muted: #655f57;
   --color-line: #e2dbd0;
   --color-ink: #161513;
   --color-ink-2: #262421;
@@ -68,7 +68,7 @@ body {
   @apply btn border border-current/30 hover:border-current;
 }
 @utility link-arrow {
-  @apply inline-flex items-center gap-2 font-medium underline decoration-1 underline-offset-[6px] decoration-current/30 hover:decoration-current;
+  @apply inline-flex min-h-11 items-center gap-2 font-medium underline decoration-1 underline-offset-[6px] decoration-current/30 hover:decoration-current;
 }
 @utility field {
   @apply block w-full rounded-lg border border-line bg-white px-4 py-3 text-base text-ink placeholder:text-muted/70 focus:border-ink focus:outline-none focus:ring-1 focus:ring-ink aria-[invalid=true]:border-danger;
@@ -83,15 +83,17 @@ body {
 /* Word-by-word heading reveal. Text stays real text with real spaces. */
 .reveal-word {
   display: inline-block;
-  opacity: 0;
+  opacity: 0.01;
   transform: translateY(0.35em);
   animation: reveal-word 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
 }
+/* starts at 0.01 (not 0) so browsers count the text as painted immediately for LCP */
 @keyframes reveal-word {
+  from { opacity: 0.01; }
   to { opacity: 1; transform: none; }
 }
 .fade-up {
-  opacity: 0;
+  opacity: 0.01;
   transform: translateY(12px);
   animation: reveal-word 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
 }

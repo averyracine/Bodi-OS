@@ -37,24 +37,24 @@ export function Footer() {
 
           <nav aria-label="Services">
             <h2 className="eyebrow mb-5 text-white/50">Services</h2>
-            <ul className="space-y-2.5 text-sm text-white/80">
-              {services.map((s) => <li key={s.slug}><Link className="hover:text-white" href={`/services/${s.slug}`}>{s.name}</Link></li>)}
+            <ul className="space-y-1 text-sm text-white/80">
+              {services.map((s) => <li key={s.slug}><Link className="inline-block py-1.5 hover:text-white" href={`/services/${s.slug}`}>{s.name}</Link></li>)}
             </ul>
           </nav>
 
           <nav aria-label="Service areas">
             <h2 className="eyebrow mb-5 text-white/50">Service area</h2>
-            <ul className="space-y-2.5 text-sm text-white/80">
-              {areas.map((a) => <li key={a.slug}><Link className="hover:text-white" href={`/service-areas/${a.slug}`}>{a.city}</Link></li>)}
+            <ul className="space-y-1 text-sm text-white/80">
+              {areas.map((a) => <li key={a.slug}><Link className="inline-block py-1.5 hover:text-white" href={`/service-areas/${a.slug}`}>{a.city}</Link></li>)}
             </ul>
             <p className="mt-4 text-xs leading-relaxed text-white/50">Plus Cave Creek, San Tan Valley and surrounding Greater Phoenix communities.</p>
           </nav>
 
           <nav aria-label="Company">
             <h2 className="eyebrow mb-5 text-white/50">Company</h2>
-            <ul className="space-y-2.5 text-sm text-white/80">
-              {nav.filter((n) => n.href !== "/services").map((n) => <li key={n.href}><Link className="hover:text-white" href={n.href}>{n.label}</Link></li>)}
-              <li><Link className="hover:text-white" href="/contact">Contact</Link></li>
+            <ul className="space-y-1 text-sm text-white/80">
+              {nav.filter((n) => n.href !== "/services").map((n) => <li key={n.href}><Link className="inline-block py-1.5 hover:text-white" href={n.href}>{n.label}</Link></li>)}
+              <li><Link className="inline-block py-1.5 hover:text-white" href="/contact">Contact</Link></li>
             </ul>
             {site.social.length > 0 && (
               <ul className="mt-6 flex gap-4 text-sm">

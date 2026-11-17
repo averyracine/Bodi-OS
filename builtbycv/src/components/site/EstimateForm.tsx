@@ -20,7 +20,9 @@ function F({ id, label, children, hint, error }: { id: string; label: string; ch
   );
 }
 
-export function EstimateForm({ defaultProject }: { defaultProject?: string }) {
+export function EstimateForm() {
+  // ?project=Kitchen%20Remodeling preselects the project type (read in the browser so the page stays static)
+  const [defaultProject, setDefaultProject] = useState("");
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -31,6 +33,7 @@ export function EstimateForm({ defaultProject }: { defaultProject?: string }) {
   const doneRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     started.current = Date.now();
+    setDefaultProject(new URLSearchParams(location.search).get("project") ?? "");
   }, []);
   useEffect(() => {
     if (done) doneRef.current?.focus();
@@ -106,7 +109,7 @@ export function EstimateForm({ defaultProject }: { defaultProject?: string }) {
         <F id="zip" error={err("zip")} label="ZIP *"><input id="ef-zip" name="zip" className="field" inputMode="numeric" maxLength={5} autoComplete="postal-code" required {...inv("zip")} /></F>
       </div>
       <F id="projectType" error={err("projectType")} label="Project type *">
-        <select id="ef-projectType" name="projectType" className="field" defaultValue={defaultProject ?? ""} required {...inv("projectType")}>
+        <select key={defaultProject} id="ef-projectType" name="projectType" className="field" defaultValue={defaultProject} required {...inv("projectType")}>
           <option value="" disabled>Choose one</option>
           {services.map((s) => <option key={s.slug}>{s.name}</option>)}
           <option>Roofing & restoration</option>
