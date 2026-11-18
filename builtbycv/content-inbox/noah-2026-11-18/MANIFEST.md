@@ -1,0 +1,70 @@
+# Photos from the owner, received 2026-11-18
+
+Source: sent by the owner (Noah) by text. These are his own job-site phone photos plus two
+renderings. All files are resized to 2000 px on the long edge, saved as JPEG, and have
+EXIF/GPS metadata removed. Nothing here is published until it is moved into
+`public/projects/<slug>/` and listed in `src/content/projects.ts`.
+
+## Confirmed by the owner
+
+### mulberry/ → project `mulberry-luxury-renovation`
+The owner said: status is "In development", and to show the plans/elevations.
+
+| File | Size | What it shows |
+|---|---|---|
+| rendering-aerial.jpg | 1448×1086 | CONCEPT RENDERING. Aerial dusk view: white stucco single-story home, dark roof, front landscaping with path lights, pool behind. |
+| rendering-front.jpg | 1448×1086 | CONCEPT RENDERING. Street-level dusk view of the same home: gabled white stucco front, black-framed windows, wood entry door, desert landscaping. |
+
+Both are renderings, not photos of finished work. Label them as concept renderings.
+The elevations sheet itself (a sealed permit drawing by the project architect) is NOT in
+the repo. Do not publish it; it needs the architect's permission first.
+
+## Not yet confirmed: which project each set belongs to
+
+The owner did not label these. They are grouped by where the photos were taken. Each
+group is one property. The suggested project is a best guess and must be confirmed by the
+owner before the photos are attached to a named project.
+
+### group-a-kitchen/ (East Valley property)
+Kitchen remodel, before and after. Suggested project: none of the six existing projects
+obviously matches. Likely a new project entry.
+
+| File | Size | What it shows |
+|---|---|---|
+| before-1.jpg | 1500×2000 | BEFORE. Kitchen seen over a half wall: oak cabinets, soffit, tile backsplash. |
+| before-2.jpg | 1500×2000 | BEFORE. Same kitchen: oak cabinets, tan laminate-style counters, peninsula, tile floor. |
+| after-1.jpg | 1500×2000 | AFTER. Same kitchen: white shaker cabinets, white marble-look waterfall island, stainless appliances, wood-look plank floor. |
+
+### group-b-bathroom/ (Northwest Valley property)
+Primary bathroom taken from demolition to finish. Suggested project:
+`wickieup-residence-505` (its scope includes bathrooms).
+
+| File | Size | What it shows |
+|---|---|---|
+| demo-1.jpg | 1500×2000 | DURING. Bathroom stripped to drywall, glass-block window, plumbing exposed. |
+| demo-2.jpg | 1500×2000 | DURING. Shower corner demolished to the slab with drain exposed. |
+| demo-3.jpg | 1500×2000 | DURING. Tub area removed below the glass-block window. |
+| progress-1.jpg | 1500×2000 | DURING. Shower walls in orange waterproofing membrane, large-format tile staged. |
+| progress-2.jpg | 1500×2000 | DURING. Waterproofed wall around the glass-block window, new marble-look floor tile down. |
+| after-1.jpg | 1500×2000 | AFTER. Finished bathroom: freestanding white tub under the glass-block window, frameless glass shower, marble-look tile floor and walls. |
+
+### group-c-kitchen-bath/ (North Phoenix / Cave Creek area property)
+Kitchen before photos, and a bathroom before and after. Suggested project:
+`cave-creek-kitchen-transformation`. Note there is no kitchen "after" photo yet.
+
+| File | Size | What it shows |
+|---|---|---|
+| kitchen-before-1.jpg | 1500×2000 | BEFORE. Kitchen with dark cabinets, brown granite counters, stainless appliances. |
+| kitchen-before-2.jpg | 1500×2000 | BEFORE. Same kitchen from the peninsula. |
+| bath-before-1.jpg | 1500×2000 | BEFORE. Bathroom with framed sliding-door tub/shower and beige tile floor. |
+| bath-before-2.jpg | 1500×2000 | BEFORE. Same bathroom from the door: dark vanity, framed shower enclosure. |
+| bath-after-1.jpg | 1500×2000 | AFTER. Same bathroom: gray marble-look tile walk-in shower with niche, floating white vanity, LED-backlit mirror, marble-look floor. |
+| bath-after-2.jpg | 1500×2000 | AFTER. Second bathroom view: long white quartz vanity with wide LED mirror, walk-in tiled shower beyond. |
+
+## Held back (not in the repo)
+
+- Three finished-bathroom photos carrying an "ARMLS" watermark. These are MLS listing
+  photos; the rights belong to the listing photographer/MLS, so they need written
+  permission or clean originals from the owner before use.
+- One night-time exterior photo of a large home with no source or project given.
+- The sealed elevations sheet for Mulberry (see above).
