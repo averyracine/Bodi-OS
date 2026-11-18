@@ -3,7 +3,7 @@
  *
  * PHOTOS: only the owner's own photos (or photos with commercial-use rights).
  * Files live in /public/projects/<slug>/. Each photo has a `kind` (before / during /
- * after / rendering), real alt text and its true pixel size (sources are at most
+ * after / rendering / plans), real alt text and its true pixel size (sources are at most
  * 2000 px on the long edge, so they are never upscaled).
  *
  * `photosConfirmed: false` = the owner has not yet confirmed these photos belong to
@@ -18,7 +18,7 @@
 import { showPlaceholders } from "./site";
 
 export type ProjectStatus = "completed" | "under-construction" | "planned" | "in-development";
-export type PhotoKind = "before" | "during" | "after" | "rendering";
+export type PhotoKind = "before" | "during" | "after" | "rendering" | "plans";
 
 export type ProjectPhoto = {
   src: string;
@@ -62,6 +62,8 @@ export const projects: PortfolioProject[] = [
     photos: [
       P("mulberry-luxury-renovation", "rendering-front.jpg", "rendering", "Street view at dusk", "Concept rendering of the finished home at dusk: gabled white stucco front, black-framed windows, wood entry door and desert landscaping", 1448, 1086),
       P("mulberry-luxury-renovation", "rendering-aerial.jpg", "rendering", "Aerial view at dusk", "Concept rendering, aerial view at dusk: white stucco single-story home with a dark roof, front landscaping with path lights and a pool behind", 1448, 1086),
+      // Architect's sealed permit sheet A3, published with the architect's permission (via the owner).
+      P("mulberry-luxury-renovation", "plans-elevations.jpg", "plans", "Permit elevations by Nathan Korkki Design", "Permit drawing sheet A3 by Nathan Korkki Design: west, south, east and north elevations of the Mulberry renovation and addition, with roof heights and exterior materials", 2000, 1333, "Elevations"),
     ],
     photosConfirmed: true,
     entryConfirmed: true,
@@ -188,6 +190,7 @@ export const photoKindLabel: Record<PhotoKind, string> = {
   during: "During",
   after: "After",
   rendering: "Concept rendering",
+  plans: "Plans",
 };
 
 /** Projects that may be shown right now (hides unconfirmed entries at launch). */

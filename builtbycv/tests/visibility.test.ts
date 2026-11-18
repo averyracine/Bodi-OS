@@ -12,7 +12,7 @@ test("at launch, unconfirmed photos and entries are hidden", async () => {
   const bySlug = (s: string) => projects.find((p) => p.slug === s)!;
   assert.equal(visiblePhotos(bySlug("wickieup-residence-505")).length, 0);
   assert.equal(visiblePhotos(bySlug("cave-creek-kitchen-transformation")).length, 0);
-  assert.equal(visiblePhotos(bySlug("mulberry-luxury-renovation")).length, 2, "confirmed Mulberry renderings stay");
+  assert.equal(visiblePhotos(bySlug("mulberry-luxury-renovation")).length, 3, "confirmed Mulberry renderings and plans stay");
   const pairs = visibleBeforeAfter();
   assert.deepEqual(pairs.map((b) => b.projectSlug), [null], "only the unlinked kitchen pair remains");
 });
@@ -28,5 +28,5 @@ test("every project photo is labelled and no location includes a street or numbe
   }
   const mulberry = projects.find((p) => p.slug === "mulberry-luxury-renovation")!;
   assert.equal(mulberry.status, "in-development");
-  assert.ok(mulberry.photos.every((ph) => ph.kind === "rendering"));
+  assert.deepEqual(mulberry.photos.map((ph) => ph.kind), ["rendering", "rendering", "plans"]);
 });

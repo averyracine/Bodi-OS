@@ -16,8 +16,10 @@ The owner said: status is "In development", and to show the plans/elevations.
 | rendering-front.jpg | 1448×1086 | CONCEPT RENDERING. Street-level dusk view of the same home: gabled white stucco front, black-framed windows, wood entry door, desert landscaping. |
 
 Both are renderings, not photos of finished work. Label them as concept renderings.
-The elevations sheet itself (a sealed permit drawing by the project architect) is NOT in
-the repo. Do not publish it; it needs the architect's permission first.
+Update 2026-11-18: the owner confirmed the architect's permission to show the elevations
+sheet. It is published as `public/projects/mulberry-luxury-renovation/plans-elevations.jpg`
+(sheet A3, rendered from the PDF at 2000 px, unedited; seals, signatures, firm name and
+copyright notice kept). The PDF itself is not in the repo.
 
 ## Not yet confirmed: which project each set belongs to
 
@@ -72,4 +74,4 @@ crop, blur or edit out the watermark.
 ## Held back (not in the repo)
 
 - One night-time exterior photo of a large home with no source or project given.
-- The sealed elevations sheet for Mulberry (see above).
+- ~~The sealed elevations sheet for Mulberry~~ (now published, see above).
