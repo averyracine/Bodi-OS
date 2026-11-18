@@ -11,6 +11,8 @@ export type Service = {
   includes: string[];
   goodToKnow: string[];
   imageAlt: string;
+  // Owner-supplied photo shown on the service page; without one, a marked placeholder shows.
+  image?: { src: string; alt: string; width: number; height: number };
   seoTitle: string;
   seoDescription: string;
 };
@@ -36,6 +38,7 @@ export const services: Service[] = [
       "Cabinet and stone lead times often set the schedule, so selections are made early.",
     ],
     imageAlt: "Remodeled kitchen with island and stone countertops",
+    image: { src: "/projects/cave-creek-kitchen-transformation/kitchen-after-2.jpg", alt: "Finished kitchen with a waterfall-edge marble-look counter, glass-front upper cabinets and a stone mosaic backsplash", width: 1344, height: 1008 },
     seoTitle: "Kitchen Remodeling in Phoenix, AZ",
     seoDescription:
       "Kitchen remodeling across the Phoenix metro by CV Capital, a licensed KB-1 Arizona contractor. Layout, cabinetry, stone, lighting and permits under one contract.",

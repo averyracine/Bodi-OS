@@ -142,6 +142,14 @@ export const beforeAfter: BeforeAfterPair[] = [
     projectSlug: "kitchen-remodel-east-valley",
   },
   {
+    title: "Cave Creek kitchen",
+    detail: "Dark cabinets and brown granite replaced with white shaker cabinetry, glass-front uppers, a waterfall-edge marble-look counter and a stone mosaic backsplash.",
+    before: { src: "/projects/cave-creek-kitchen-transformation/kitchen-before-2.jpg", alt: "Kitchen before the remodel, seen from the peninsula: dark cabinets and brown granite counters", width: 1500, height: 2000 },
+    after: { src: "/projects/cave-creek-kitchen-transformation/kitchen-after-2.jpg", alt: "Same kitchen after the remodel, seen from the peninsula: waterfall-edge marble-look counter, white cabinets and stone mosaic backsplash", width: 1344, height: 1008 },
+    beforeLabel: "Before",
+    projectSlug: "cave-creek-kitchen-transformation",
+  },
+  {
     title: "Bathroom remodel",
     detail: "A framed tub and shower replaced with a marble-look walk-in shower, floating vanity and LED-backlit mirror.",
     before: { src: "/projects/cave-creek-kitchen-transformation/bath-before-2.jpg", alt: "Bathroom before the remodel: dark vanity and framed shower enclosure", width: 1500, height: 2000 },

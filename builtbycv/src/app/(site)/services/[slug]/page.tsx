@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import type { Metadata } from "next";
 import { services, getService } from "@/content/services";
 import { projectsWithPhotosFirst } from "@/content/projects";
@@ -51,7 +52,13 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
             <ul className="mt-6 space-y-4 text-stone">{s.goodToKnow.map((g) => <li key={g}>{g}</li>)}</ul>
           </div>
           <aside className="space-y-6">
-            <PhotoPlaceholder label={s.imageAlt} className="aspect-[4/5] rounded-2xl" />
+            {s.image ? (
+              <div className="relative overflow-hidden rounded-2xl bg-sand-100" style={{ aspectRatio: `${s.image.width} / ${s.image.height}` }}>
+                <Image src={s.image.src} alt={s.image.alt} fill sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover" priority />
+              </div>
+            ) : (
+              <PhotoPlaceholder label={s.imageAlt} className="aspect-[4/5] rounded-2xl" />
+            )}
             <div className="card p-6">
               <h2 className="font-medium">Investment</h2>
               <p className="mt-2 font-serif text-3xl font-light">{priceNote(s.pricingKey)}</p>

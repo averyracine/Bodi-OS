@@ -26,6 +26,10 @@ test("every project photo is labelled and no location includes a street or numbe
       assert.ok(ph.width > 0 && ph.height > 0 && Math.max(ph.width, ph.height) <= 2000, `${ph.src} size`);
     }
   }
+  const cc = projects.find((p) => p.slug === "cave-creek-kitchen-transformation")!;
+  assert.equal(cc.photos[0].src.endsWith("kitchen-after-2.jpg"), true, "kitchen after is the lead image");
+  assert.equal(cc.photos[0].room, "Kitchen");
+  assert.equal(cc.photosConfirmed, false);
   const mulberry = projects.find((p) => p.slug === "mulberry-luxury-renovation")!;
   assert.equal(mulberry.status, "in-development");
   assert.deepEqual(mulberry.photos.map((ph) => ph.kind), ["rendering", "rendering", "plans"]);

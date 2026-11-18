@@ -127,9 +127,12 @@ export const projects: PortfolioProject[] = [
     status: null,
     summary: "A custom kitchen with new cabinetry, countertops and appliance improvements.",
     scope: ["Custom kitchen", "Cabinetry", "Countertops", "Appliance improvements"],
-    // No kitchen "after" photo yet. Every photo is tagged with its room so bathroom results are never shown as the kitchen.
+    // Every photo is tagged with its room so bathroom results are never shown as the kitchen.
     photos: [
-      // Lead "After" images: owner-supplied ARMLS listing photos, used unedited (watermark kept) on the owner's instruction.
+      // Owner-supplied ARMLS listing photos (kitchen-after-*, listing-after-*), used unedited with the watermark kept, on the owner's instruction.
+      P("cave-creek-kitchen-transformation", "kitchen-after-2.jpg", "after", "Kitchen after, from the peninsula", "Finished kitchen seen from the peninsula: waterfall-edge marble-look counter, glass-front upper cabinets, stone mosaic backsplash and an undermount sink at the window", 1344, 1008, "Kitchen"),
+      P("cave-creek-kitchen-transformation", "kitchen-after-1.jpg", "after", "Kitchen after, from the dining side", "Finished kitchen seen from the dining side: white shaker cabinets, white marble-look counters and stainless appliances", 1344, 1008, "Kitchen"),
+      P("cave-creek-kitchen-transformation", "kitchen-after-3.jpg", "after", "Kitchen after: the full U-shaped layout", "Finished kitchen from the opposite corner, showing the full U-shaped layout with white shaker cabinets and marble-look counters", 1344, 1008, "Kitchen"),
       P("cave-creek-kitchen-transformation", "listing-after-1.jpg", "after", "Bathroom after: walk-in shower", "Finished bathroom: walk-in shower with marble-look tile, niche and frameless glass, white vanity beyond", 1344, 1008, "Bathroom"),
       P("cave-creek-kitchen-transformation", "listing-after-2.jpg", "after", "Bathroom after: double vanity", "Finished bathroom: long white double vanity with LED-backlit mirror and marble-look floor", 1344, 1008, "Bathroom"),
       P("cave-creek-kitchen-transformation", "listing-after-3.jpg", "after", "Bathroom after: shower and vanity", "Finished bathroom: tiled walk-in shower, toilet and floating white vanity with LED mirror", 1344, 1008, "Bathroom"),
