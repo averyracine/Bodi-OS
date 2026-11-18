@@ -75,3 +75,19 @@ crop, blur or edit out the watermark.
 
 - One night-time exterior photo of a large home with no source or project given.
 - ~~The sealed elevations sheet for Mulberry~~ (now published, see above).
+
+## Added later on 2026-11-18: kitchen "after" photos (not yet published)
+
+Files: `group-c-kitchen-bath/kitchen-after-1.jpg`, `-2.jpg`, `-3.jpg` (each 1344×1008).
+Destination: `public/projects/cave-creek-kitchen-transformation/`.
+
+These are the finished kitchen for the same property as kitchen-before-1/2: same window
+over the sink, same U-shaped layout with peninsula, same floor tile. They fill the
+missing kitchen "after". Owner-supplied listing photos with an "ARMLS" watermark; use
+them unedited, watermark kept, on the owner's instruction (same as listing-after-1/2/3).
+
+| File | What it shows |
+|---|---|
+| kitchen-after-1.jpg | AFTER. White shaker cabinets, white marble-look counters and stainless appliances, seen from the dining side. |
+| kitchen-after-2.jpg | AFTER. From the peninsula: waterfall-edge marble-look counter, glass-front upper cabinets, stone mosaic backsplash, undermount sink at the window. Best lead image. |
+| kitchen-after-3.jpg | AFTER. From the opposite corner, showing the full U-shaped layout. |
