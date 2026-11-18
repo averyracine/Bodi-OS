@@ -120,10 +120,47 @@
   /* ---------- Page widgets ---------- */
   function wire() {
     main.querySelectorAll("input.ba-range").forEach(wireSlider);
+    var shots = Array.prototype.slice.call(main.querySelectorAll('button[aria-label^="Open larger"]'));
+    shots.forEach(function (btn, i) { btn.addEventListener("click", function () { openLightbox(shots, i); }); });
     var calcSteps = main.querySelector('ol[aria-label="Calculator steps"]');
     if (calcSteps) wireCalculator(calcSteps.parentElement);
     var ef = main.querySelector("#ef-name");
     if (ef) wireEstimate(ef.closest("form"));
+  }
+
+  function openLightbox(shots, start) {
+    var i = start;
+    var box = document.createElement("div");
+    box.setAttribute("role", "dialog");
+    box.setAttribute("aria-modal", "true");
+    box.style.cssText = "position:fixed;inset:0;z-index:90;background:rgba(22,21,19,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px;color:#fff";
+    function item(k) {
+      var b = shots[k], img = b.querySelector("img"), lab = b.querySelector("span"), cap = b.closest("figure").querySelector("figcaption");
+      return { src: img.getAttribute("src"), alt: img.getAttribute("alt"), label: lab ? lab.textContent : "", caption: cap ? cap.textContent : "" };
+    }
+    function paint() {
+      var it = item(i);
+      box.innerHTML = '<div style="position:relative;max-width:92vw"><img src="' + it.src + '" alt="' + esc(it.alt) + '" style="display:block;max-width:92vw;max-height:78vh;width:auto;height:auto;border-radius:12px">' +
+        '<span style="position:absolute;left:12px;top:12px;background:rgba(22,21,19,.75);border-radius:999px;padding:4px 12px;font:500 12px/1.4 var(--font-body);letter-spacing:.08em;text-transform:uppercase">' + esc(it.label) + "</span></div>" +
+        '<p style="font:14px/1.4 var(--font-body);opacity:.85">' + esc(it.caption) + " · " + (i + 1) + " of " + shots.length + "</p>" +
+        '<div style="display:flex;gap:8px">' + (shots.length > 1 ? '<button type="button" class="btn-ghost min-h-11" data-lb="-1">← Previous</button><button type="button" class="btn-ghost min-h-11" data-lb="1">Next →</button>' : "") +
+        '<button type="button" class="btn-ghost min-h-11" data-lb="close">Close</button></div>';
+      var c = box.querySelector('[data-lb="close"]'); if (c) c.focus();
+    }
+    function close() { document.removeEventListener("keydown", onKey); box.remove(); if (shots[i]) shots[i].focus(); }
+    function onKey(e) {
+      if (e.key === "Escape") close();
+      if (e.key === "ArrowRight") { i = (i + 1) % shots.length; paint(); }
+      if (e.key === "ArrowLeft") { i = (i - 1 + shots.length) % shots.length; paint(); }
+    }
+    box.addEventListener("click", function (e) {
+      var t = e.target.getAttribute && e.target.getAttribute("data-lb");
+      if (t === "close" || e.target === box) return close();
+      if (t) { i = (i + Number(t) + shots.length) % shots.length; paint(); }
+    });
+    document.addEventListener("keydown", onKey);
+    document.body.appendChild(box);
+    paint();
   }
 
   function wireSlider(input) {

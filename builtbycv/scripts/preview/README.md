@@ -22,6 +22,6 @@ psql "$DATABASE_URL" -c "insert into sessions (id, user_id, expires_at) select '
 CV_SESSION_TOKEN=$TOKEN python3 scripts/preview/build.py /tmp/preview
 ```
 
-Output: `/tmp/preview/cv-capital-site-preview.html`. It has no `<!doctype>`/`<head>` (the Claude artifact host adds those). For Vercel, wrap it in a normal HTML document with `<meta name="robots" content="noindex,nofollow">` and deploy it as `index.html`.
+Output: `/tmp/preview/cv-capital-site-preview.html` plus photos in `/tmp/preview/img/` (each photo written once, long edge ≤ 1400 px). The HTML has no `<!doctype>`/`<head>` (the Claude artifact host adds those). For Vercel, wrap it in a normal HTML document with `<meta name="robots" content="noindex,nofollow">`, deploy it as `index.html`, and upload the `img/` files alongside it.
 
 Files: `build.py` (crawler/assembler), `preview.js` (site navigation, menu, calculator, estimate form, before/after slider), `crm.js` (CRM navigation, drag-and-drop pipeline, notes, tasks, demo toasts), `demo_seed.py` (fictional sample data).

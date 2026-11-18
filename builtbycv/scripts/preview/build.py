@@ -26,17 +26,22 @@ paths = ["/"] + [p for p in paths if p not in ("", "/")]
 routes = {route_name(p) for p in paths}
 
 _img_cache = {}
-def data_uri(local_path, width=1400, q=74):
+IMG_DIR = os.path.join(OUTDIR, "img")
+
+def data_uri(local_path, long_edge=1400, q=74):
+    """Writes each photo once to OUTDIR/img/ (long edge <= 1400 px, never upscaled) and returns its relative path."""
     if local_path in _img_cache:
         return _img_cache[local_path]
     im = Image.open(PUBLIC + local_path).convert("RGB")
-    if im.width > width:
-        im = im.resize((width, round(im.height * width / im.width)), Image.LANCZOS)
-    b = io.BytesIO()
-    im.save(b, "JPEG", quality=q, optimize=True, progressive=True)
-    uri = "data:image/jpeg;base64," + base64.b64encode(b.getvalue()).decode()
-    _img_cache[local_path] = uri
-    return uri
+    scale = min(1, long_edge / max(im.width, im.height))
+    if scale < 1:
+        im = im.resize((round(im.width * scale), round(im.height * scale)), Image.LANCZOS)
+    os.makedirs(IMG_DIR, exist_ok=True)
+    name = local_path.strip("/").replace("/", "-")
+    name = name.rsplit(".", 1)[0] + ".jpg"
+    im.save(os.path.join(IMG_DIR, name), "JPEG", quality=q, optimize=True, progressive=True)
+    _img_cache[local_path] = "img/" + name
+    return _img_cache[local_path]
 
 def clean(node):
     for s in node.find_all("script"):
