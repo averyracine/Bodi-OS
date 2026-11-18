@@ -72,8 +72,8 @@ export function Header() {
           <a href={site.phoneHref} className="hidden items-center gap-2 px-2 py-2 text-[0.92rem] font-medium md:inline-flex">
             <PhoneIcon /> {site.phone}
           </a>
-          <a href={site.phoneHref} className="btn-ghost min-h-11 whitespace-nowrap px-4 text-sm md:hidden">
-            <PhoneIcon /> Call Now
+          <a href={site.phoneHref} className="btn-ghost min-h-11 gap-1.5 whitespace-nowrap px-3.5 text-sm md:hidden">
+            <span className="max-[359px]:hidden"><PhoneIcon /></span> Call Now
           </a>
           <Link href={site.cta.href} className="btn-primary hidden min-h-11 px-5 sm:inline-flex">
             {site.cta.primaryShort}

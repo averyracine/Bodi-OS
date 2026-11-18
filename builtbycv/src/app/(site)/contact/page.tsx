@@ -21,6 +21,12 @@ export default function ContactPage() {
               <h2 className="eyebrow mb-2">Call</h2>
               <a href={site.phoneHref} className="font-serif text-3xl font-light hover:underline">{site.phone}</a>
             </div>
+            {site.email && (
+              <div>
+                <h2 className="eyebrow mb-2">Email</h2>
+                <a href={`mailto:${site.email}`} className="text-lg hover:underline">{site.email}</a>
+              </div>
+            )}
             <div>
               <h2 className="eyebrow mb-2">Hours</h2>
               {site.hours.map((h) => <p key={h.days} className="text-stone">{h.days}: {h.time}</p>)}

@@ -186,7 +186,7 @@ export function StatsBand() {
         </dl>
         <p className="mt-12 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-white/70">
           <span>Licensed Arizona General Contractor · ROC #{site.license.number}</span>
-          {site.insuredVerified ? <span>Insured</span> : <PlaceholderTag note="Confirm insurance before advertising">“Insured”: confirm</PlaceholderTag>}
+          {site.insuredVerified ? <span>Bonded & insured</span> : <PlaceholderTag note="Confirm insurance before advertising">“Insured”: confirm</PlaceholderTag>}
           <a href={site.license.lookupUrl} target="_blank" rel="noopener" className="underline underline-offset-4 hover:text-white">Verify our license ↗</a>
         </p>
       </div>
@@ -267,17 +267,29 @@ export function FinancingBlock({ headingLevel = "h2" }: { headingLevel?: "h1" | 
         <p className="eyebrow mb-4">Financing & payments</p>
         <H id="financing-h" className="h2">{financing.heading}</H>
         <p className="lede mt-5">{financing.body}</p>
-        {(financing.partnersConfirmed || showPlaceholders) && (
-          <div className="mt-8">
-            {!financing.partnersConfirmed && <PlaceholderTag note="Confirm these platforms are available for CV Capital contracts">Confirm before publishing</PlaceholderTag>}
-            <ul className="mt-3 flex flex-wrap gap-3">
-              {financing.partners.map((p) => (
-                <li key={p.name} className="rounded-full border border-line bg-white px-4 py-2 text-sm">{p.name} <span className="text-muted">· {p.note}</span></li>
-              ))}
-            </ul>
-            <p className="mt-3 text-xs text-muted">{financing.partnerDisclaimer}</p>
-          </div>
-        )}
+        {(() => {
+          const shown = financing.partners.filter((p) => p.confirmed || showPlaceholders);
+          if (!shown.length) return null;
+          const apply = financing.partners.find((p) => p.confirmed && p.applyUrl);
+          return (
+            <div className="mt-8">
+              <ul className="flex flex-wrap gap-3">
+                {shown.map((p) => (
+                  <li key={p.name} className="flex items-center gap-2 rounded-full border border-line bg-white px-4 py-2 text-sm">
+                    {p.name} <span className="text-muted">· {p.note}</span>
+                    {!p.confirmed && <PlaceholderTag note="Confirm this platform is available for CV Capital contracts">Confirm</PlaceholderTag>}
+                  </li>
+                ))}
+              </ul>
+              {apply && (
+                <a href={apply.applyUrl!} target="_blank" rel="noopener" className="btn-ghost mt-5">
+                  Check financing options with {apply.name}<span className="sr-only"> (opens in a new tab)</span> ↗
+                </a>
+              )}
+              <p className="mt-3 text-xs text-muted">{financing.partnerDisclaimer}</p>
+            </div>
+          );
+        })()}
       </div>
       <div className="card p-8 sm:p-10">
         <h3 className="font-medium">Milestone payment schedule</h3>

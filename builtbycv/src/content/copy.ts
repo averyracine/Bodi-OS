@@ -1,12 +1,13 @@
 /** Smaller content blocks used on the home page and inner pages. */
 import { startingPriceDisclaimer } from "./pricing";
+import { site } from "./site";
 
 export const hero = {
   eyebrow: "Licensed residential & commercial general contractor · Arizona",
   heading: "Exceptional Spaces. Built to Last.",
   sub: "CV Capital is a licensed residential and commercial general contractor delivering luxury renovations, custom homes, additions, ADUs and commercial improvements across the Phoenix metro.",
   // Put a real, company-owned photo or short muted video in /public/hero/ and set these.
-  image: null as string | null,
+  image: "/hero/cv-capital-hero.jpg" as string | null,
   video: null as string | null,
 };
 
@@ -77,7 +78,7 @@ export const faqs = [
   },
   {
     q: "Are you licensed?",
-    a: "Yes. CV Property Investments Inc., doing business as CV Capital, holds Arizona ROC license #368875, classification KB-1 General Dual Building Contractor, covering residential and commercial building. You can verify it on the Arizona Registrar of Contractors website.",
+    a: `Yes. CV Property Investments Inc., doing business as CV Capital, holds Arizona ROC license #368875, classification KB-1 General Dual Building Contractor, covering residential and commercial building. We are insured with a ${site.insurance.coverage} through ${site.insurance.carrier} and bonded through ${site.bond.surety}. All of this is listed on our license record on the Arizona Registrar of Contractors website.`,
   },
   {
     q: "How do payments work?",
@@ -98,11 +99,10 @@ export const financing = {
     { pct: "25%", label: "Final payment" },
   ],
   milestoneNote: "A typical schedule. Larger projects can use customized milestones.",
-  // Partner platforms must be confirmed for CV Capital contracts before publishing.
-  partnersConfirmed: false,
+  // Each partner shows publicly only once confirmed for CV Capital contracts.
   partners: [
-    { name: "Acorn Finance", note: "Loan marketplace" },
-    { name: "HFS Financial", note: "Financing platform" },
+    { name: "HFS Financial", note: "Financing platform", confirmed: true, applyUrl: "https://www.hfsfinancial.net/promo/69f90dd15a2753a3b712394a/" as string | null },
+    { name: "Acorn Finance", note: "Loan marketplace", confirmed: false, applyUrl: null as string | null },
   ],
   partnerDisclaimer:
     "These are financing platforms, not direct lenders. Approval, rates, terms and eligibility are set by participating lenders.",

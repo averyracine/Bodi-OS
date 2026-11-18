@@ -20,15 +20,18 @@ export const site = {
   phone: "(602) 743-6957",
   phoneHref: "tel:+16027436957",
   // No public lead inbox confirmed yet. Leave null to hide it; forms still work.
-  email: null as string | null,
+  email: "contact@builtbycv.com" as string | null,
   license: {
     number: "368875",
     classification: "KB-1 General Dual Building Contractor",
     short: "ROC #368875 · KB-1",
-    lookupUrl: "https://azroc.my.site.com/AZRoc/s/contractor-search",
+    // Opens CV Capital's own record on the Arizona ROC site (shows license, bond and insurance)
+    lookupUrl: "https://azroc.my.site.com/AZRoc/s/contractor-search?licenseId=a0ocs00000UeE1NAAV",
   },
-  // "Insured" has not been confirmed in writing. Flip to true once it is.
-  insuredVerified: false,
+  // Confirmed by the owner; also listed on the ROC license record.
+  insuredVerified: true,
+  insurance: { carrier: "Berkley Aspire", coverage: "$5,000,000 policy" },
+  bond: { surety: "PA Manufacturers' Association Insurance Co." },
   hours: [
     { days: "Monday–Friday", time: "8:00 AM – 5:00 PM", schema: { days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], opens: "08:00", closes: "17:00" } },
     { days: "Saturday–Sunday", time: "By appointment" },
