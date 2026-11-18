@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { site, stats, founder, showPlaceholders } from "@/content/site";
 import { services } from "@/content/services";
-import { projects as allProjects, statusLabel, type PortfolioProject } from "@/content/projects";
+import { statusLabel, photoLabel, visiblePhotos, projectsWithPhotosFirst, type PortfolioProject } from "@/content/projects";
 import { projectPricing, startingPriceDisclaimer } from "@/content/pricing";
 import { comparison, faqs as allFaqs, financing, testimonials, testimonialsHeading, offers } from "@/content/copy";
 import { Section, SectionHeader } from "./Section";
@@ -88,17 +88,27 @@ export function ServicesGrid({ headingId = "services-h", showHeader = true }: { 
 
 export function ProjectStatus({ p }: { p: PortfolioProject }) {
   if (p.status) return <span className="rounded-full border border-current/25 px-2.5 py-0.5 text-[11px] font-medium uppercase tracking-wider">{statusLabel[p.status]}</span>;
-  return <PlaceholderTag note="Completed, under construction or planned?">Status?</PlaceholderTag>;
+  return <PlaceholderTag note="Completed, under construction, planned or in development?">Status?</PlaceholderTag>;
+}
+
+export function projectLocation(p: PortfolioProject) {
+  return p.area ? `${p.area} · ${p.city}` : p.city;
 }
 
 export function ProjectCard({ p, priority = false }: { p: PortfolioProject; priority?: boolean }) {
-  const photo = p.photos[0];
+  const photo = visiblePhotos(p)[0];
   return (
     <article className="group">
       <Link href={`/projects/${p.slug}`} className="block">
         <div className="relative aspect-[4/5] overflow-hidden rounded-2xl">
           {photo ? (
-            <Image src={photo.src} alt={photo.alt} fill sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className="object-cover transition-transform duration-700 group-hover:scale-[1.03]" priority={priority} />
+            <>
+              <Image src={photo.src} alt={photo.alt} fill sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className="object-cover transition-transform duration-700 group-hover:scale-[1.03]" priority={priority} />
+              <span className="pointer-events-none absolute left-3 top-3 rounded-full bg-ink/75 px-2.5 py-1 text-[11px] font-medium uppercase tracking-wider text-white">{photoLabel(photo)}</span>
+              {!p.photosConfirmed && (
+                <span className="absolute bottom-3 left-3"><PlaceholderTag note="Owner has not yet confirmed these photos belong to this project">Photo match unconfirmed</PlaceholderTag></span>
+              )}
+            </>
           ) : (
             <PhotoPlaceholder label={p.name} className="h-full w-full" />
           )}
@@ -106,7 +116,7 @@ export function ProjectCard({ p, priority = false }: { p: PortfolioProject; prio
         <div className="mt-5 flex items-start justify-between gap-4">
           <div>
             <h3 className="font-serif text-2xl font-normal leading-tight group-hover:underline group-hover:underline-offset-4">{p.name}</h3>
-            <p className="mt-1 text-sm text-muted">{p.area} · {p.city}</p>
+            <p className="mt-1 text-sm text-muted">{projectLocation(p)}</p>
           </div>
           <ProjectStatus p={p} />
         </div>
@@ -117,7 +127,7 @@ export function ProjectCard({ p, priority = false }: { p: PortfolioProject; prio
 }
 
 export function FeaturedProjects({ limit = 6 }: { limit?: number }) {
-  const list = allProjects.filter((p) => p.featured).slice(0, limit);
+  const list = projectsWithPhotosFirst().filter((p) => p.featured).slice(0, limit);
   return (
     <Section tone="paper" labelledBy="projects-h">
       <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">

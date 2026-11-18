@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { areas, getArea } from "@/content/areas";
 import { getService } from "@/content/services";
-import { projects } from "@/content/projects";
+import { projectsWithPhotosFirst } from "@/content/projects";
 import { site } from "@/content/site";
 import { startingPriceDisclaimer } from "@/content/pricing";
 import { pageMeta, breadcrumbJsonLd } from "@/lib/seo";
@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: { params: Promise<{ city: str
 export default async function AreaPage({ params }: { params: Promise<{ city: string }> }) {
   const a = getArea((await params).city);
   if (!a) notFound();
-  const local = projects.filter((p) => p.city.includes(a.city));
+  const local = projectsWithPhotosFirst().filter((p) => p.city.includes(a.city));
   const crumbs = [{ name: "Home", path: "/" }, { name: "Service areas", path: "/service-areas" }, { name: a.city, path: `/service-areas/${a.slug}` }];
   return (
     <>

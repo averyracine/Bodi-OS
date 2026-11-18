@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { site } from "@/content/site";
-import { hero, beforeAfter, faqs, calculatorIntro } from "@/content/copy";
+import { hero, visibleBeforeAfter, faqs, calculatorIntro } from "@/content/copy";
 import { LicenseBlock } from "@/components/site/LicenseBlock";
 import { AnimatedHeading } from "@/components/site/AnimatedHeading";
 import { Section, SectionHeader } from "@/components/site/Section";
@@ -27,7 +27,7 @@ export const metadata = pageMeta({
 const homeFaqs = faqs.slice(0, 5); // timeline, cost, permits, warranty, service area
 
 export default function HomePage() {
-  const ba = beforeAfter[0];
+  const ba = visibleBeforeAfter()[0];
   return (
     <>
       <JsonLd data={faqJsonLd(homeFaqs)} />
@@ -92,7 +92,7 @@ export default function HomePage() {
       {/* 6. Before & after */}
       <Section tone="white" labelledBy="ba-h">
         <SectionHeader id="ba-h" eyebrow="Before & after" title="Same kitchen. Different house." lede={ba.detail} />
-        <BeforeAfter before={ba.before} after={ba.after} />
+        <BeforeAfter before={ba.before} after={ba.after} beforeLabel={ba.beforeLabel} />
         <p className="mt-4 text-sm text-muted">Drag the handle, or use the arrow keys, to compare.</p>
       </Section>
 

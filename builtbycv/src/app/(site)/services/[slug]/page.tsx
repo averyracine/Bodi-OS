@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { services, getService } from "@/content/services";
-import { projects } from "@/content/projects";
+import { projectsWithPhotosFirst } from "@/content/projects";
 import { site } from "@/content/site";
 import { pageMeta, breadcrumbJsonLd } from "@/lib/seo";
 import { Section } from "@/components/site/Section";
@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function ServicePage({ params }: { params: Promise<{ slug: string }> }) {
   const s = getService((await params).slug);
   if (!s) notFound();
-  const related = projects.filter((p) => p.service === s.slug);
+  const related = projectsWithPhotosFirst().filter((p) => p.service === s.slug);
   const tailored = projectPricing.find((p) => p.key === s.pricingKey)?.tailored ?? false;
   const crumbs = [{ name: "Home", path: "/" }, { name: "Services", path: "/services" }, { name: s.name, path: `/services/${s.slug}` }];
   return (

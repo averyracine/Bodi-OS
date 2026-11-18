@@ -25,7 +25,7 @@ export const areas: Area[] = [
     popular: ["whole-home-renovations", "kitchen-remodeling", "home-additions", "adus-casitas"],
     notes: [
       "Permits for most structural, electrical, plumbing and addition work go through the City of Phoenix Planning & Development Department. We prepare and submit them.",
-      "Current projects include the Mulberry renovation and two Wickieup Lane homes in North Phoenix.",
+      "Current projects include the Mulberry renovation and two Wickieup residences in North Phoenix.",
     ],
   },
   {

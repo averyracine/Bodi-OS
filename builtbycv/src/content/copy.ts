@@ -1,6 +1,7 @@
 /** Smaller content blocks used on the home page and inner pages. */
 import { startingPriceDisclaimer } from "./pricing";
-import { site } from "./site";
+import { site, showPlaceholders } from "./site";
+import { projects } from "./projects";
 
 export const hero = {
   eyebrow: "Licensed residential & commercial general contractor · Arizona",
@@ -113,12 +114,56 @@ export const testimonials: { quote: string; name: string; city: string; project?
 export const testimonialsHeading = "Built on trust. Defined by quality.";
 
 /** Before/after pairs (company-owned photos only). First one shows on the home page. */
-export const beforeAfter = [
+type BaImage = { src: string; alt: string; width: number; height: number };
+export type BeforeAfterPair = {
+  title: string;
+  detail: string;
+  before: BaImage;
+  after: BaImage;
+  beforeLabel: string; // e.g. "Before" or "During demolition"
+  projectSlug: string | null; // hidden at launch while that project's photos are unconfirmed
+};
+
+export const beforeAfter: BeforeAfterPair[] = [
   {
     title: "Kitchen transformation",
     detail: "Full gut and rebuild with a Crystallo Traslux quartzite waterfall island, backsplash and new cabinetry.",
     before: { src: "/projects/kitchen-before-after/before.jpg", alt: "Kitchen gutted to bare walls and concrete slab before the remodel", width: 1124, height: 785 },
     after: { src: "/projects/kitchen-before-after/after.jpg", alt: "Same kitchen after the remodel with wood cabinets, stainless appliances and a quartzite waterfall island", width: 1124, height: 785 },
-    projectSlug: null as string | null, // link to a project page once confirmed
+    beforeLabel: "Before",
+    projectSlug: null,
+  },
+  {
+    title: "East Valley kitchen",
+    detail: "Oak cabinets and laminate-style counters replaced with white shaker cabinetry, a marble-look waterfall island and wood-look plank flooring.",
+    before: { src: "/projects/kitchen-remodel-east-valley/before-2.jpg", alt: "Kitchen before the remodel: oak cabinets, tan laminate-style counters, peninsula and tile floor", width: 1500, height: 2000 },
+    after: { src: "/projects/kitchen-remodel-east-valley/after-1.jpg", alt: "Same kitchen after the remodel: white shaker cabinets, marble-look waterfall island and wood-look plank floor", width: 1500, height: 2000 },
+    beforeLabel: "Before",
+    projectSlug: "kitchen-remodel-east-valley",
+  },
+  {
+    title: "Bathroom remodel",
+    detail: "A framed tub and shower replaced with a marble-look walk-in shower, floating vanity and LED-backlit mirror.",
+    before: { src: "/projects/cave-creek-kitchen-transformation/bath-before-2.jpg", alt: "Bathroom before the remodel: dark vanity and framed shower enclosure", width: 1500, height: 2000 },
+    after: { src: "/projects/cave-creek-kitchen-transformation/bath-after-1.jpg", alt: "Same bathroom after the remodel: gray marble-look walk-in shower, floating white vanity and LED-backlit mirror", width: 1500, height: 2000 },
+    beforeLabel: "Before",
+    projectSlug: "cave-creek-kitchen-transformation",
+  },
+  {
+    title: "Primary bathroom",
+    detail: "From demolition to a finished primary bath with a freestanding tub, frameless glass shower and marble-look tile.",
+    before: { src: "/projects/wickieup-residence-505/demo-3.jpg", alt: "Tub area removed below the glass-block window during demolition", width: 1500, height: 2000 },
+    after: { src: "/projects/wickieup-residence-505/after-1.jpg", alt: "Finished primary bathroom with a freestanding white tub under the glass-block window and a frameless glass shower", width: 1500, height: 2000 },
+    beforeLabel: "During demolition",
+    projectSlug: "wickieup-residence-505",
   },
 ];
+
+/** Pairs that may be shown right now (pairs tied to unconfirmed photos hide at launch). */
+export function visibleBeforeAfter(): BeforeAfterPair[] {
+  return beforeAfter.filter((b) => {
+    if (!b.projectSlug) return true;
+    const p = projects.find((x) => x.slug === b.projectSlug);
+    return !!p && (p.photosConfirmed || showPlaceholders) && (p.entryConfirmed || showPlaceholders);
+  });
+}
