@@ -60,11 +60,16 @@ Kitchen before photos, and a bathroom before and after. Suggested project:
 | bath-before-2.jpg | 1500×2000 | BEFORE. Same bathroom from the door: dark vanity, framed shower enclosure. |
 | bath-after-1.jpg | 1500×2000 | AFTER. Same bathroom: gray marble-look tile walk-in shower with niche, floating white vanity, LED-backlit mirror, marble-look floor. |
 | bath-after-2.jpg | 1500×2000 | AFTER. Second bathroom view: long white quartz vanity with wide LED mirror, walk-in tiled shower beyond. |
+| listing-after-1.jpg | 1344×1008 | AFTER. Walk-in shower with marble-look tile, niche and frameless glass; white vanity beyond. Carries an "ARMLS" watermark. |
+| listing-after-2.jpg | 1344×1008 | AFTER. Long white double vanity with LED-backlit mirror and marble-look floor. Carries an "ARMLS" watermark. |
+| listing-after-3.jpg | 1344×1008 | AFTER. Tiled walk-in shower, toilet and floating white vanity with LED mirror. Carries an "ARMLS" watermark. |
+
+The three listing-after photos were added on the site owner's instruction: they show the
+finished renovation. They look like the same bathrooms as bath-after-1/2, so they are
+filed with this group, but the property is not confirmed. Use them as they are. Do not
+crop, blur or edit out the watermark.
 
 ## Held back (not in the repo)
 
-- Three finished-bathroom photos carrying an "ARMLS" watermark. These are MLS listing
-  photos; the rights belong to the listing photographer/MLS, so they need written
-  permission or clean originals from the owner before use.
 - One night-time exterior photo of a large home with no source or project given.
 - The sealed elevations sheet for Mulberry (see above).
