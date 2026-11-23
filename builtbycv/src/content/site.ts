@@ -1,12 +1,11 @@
 /**
  * Business facts used across the site. Edit here; every page reads from this file.
  *
- * Anything not yet confirmed by the owner is marked `verified: false` (or null).
- * While NEXT_PUBLIC_SHOW_PLACEHOLDERS is "true" those items render with a yellow
- * "Placeholder" tag so they are easy to spot; set it to "false" for launch and
- * unverified items are hidden automatically.
+ * Anything not yet confirmed by the owner is marked `verified: false` (or null) and is
+ * hidden on the live site. Set NEXT_PUBLIC_SHOW_PLACEHOLDERS="true" (review builds only)
+ * to see those items with a yellow "Placeholder" tag.
  */
-export const showPlaceholders = process.env.NEXT_PUBLIC_SHOW_PLACEHOLDERS !== "false";
+export const showPlaceholders = process.env.NEXT_PUBLIC_SHOW_PLACEHOLDERS === "true";
 
 export const site = {
   name: "CV Capital",
@@ -55,7 +54,7 @@ export const site = {
   cta: {
     primary: "Schedule a Consultation",
     primaryShort: "Free Consultation",
-    secondary: "Price My Project",
+    secondary: "Start Your Project",
     href: "/contact",
     calculatorHref: "/#price-my-project",
   },

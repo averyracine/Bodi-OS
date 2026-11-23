@@ -14,7 +14,7 @@ export const metadata = pageMeta({
 export default function ProjectsPage() {
   return (
     <>
-      <PageHero eyebrow="Projects" title="Work across the Valley." lede="Real CV Capital projects, each labeled by status, with before, during and after photos where we have them." />
+      <PageHero eyebrow="Featured projects" title="Work across the Valley." lede="Real CV Capital projects, each labeled by status, with before, during and after photos where we have them." />
       <Section tone="paper">
         <div className="grid gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
           {projectsWithPhotosFirst().map((p, i) => <ProjectCard key={p.slug} p={p} priority={i < 3} />)}

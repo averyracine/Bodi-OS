@@ -1,17 +1,17 @@
 import Link from "next/link";
 import Image from "next/image";
 import { site } from "@/content/site";
-import { hero, visibleBeforeAfter, faqs, calculatorIntro } from "@/content/copy";
+import { hero, visibleBeforeAfter, faqs, projectIntro } from "@/content/copy";
 import { LicenseBlock } from "@/components/site/LicenseBlock";
 import { AnimatedHeading } from "@/components/site/AnimatedHeading";
 import { Section, SectionHeader } from "@/components/site/Section";
-import { PriceCalculator } from "@/components/site/PriceCalculator";
+import { EstimateForm } from "@/components/site/EstimateForm";
 import { BeforeAfter } from "@/components/site/BeforeAfter";
 import { JsonLd } from "@/components/site/JsonLd";
 import { PlaceholderTag } from "@/components/site/Placeholder";
 import { PhoneIcon } from "@/components/site/Header";
 import {
-  OffersBlock, ServicesGrid, FeaturedProjects, ComparisonTable, StatsBand, FounderBlock,
+  OffersBlock, ServicesGrid, FeaturedProjects, ComparisonTable, StatsBand,
   Testimonials, FinancingBlock, FaqList, FinalCta,
 } from "@/components/site/blocks";
 import { pageMeta, faqJsonLd } from "@/lib/seo";
@@ -66,18 +66,18 @@ export default function HomePage() {
       {/* 2. Free offers */}
       <OffersBlock />
 
-      {/* 3. Price calculator */}
+      {/* 3. Project intake form (goes to the CRM as a lead) */}
       <Section id="price-my-project" tone="sand" labelledBy="calc-h" className="scroll-mt-16">
         <div className="grid gap-12 lg:grid-cols-[4fr_7fr] lg:gap-16">
           <div>
-            <p className="eyebrow mb-4">Price my project</p>
-            <h2 id="calc-h" className="h2">What will my project cost?</h2>
-            <p className="lede mt-5">{calculatorIntro.lede}</p>
+            <p className="eyebrow mb-4">Start your project</p>
+            <h2 id="calc-h" className="h2">Tell us about your project.</h2>
+            <p className="lede mt-5">{projectIntro.lede}</p>
             <ul className="mt-8 space-y-3 text-sm text-stone">
-              {calculatorIntro.points.map((t) => <li key={t}>· {t}</li>)}
+              {projectIntro.points.map((t) => <li key={t}>· {t}</li>)}
             </ul>
           </div>
-          <PriceCalculator />
+          <EstimateForm />
         </div>
       </Section>
 
@@ -104,9 +104,6 @@ export default function HomePage() {
 
       {/* 8. Stats */}
       <StatsBand />
-
-      {/* 9. Founder */}
-      <FounderBlock />
 
       {/* 10. Testimonials */}
       <Testimonials />

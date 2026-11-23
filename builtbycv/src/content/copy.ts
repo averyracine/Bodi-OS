@@ -12,10 +12,10 @@ export const hero = {
   video: null as string | null,
 };
 
-/** Intro beside the price calculator on the home page. */
-export const calculatorIntro = {
-  lede: "Get a planning-level figure in about a minute. Bathroom remodels start at $7,500; kitchens receive a custom project estimate.",
-  points: ["Based on CV Capital's published starting prices", "No ZIP-code surcharges", "Your written proposal follows a free on-site visit"],
+/** Intro beside the project form on the home page. */
+export const projectIntro = {
+  lede: "Share your project, budget and desired start time. A CV professional will contact you to talk it through and prepare your estimate.",
+  points: ["Takes about a minute", "No obligation", "Your written proposal follows a free on-site visit"],
 };
 
 export const offers = [
@@ -63,7 +63,7 @@ export const faqs = [
   },
   {
     q: "How much will my project cost?",
-    a: `Bathroom remodels start at $7,500, home additions at $50,000 and ADUs and casitas at $75,000. Whole-home renovations typically run $50,000 to $500,000, depending on scope. Kitchens and outdoor living receive custom project estimates, custom homes are individually quoted, and commercial work receives a custom commercial proposal. ${startingPriceDisclaimer} Use the price calculator for a planning figure; your written proposal sets the real number.`,
+    a: `Bathroom remodels start at $7,500, home additions at $50,000 and ADUs and casitas at $75,000. Whole-home renovations typically run $50,000 to $500,000, depending on scope. Kitchens and outdoor living receive custom project estimates, custom homes are individually quoted, and commercial work receives a custom commercial proposal. ${startingPriceDisclaimer} Your written proposal sets the real number.`,
   },
   {
     q: "Do you handle permits?",

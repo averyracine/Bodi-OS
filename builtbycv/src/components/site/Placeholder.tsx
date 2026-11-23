@@ -24,6 +24,7 @@ export function PhotoPlaceholder({
   className?: string;
   tone?: "dark" | "light";
 }) {
+  if (!showPlaceholders) return null;
   return (
     <div
       role="img"

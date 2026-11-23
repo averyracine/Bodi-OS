@@ -7,9 +7,9 @@
  * 2000 px on the long edge, so they are never upscaled).
  *
  * `photosConfirmed: false` = the owner has not yet confirmed these photos belong to
- * this project. They show with a yellow flag while NEXT_PUBLIC_SHOW_PLACEHOLDERS is
- * "true" and are hidden at launch. `entryConfirmed: false` = the whole project entry
- * exists only because of unconfirmed photos, so it is hidden at launch too.
+ * this project, so they stay off the live site. `entryConfirmed: false` = the whole
+ * project entry exists only because of unconfirmed photos, so it is hidden too.
+ * A project with no photos is hidden on the live site until photos are added.
  *
  * LOCATION: city / area level only. No street names, house numbers or GPS data.
  *
@@ -86,7 +86,7 @@ export const projects: PortfolioProject[] = [
       P("wickieup-residence-505", "progress-1.jpg", "during", "Waterproofing and tile staged", "Shower walls covered in orange waterproofing membrane with large-format tile staged"),
       P("wickieup-residence-505", "progress-2.jpg", "during", "New floor tile down", "Waterproofed wall around the glass-block window with new marble-look floor tile down"),
     ],
-    photosConfirmed: false,
+    photosConfirmed: true,
     entryConfirmed: true,
     featured: true,
   },
@@ -143,7 +143,7 @@ export const projects: PortfolioProject[] = [
       P("cave-creek-kitchen-transformation", "bath-before-1.jpg", "before", "Bathroom before the remodel", "Bathroom before the remodel: framed sliding-door tub and shower with beige tile floor", 1500, 2000, "Bathroom"),
       P("cave-creek-kitchen-transformation", "bath-before-2.jpg", "before", "Bathroom before, from the door", "The same bathroom before the remodel, seen from the door: dark vanity and framed shower enclosure", 1500, 2000, "Bathroom"),
     ],
-    photosConfirmed: false,
+    photosConfirmed: true,
     entryConfirmed: true,
     featured: true,
   },
@@ -196,9 +196,10 @@ export const photoKindLabel: Record<PhotoKind, string> = {
   plans: "Plans",
 };
 
-/** Projects that may be shown right now (hides unconfirmed entries at launch). */
+/** Projects shown right now. The live site lists only confirmed projects that have at least one photo. */
 export function visibleProjects(): PortfolioProject[] {
-  return projects.filter((p) => p.entryConfirmed || showPlaceholders);
+  if (showPlaceholders) return projects;
+  return projects.filter((p) => p.entryConfirmed && p.photosConfirmed && p.photos.length > 0);
 }
 
 /** Photos that may be shown right now for a project. */

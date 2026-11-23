@@ -36,7 +36,7 @@ Everything visitors read lives in `src/content/`. No code changes are needed for
 | `areas.ts` | Service-area pages |
 | `copy.ts` | Hero, free offers, comparison table, process, FAQ, financing, testimonials, before/after |
 
-**Placeholders.** Anything unconfirmed is flagged in code (`verified: false`, `null`, empty lists) and shows a yellow ⚑ tag on the site. Set `NEXT_PUBLIC_SHOW_PLACEHOLDERS=false` at launch to hide everything unverified.
+**Placeholders.** Anything unconfirmed is flagged in code (`verified: false`, `null`, empty lists) and is hidden on the live site, as is any project without photos. Set `NEXT_PUBLIC_SHOW_PLACEHOLDERS=true` on a review build to see those items with a yellow ⚑ tag.
 
 ## How leads flow
 

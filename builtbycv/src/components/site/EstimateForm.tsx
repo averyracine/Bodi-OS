@@ -85,7 +85,7 @@ export function EstimateForm() {
     return (
       <div ref={doneRef} tabIndex={-1} className="card p-8 outline-none sm:p-10" role="status">
         <p className="eyebrow">Request received</p>
-        <h2 className="h3 mt-3">Thank you. We&apos;ll be in touch within one business day.</h2>
+        <h2 className="h3 mt-3">Thank you. A CV professional will be contacting you shortly.</h2>
         <p className="mt-4 text-stone">
           Need us sooner? Call <a className="underline" href={site.phoneHref}>{site.phone}</a>, Monday–Friday, 8 AM–5 PM.
         </p>
@@ -123,7 +123,7 @@ export function EstimateForm() {
           {budgetRanges.map((b) => <option key={b.label}>{b.label}</option>)}
         </select>
       </F>
-      <F id="timeline" error={err("timeline")} label="Timeline">
+      <F id="timeline" error={err("timeline")} label="Desired start time">
         <select id="ef-timeline" name="timeline" className="field" defaultValue="">
           <option value="">Choose one</option>
           {timelines.map((t) => <option key={t}>{t}</option>)}

@@ -132,7 +132,7 @@ export function FeaturedProjects({ limit = 6 }: { limit?: number }) {
     <Section tone="paper" labelledBy="projects-h">
       <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
         <SectionHeader id="projects-h" eyebrow="Featured projects" title="Recent and current work across the Valley." />
-        <Link href="/projects" className="link-arrow mb-12 shrink-0 sm:mb-16">All projects →</Link>
+        <Link href="/projects" className="link-arrow mb-12 shrink-0 sm:mb-16">View projects →</Link>
       </div>
       <div className="grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
         {list.map((p) => <ProjectCard key={p.slug} p={p} />)}
@@ -221,7 +221,6 @@ export function FounderBlock() {
           <p className="mt-2 text-muted">{founder.title}, {site.name}</p>
           <blockquote className="mt-8 border-l-2 border-accent pl-6 font-serif text-2xl font-light italic leading-snug">“{founder.quote}”</blockquote>
           <div className="mt-8 space-y-4 leading-relaxed text-stone">{founder.bio.map((b) => <p key={b}>{b}</p>)}</div>
-          <Link href="/our-story" className="link-arrow mt-8">Our story →</Link>
         </div>
       </div>
     </Section>
@@ -230,6 +229,7 @@ export function FounderBlock() {
 
 export function Testimonials() {
   const g = site.googleReviews;
+  if (!showPlaceholders && testimonials.length === 0 && !(g.rating && g.count)) return null;
   return (
     <Section tone="sand" labelledBy="reviews-h">
       <SectionHeader
