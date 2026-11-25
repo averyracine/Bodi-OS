@@ -160,10 +160,10 @@ export const beforeAfter: BeforeAfterPair[] = [
   {
     title: "Primary bathroom",
     detail: "From demolition to a finished primary bath with a freestanding tub, frameless glass shower and marble-look tile.",
-    before: { src: "/projects/wickieup-residence-505/demo-3.jpg", alt: "Tub area removed below the glass-block window during demolition", width: 1500, height: 2000 },
-    after: { src: "/projects/wickieup-residence-505/after-1.jpg", alt: "Finished primary bathroom with a freestanding white tub under the glass-block window and a frameless glass shower", width: 1500, height: 2000 },
+    before: { src: "/projects/hillcrest-kitchen-and-bathroom-remodels/demo-3.jpg", alt: "Tub area removed below the glass-block window during demolition", width: 1500, height: 2000 },
+    after: { src: "/projects/hillcrest-kitchen-and-bathroom-remodels/after-1.jpg", alt: "Finished primary bathroom with a freestanding white tub under the glass-block window and a frameless glass shower", width: 1500, height: 2000 },
     beforeLabel: "During demolition",
-    projectSlug: "wickieup-residence-505",
+    projectSlug: "hillcrest-kitchen-and-bathroom-remodels",
   },
 ];
 

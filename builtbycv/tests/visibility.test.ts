@@ -10,7 +10,7 @@ test("on the live site, unconfirmed entries and projects without photos are hidd
   const slugs = visibleProjects().map((p) => p.slug);
   assert.ok(!slugs.includes("kitchen-remodel-east-valley"), "unconfirmed East Valley entry must be hidden");
   const bySlug = (s: string) => projects.find((p) => p.slug === s)!;
-  assert.deepEqual(slugs, ["mulberry-luxury-renovation", "wickieup-residence-505", "cave-creek-kitchen-transformation"]);
+  assert.deepEqual(slugs, ["mulberry-luxury-renovation", "hillcrest-kitchen-and-bathroom-remodels", "cave-creek-kitchen-transformation"]);
   for (const s of slugs) assert.ok(visiblePhotos(bySlug(s)).length > 0, `${s} must have a photo`);
   assert.equal(visiblePhotos(bySlug("kitchen-remodel-east-valley")).length, 0);
   const pairs = visibleBeforeAfter();

@@ -17,6 +17,12 @@ const nextConfig: NextConfig = {
   experimental: {
     serverActions: { bodySizeLimit: "4mb" },
   },
+  async redirects() {
+    return [
+      // Renamed project (Nov 2026)
+      { source: "/projects/wickieup-residence-505", destination: "/projects/hillcrest-kitchen-and-bathroom-remodels", permanent: true },
+    ];
+  },
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },
