@@ -1,0 +1,12 @@
+# Only the builtbycv app is deployed (project root directory: builtbycv).
+.git
+.vercel
+marketing
+builtbycv/node_modules
+builtbycv/.next
+builtbycv/.data
+builtbycv/.env
+builtbycv/.env.*
+!builtbycv/.env.example
+builtbycv/content-inbox
+builtbycv/tsconfig.tsbuildinfo
